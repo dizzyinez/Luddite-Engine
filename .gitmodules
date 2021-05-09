@@ -1,0 +1,15 @@
+[submodule "ThirdParty/DiligentCore"]
+	path = ThirdParty/DiligentCore
+	url = https://github.com/DiligentGraphics/DiligentCore
+[submodule "ThirdParty/DiligentTools"]
+	path = ThirdParty/DiligentTools
+	url = https://github.com/DiligentGraphics/DiligentTools
+[submodule "ThirdParty/DiligentFX"]
+	path = ThirdParty/DiligentFX
+	url = https://github.com/DiligentGraphics/DiligentFX
+[submodule "ThirdParty/spdlog"]
+	path = ThirdParty/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "ThirdParty/entt"]
+	path = ThirdParty/entt
+	url = https://github.com/skypjack/entt
