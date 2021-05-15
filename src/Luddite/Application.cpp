@@ -13,7 +13,10 @@ void Application::Run()
         while (true)
         {
                 for (auto window : m_windows)
+                {
                         window->GetRenderer().Draw();
+                        window->GetRenderer().Present();
+                }
         }
 }
 }

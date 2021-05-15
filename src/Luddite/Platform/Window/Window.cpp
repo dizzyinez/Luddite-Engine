@@ -2,6 +2,9 @@
 
 namespace Luddite
 {
-Window::Window() {}
+Window::Window()
+        : m_renderer(this)
+{
+}
 Window::~Window() {}
 }

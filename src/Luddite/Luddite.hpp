@@ -7,3 +7,8 @@
 #include "Luddite/LayerStack.hpp"
 #include "Luddite/ECS/World.hpp"
 #include "Luddite/ECS/Entity.hpp"
+
+//Graphics
+#include "Luddite/Rendering/Color.hpp"
+#include "Luddite/Rendering/Material.hpp"
+#include "Luddite/Rendering/Texture.hpp"

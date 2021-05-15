@@ -7,7 +7,8 @@ public:
         TestApp()
         {
                 LOG_INFO("Test Application starting");
-                auto game_window = std::make_shared<Luddite::XCBWindow>();
+                auto game_window = std::make_shared<Luddite::XCBWindow>("Luddite Test App");
+                // game_window->SetTitle("GAMING TIME");
                 m_windows.emplace_back(game_window);
                 // game_window->GetLayerStack()->PushLayer(std::make_shared<>)
                 LOG_INFO("Window Created");

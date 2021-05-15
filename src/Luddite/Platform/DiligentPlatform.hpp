@@ -15,5 +15,6 @@
     #define PLATFORM_ANDROID 1
 #endif
 
-#ifdef LD_PLATFORM_IOS 1
+#ifdef LD_PLATFORM_IOS
+    #define PLATFORM_IOS 1
 #endif

@@ -27,12 +27,13 @@ class LUDDITE_API XCBWindow : public Window
 {
 public:
         XCBWindow();
+        XCBWindow(const std::string& title);
         ~XCBWindow() override;
-        void SetTitle(std::string title) override;
+        void SetTitle(const std::string& title) override;
         uint32_t GetWidth() override {return info.width;}
         uint32_t GetHeight() override {return info.height;}
 private:
-        void InitXCBConnectionAndWindow();
+        void InitXCBConnectionAndWindow(const std::string& title);
         bool InitVulkan();
         XCBInfo info;
 };

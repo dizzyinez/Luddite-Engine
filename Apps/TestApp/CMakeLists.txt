@@ -11,4 +11,6 @@ target_link_libraries(TestApp
 PUBLIC
 Luddite-Engine
 )
-#copy_required_dlls(TestApp)
+
+file(COPY ${CMAKE_SOURCE_DIR}/Assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

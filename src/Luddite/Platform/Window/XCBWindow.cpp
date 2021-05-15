@@ -32,7 +32,13 @@ namespace Luddite
 {
 XCBWindow::XCBWindow()
 {
-        InitXCBConnectionAndWindow();
+        InitXCBConnectionAndWindow("");
+        InitVulkan();
+        xcb_flush(info.connection);
+}
+XCBWindow::XCBWindow(const std::string& title)
+{
+        InitXCBConnectionAndWindow(title);
         InitVulkan();
         xcb_flush(info.connection);
 }
@@ -42,6 +48,7 @@ bool XCBWindow::InitVulkan()
         Diligent::EngineVkCreateInfo EngVkAttribs;
 
         auto* pFactoryVk = Diligent::GetEngineFactoryVk();
+        GetEngineFactory() = pFactoryVk;
         pFactoryVk->CreateDeviceAndContextsVk(EngVkAttribs, &GetRenderDevice(), &GetDeviceContext());
         Diligent::SwapChainDesc SCDesc;
         Diligent::LinuxNativeWindow XCB_Window;
@@ -52,7 +59,7 @@ bool XCBWindow::InitVulkan()
         return true;
 }
 
-void XCBWindow::InitXCBConnectionAndWindow()
+void XCBWindow::InitXCBConnectionAndWindow(const std::string& title)
 {
         int scr = 0;
         info.connection = xcb_connect(nullptr, &scr);
@@ -95,10 +102,7 @@ void XCBWindow::InitXCBConnectionAndWindow()
                 &(*info.atom_wm_delete_window).atom);
         free(reply);
 
-
-        // const char* title = "Tutorial00: Hello Linux (Vulkan)";
-        // xcb_change_property(info.connection, XCB_PROP_MODE_REPLACE, info.window, XCB_ATOM_WM_NAME, XCB_ATOM_STRING,
-        //         8, strlen(title), title);
+        SetTitle(title);
 
         // https://stackoverflow.com/a/27771295
         xcb_size_hints_t hints = {};
@@ -123,7 +127,7 @@ void XCBWindow::InitXCBConnectionAndWindow()
         }
 }
 
-void XCBWindow::SetTitle(std::string title)
+void XCBWindow::SetTitle(const std::string& title)
 {
         const char* title_pointer = title.data();
         xcb_change_property(info.connection, XCB_PROP_MODE_REPLACE, info.window, XCB_ATOM_WM_NAME, XCB_ATOM_STRING,

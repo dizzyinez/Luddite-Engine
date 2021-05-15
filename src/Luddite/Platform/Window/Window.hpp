@@ -11,7 +11,7 @@ class LUDDITE_API Window
 public:
         Window();
         virtual ~Window();
-        virtual void SetTitle(std::string title) {};
+        virtual void SetTitle(const std::string& title) {};
         virtual void Resize(uint32_t width, uint32_t height) {};
         virtual uint32_t GetWidth() = 0;
         virtual uint32_t GetHeight() = 0;
@@ -23,6 +23,7 @@ protected:
         Diligent::RefCntAutoPtr<Diligent::IRenderDevice>& GetRenderDevice() {return m_renderer.m_pDevice;}
         Diligent::RefCntAutoPtr<Diligent::IDeviceContext>& GetDeviceContext() {return m_renderer.m_pImmediateContext;}
         Diligent::RefCntAutoPtr<Diligent::ISwapChain>& GetSwapChain() {return m_renderer.m_pSwapChain;}
+        Diligent::RefCntAutoPtr<Diligent::IEngineFactory>& GetEngineFactory() {return m_renderer.m_pEngineFactory;}
         // Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pPSO;
         Renderer m_renderer;
 };

@@ -4,12 +4,14 @@ if(UNIX AND NOT APPLE)
     set(LINUX TRUE)
 endif()
 
-project(Luddite-Engine LANGUAGES CXX VERSION 0.0)
+project(Luddite-Engine LANGUAGES CXX C VERSION 0.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 add_subdirectory(ThirdParty/DiligentCore)
+add_subdirectory(ThirdParty/DiligentFX)
+add_subdirectory(ThirdParty/DiligentTools)
 add_subdirectory(ThirdParty/spdlog)
 
 set (ENGINE_COMPILE_DEFINES LD_BUILD_LIB)
@@ -41,13 +43,24 @@ target_compile_options(Luddite-Engine PRIVATE -DUNICODE -DENGINE_DLL)
 target_compile_definitions(Luddite-Engine PRIVATE ${ENGINE_COMPILE_DEFINES} ${PLATFORM_DEFINE} ${CONFIGURATION_DEFINE})
 
 set(LUDDITE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_include_directories(Luddite-Engine PUBLIC ${LUDDITE_INCLUDE} "ThirdParty/DiligentCore" "ThirdParty/spdlog/include" "ThirdParty/entt/single_include")
+target_include_directories(Luddite-Engine PUBLIC ${LUDDITE_INCLUDE} 
+"ThirdParty/DiligentCore"
+"ThirdParty/DiligentFX"
+"ThirdParty/DiligentTools"
+"ThirdParty/spdlog/include"
+"ThirdParty/entt/single_include"
+"ThirdParty/glm"
+)
+
 target_precompile_headers(Luddite-Engine PRIVATE src/Luddite/pch.hpp)
 
 if (LINUX)
     Set(DILIGENT_LIBS
     Diligent-GraphicsEngineOpenGL-shared
     Diligent-GraphicsEngineVk-shared
+    Diligent-GraphicsTools
+    Diligent-TextureLoader
+    DiligentFX
     xcb
     )
 endif()
@@ -57,6 +70,9 @@ if (WIN32)
         Diligent-GraphicsEngineOpenGL-shared
         Diligent-GraphicsEngineD3D12-shared
         Diligent-GraphicsEngineVk-shared
+        Diligent-GraphicsTools
+        DiligentTools
+        DiligentFX
     )
 endif()
 target_link_libraries(Luddite-Engine PRIVATE ${DILIGENT_LIBS} spdlog)
