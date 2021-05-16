@@ -2,7 +2,7 @@
 #include "Luddite/Core.hpp"
 #include "Luddite/pch.hpp"
 
-#include "Luddite/Rendering/Texture.hpp"
+#include "Luddite/Graphics/Texture.hpp"
 #include "Luddite/Platform/DiligentPlatform.hpp"
 #include "Graphics/GraphicsEngine/interface/RenderDevice.h"
 #include "Graphics/GraphicsEngine/interface/DeviceContext.h"
@@ -60,7 +60,6 @@ private:
         };
 
         glm::mat4 m_ViewProjMatrix;
-        glm::mat4 m_RotationMatrix;
         static constexpr int MaxInstances = 4096;
         static constexpr int MaxTextures = 4;
         std::array<InstanceData, MaxInstances> instance_data;

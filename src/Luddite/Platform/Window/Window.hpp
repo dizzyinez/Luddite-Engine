@@ -2,7 +2,7 @@
 #include "Luddite/pch.hpp"
 #include "Luddite/Core.hpp"
 #include "Luddite/LayerStack.hpp"
-#include "Luddite/Rendering/Renderer.hpp"
+#include "Luddite/Graphics/Renderer.hpp"
 
 namespace Luddite
 {

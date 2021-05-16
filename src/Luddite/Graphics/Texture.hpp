@@ -1,5 +1,7 @@
 #pragma once
 #include "Luddite/pch.hpp"
+#include "Luddite/Core.hpp"
+
 #include "Luddite/Platform/DiligentPlatform.hpp"
 #include "Graphics/GraphicsEngine/interface/RenderDevice.h"
 #include "Graphics/GraphicsEngine/interface/DeviceContext.h"

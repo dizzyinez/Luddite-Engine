@@ -1,8 +1,11 @@
 #pragma once
 #include "Luddite/pch.hpp"
 #include "Luddite/Core.hpp"
-#include "Luddite/Rendering/Texture.hpp"
-#include "Luddite/Rendering/QuadBatchRenderer.hpp"
+
+#include "Luddite/Graphics/Texture.hpp"
+#include "Luddite/Graphics/QuadBatchRenderer.hpp"
+#include "Luddite/Graphics/PBRRenderer.hpp"
+#include "Luddite/Graphics/ModelLoader.hpp"
 
 // #include "Common/interface/BasicMath.hpp"
 
@@ -42,10 +45,13 @@ private:
         // Diligent::float4x4 m_WorldViewProjMatrix;
         // float accum = 0.0f;
         QuadBatchRenderer m_basic_quad_renderer;
+        PBRRenderer m_PBRRenderer;
+        ModelLoader m_ModelLoader;
+
         Window* m_pWindow;
         Texture t;
 
-        // Diligent::float4x4 GetAdjustedProjectionMatrix(float FOV, float NearPlane, float FarPlane) const;
-        // Diligent::float4x4 GetSurfacePretransformMatrix(const Diligent::float3& f3CameraViewAxis) const;
+        glm::mat4x4 GetAdjustedProjectionMatrix(float FOV, float NearPlane, float FarPlane) const;
+        glm::mat4x4 GetSurfacePretransformMatrix(const glm::vec3& f3CameraViewAxis) const;
 };
 }

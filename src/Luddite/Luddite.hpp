@@ -9,6 +9,6 @@
 #include "Luddite/ECS/Entity.hpp"
 
 //Graphics
-#include "Luddite/Rendering/Color.hpp"
-#include "Luddite/Rendering/Material.hpp"
-#include "Luddite/Rendering/Texture.hpp"
+#include "Luddite/Graphics/Color.hpp"
+#include "Luddite/Graphics/MaterialLibrary.hpp"
+#include "Luddite/Graphics/Texture.hpp"

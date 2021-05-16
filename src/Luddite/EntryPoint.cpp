@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 int main(int argc, char** argv)
 {
         Luddite::Logger::Init();
-        LOG_INFO("Logger Initialized!");
+        LD_LOG_INFO("Logger Initialized!");
         auto app = Luddite::CreateApplication();
         app->Run();
         delete app;

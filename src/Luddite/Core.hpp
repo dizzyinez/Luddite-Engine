@@ -19,3 +19,25 @@
 #ifndef LUDDITE_API
     #define LUDDITE_API
 #endif
+
+
+
+#ifdef LD_PLATFORM_WINDOWS
+    #define LD_PLATFORM_DESKTOP
+#endif
+
+#ifdef LD_PLATFORM_LINUX
+    #define LD_PLATFORM_DESKTOP
+#endif
+
+#ifdef LD_PLATFORM_MACOS
+    #define LD_PLATFORM_DESKTOP
+#endif
+
+#ifdef LD_PLATFORM_IOS
+    #define LD_PLATFORM_MOBILE
+#endif
+
+#ifdef LD_PLATFORM_ANDRIOD
+    #define LD_PLATFORM_MOBILE
+#endif

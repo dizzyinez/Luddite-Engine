@@ -1,1 +1,0 @@
-#include "Luddite/Rendering/Color.hpp"

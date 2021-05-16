@@ -46,6 +46,7 @@ XCBWindow::XCBWindow(const std::string& title)
 bool XCBWindow::InitVulkan()
 {
         Diligent::EngineVkCreateInfo EngVkAttribs;
+        EngVkAttribs.DebugMessageCallback = Logger::DiligentLogMessage;
 
         auto* pFactoryVk = Diligent::GetEngineFactoryVk();
         GetEngineFactory() = pFactoryVk;
@@ -65,9 +66,9 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title)
         info.connection = xcb_connect(nullptr, &scr);
         if (info.connection == nullptr || xcb_connection_has_error(info.connection))
         {
-                LOG_CRITICAL("Unable to make an XCB connection");
+                LD_LOG_CRITICAL("Unable to make an XCB connection");
         }
-        LOG_INFO("XCB connection established");
+        LD_LOG_INFO("XCB connection established");
 
         const xcb_setup_t*    setup = xcb_get_setup(info.connection);
         xcb_screen_iterator_t iter = xcb_setup_roots_iterator(setup);

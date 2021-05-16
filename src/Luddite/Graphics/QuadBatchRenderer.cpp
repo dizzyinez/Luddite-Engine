@@ -1,4 +1,4 @@
-#include "Luddite/Rendering/QuadBatchRenderer.hpp"
+#include "Luddite/Graphics/QuadBatchRenderer.hpp"
 #include "Graphics/GraphicsTools/interface/GraphicsUtilities.h"
 #include "Graphics/GraphicsTools/interface/MapHelper.hpp"
 
@@ -24,7 +24,7 @@ void QuadBatchRenderer::Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevi
 
         CreateInstanceBuffer();
         //LoadTextures();
-        LOG_INFO("Quad Batch Renderer Initialized");
+        LD_LOG_INFO("Quad Batch Renderer Initialized");
 }
 void QuadBatchRenderer::StartBatch()
 {

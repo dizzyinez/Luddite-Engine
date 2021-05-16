@@ -1,4 +1,4 @@
-#include "Luddite/Rendering/Texture.hpp"
+#include "Luddite/Graphics/Texture.hpp"
 #include "Graphics/GraphicsTools/interface/GraphicsUtilities.h"
 #include "Graphics/GraphicsTools/interface/MapHelper.hpp"
 #include "Graphics/GraphicsTools/interface/TextureUploader.hpp"

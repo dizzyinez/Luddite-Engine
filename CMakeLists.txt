@@ -50,6 +50,7 @@ target_include_directories(Luddite-Engine PUBLIC ${LUDDITE_INCLUDE}
 "ThirdParty/spdlog/include"
 "ThirdParty/entt/single_include"
 "ThirdParty/glm"
+"ThirdParty/OBJ-Loader/Source"
 )
 
 target_precompile_headers(Luddite-Engine PRIVATE src/Luddite/pch.hpp)
