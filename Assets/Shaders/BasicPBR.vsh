@@ -1,13 +1,12 @@
 cbuffer ShaderConstants
 {
     float4x4 g_CameraViewProj;
-    float4x4 g_CameraViewInvProj;
 };
 
-cbuffer ModelBuffer
-{
-    float4x4 g_ModelTransform;
-};
+// cbuffer ModelConstants
+// {
+//     float4x4 g_ModelTransform;
+// };
 
 // Vertex shader takes two inputs: vertex position and uv coordinates.
 // By convention, Diligent Engine expects vertex shader inputs to be 
@@ -15,12 +14,14 @@ cbuffer ModelBuffer
 struct VSInput
 {
     float3 Pos : ATTRIB0;
-    float2 UV  : ATTRIB1;
+    float3 Normal : ATTRIB1;
+    float2 UV  : ATTRIB2;
 };
 
 struct PSInput 
 { 
     float4 Pos : SV_POSITION; 
+    float3 Normal : NORMAL;
     float2 UV  : TEX_COORD; 
 };
 
@@ -40,6 +41,7 @@ void main(in  uint    InstID : SV_InstanceID,
     Pos.y += float(GridY) * 2.0;
     Pos.z += float(GridX + (GridY % 2));
     
-    PSIn.Pos = mul(g_CameraViewProj, mul(g_ModelTransform, float4(Pos, 1.0)));
+    PSIn.Pos = mul(g_CameraViewProj, float4(Pos, 1.0));
+    PSIn.Normal = mul(g_CameraViewProj, float4(VSIn.Normal, 0.0));
     PSIn.UV  = VSIn.UV;
 }

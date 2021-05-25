@@ -46,7 +46,4 @@ void LayerStack::DefferedPopLayer(std::shared_ptr<Layer> layer)
         if (it != m_stack.end())
                 m_stack.erase(it);
 }
-// std::vector<std::shared_ptr<Layer> > m_stack;
-// std::vector<std::shared_ptr<Layer> > m_remove_queue;
-// std::vector<std::shared_ptr<Layer> > m_add_queue;
 }

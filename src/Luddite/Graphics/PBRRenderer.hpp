@@ -3,13 +3,7 @@
 #include "Luddite/Core.hpp"
 
 #include "Luddite/Graphics/Texture.hpp"
-#include "Luddite/Platform/DiligentPlatform.hpp"
-#include "Graphics/GraphicsEngine/interface/RenderDevice.h"
-#include "Graphics/GraphicsEngine/interface/DeviceContext.h"
-#include "Graphics/GraphicsEngine/interface/SwapChain.h"
-#include "Graphics/GraphicsTools/interface/DynamicTextureAtlas.h"
-
-#include "Common/interface/RefCntAutoPtr.hpp"
+#include "Luddite/Graphics/DiligentInclude.hpp"
 
 namespace Luddite
 {
@@ -40,6 +34,7 @@ private:
 
         Diligent::RefCntAutoPtr<Diligent::IRenderPass> m_pRenderPass;
         Diligent::RefCntAutoPtr<Diligent::IBuffer>     m_pShaderConstantsCB;
+        Diligent::RefCntAutoPtr<Diligent::IBuffer>     m_pModelBufferCB;
         glm::mat4 m_ViewProjMatrix;
 
 
@@ -54,9 +49,11 @@ private:
         //TEMP
         Diligent::RefCntAutoPtr<Diligent::IPipelineState>         m_pCubePSO;
         Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> m_pCubeSRB;
+        Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> m_pCubeSRB2;
         Diligent::RefCntAutoPtr<Diligent::IPipelineState>         m_pAmbientLightPSO;
         Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> m_pAmbientLightSRB;
         Diligent::RefCntAutoPtr<Diligent::ITextureView>           m_CubeTextureSRV;
+        Diligent::RefCntAutoPtr<Diligent::ITextureView>           m_CubeTextureSRV2;
         Diligent::RefCntAutoPtr<Diligent::IBuffer>                m_CubeVertexBuffer;
         Diligent::RefCntAutoPtr<Diligent::IBuffer>                m_CubeIndexBuffer;
 

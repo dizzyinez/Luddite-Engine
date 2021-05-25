@@ -3,13 +3,15 @@
 #include "Luddite/Platform/Window/Window.hpp"
 #include <xcb/xcb.h>
 
-#include "Luddite/Platform/DiligentPlatform.hpp"
-#include "Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h"
-#include "Graphics/GraphicsEngine/interface/RenderDevice.h"
-#include "Graphics/GraphicsEngine/interface/DeviceContext.h"
-#include "Graphics/GraphicsEngine/interface/SwapChain.h"
 
-#include "Common/interface/RefCntAutoPtr.hpp"
+#include "Luddite/Graphics/DiligentInclude.hpp"
+#include "Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h"
+// #include "Luddite/Platform/DiligentPlatform.hpp"
+// #include "Graphics/GraphicsEngine/interface/RenderDevice.h"
+// #include "Graphics/GraphicsEngine/interface/DeviceContext.h"
+// #include "Graphics/GraphicsEngine/interface/SwapChain.h"
+
+// #include "Common/interface/RefCntAutoPtr.hpp"
 
 
 struct XCBInfo
@@ -26,12 +28,14 @@ namespace Luddite
 class LUDDITE_API XCBWindow : public Window
 {
 public:
-        XCBWindow();
-        XCBWindow(const std::string& title);
+        XCBWindow(const std::string& title = "Luddite Engine Application");
         ~XCBWindow() override;
         void SetTitle(const std::string& title) override;
         uint32_t GetWidth() override {return info.width;}
         uint32_t GetHeight() override {return info.height;}
+        void HandleEvents() override;
+
+        static bool InitNativeEngineFactory();
 private:
         void InitXCBConnectionAndWindow(const std::string& title);
         bool InitVulkan();

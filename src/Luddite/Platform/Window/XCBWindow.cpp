@@ -1,5 +1,7 @@
 #include "Luddite/Platform/Window/XCBWindow.hpp"
 #include "Luddite/Logging.hpp"
+#include "Imgui/interface/ImGuiImplLinuxXCB.hpp"
+
 enum XCB_SIZE_HINT
 {
         XCB_SIZE_HINT_US_POSITION   = 1 << 0,
@@ -30,12 +32,6 @@ struct xcb_size_hints_t
 
 namespace Luddite
 {
-XCBWindow::XCBWindow()
-{
-        InitXCBConnectionAndWindow("");
-        InitVulkan();
-        xcb_flush(info.connection);
-}
 XCBWindow::XCBWindow(const std::string& title)
 {
         InitXCBConnectionAndWindow(title);
@@ -45,18 +41,44 @@ XCBWindow::XCBWindow(const std::string& title)
 
 bool XCBWindow::InitVulkan()
 {
+        {
+                Diligent::SwapChainDesc SCDesc;
+                Diligent::LinuxNativeWindow XCB_Window;
+                XCB_Window.WindowId = info.window;
+                XCB_Window.pXCBConnection = info.connection;
+                Diligent::GetEngineFactoryVk()->CreateSwapChainVk(Renderer::GetDevice(), Renderer::GetContext(), SCDesc, XCB_Window, &m_pSwapChain);
+        }
+
+        auto& SCDesc = m_pSwapChain->GetDesc();
+        Renderer::SetDefaultRTVFormat(SCDesc.ColorBufferFormat);
+        m_pImGuiImpl.reset( //std::make_unique<Diligent::ImGuiImplDiligent>(
+                new Diligent::ImGuiImplLinuxXCB(info.connection,
+                        Renderer::GetDevice(),
+                        SCDesc.ColorBufferFormat,
+                        SCDesc.DepthBufferFormat,
+                        SCDesc.Width,
+                        SCDesc.Height
+                        ));
+        m_pImGuiImpl->CreateDeviceObjects();
+        // auto& PlatformIO = ImGui::GetPlatformIO();
+        // PlatformIO.Platform_CreateWindow = [] (ImGuiViewport* vp) {};
+        // PlatformIO.Platform_DestroyWindow = [] (ImGuiViewport* vp) {};
+        // PlatformIO.Platform_GetWindowPos = [] (ImGuiViewport* vp) {return ImVec2(0.f, 0.f);};
+        // PlatformIO.Platform_SetWindowPos = [] (ImGuiViewport* vp, ImVec2 pos) {};
+        // PlatformIO.Platform_GetWindowSize = [] (ImGuiViewport* vp) {return ImVec2(0.f, 0.f);};
+        // PlatformIO.Platform_SetWindowSize = [] (ImGuiViewport* vp, ImVec2 pos) {};
+        // PlatformIO.Monitors.push_back()
+        return true;
+}
+
+bool XCBWindow::InitNativeEngineFactory()
+{
         Diligent::EngineVkCreateInfo EngVkAttribs;
         EngVkAttribs.DebugMessageCallback = Logger::DiligentLogMessage;
 
         auto* pFactoryVk = Diligent::GetEngineFactoryVk();
-        GetEngineFactory() = pFactoryVk;
-        pFactoryVk->CreateDeviceAndContextsVk(EngVkAttribs, &GetRenderDevice(), &GetDeviceContext());
-        Diligent::SwapChainDesc SCDesc;
-        Diligent::LinuxNativeWindow XCB_Window;
-        XCB_Window.WindowId = info.window;
-        XCB_Window.pXCBConnection = info.connection;
-        pFactoryVk->CreateSwapChainVk(GetRenderDevice(), GetDeviceContext(), SCDesc, XCB_Window, &GetSwapChain());
-
+        Renderer::GetEngineFactory() = pFactoryVk;
+        pFactoryVk->CreateDeviceAndContextsVk(EngVkAttribs, &Renderer::GetDevice(), &Renderer::GetContext());
         return true;
 }
 
@@ -86,7 +108,20 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title)
 
         value_mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
         value_list[0] = screen->black_pixel;
-        value_list[1] = XCB_EVENT_MASK_KEY_RELEASE | XCB_EVENT_MASK_EXPOSURE | XCB_EVENT_MASK_STRUCTURE_NOTIFY;
+        value_list[1] = XCB_EVENT_MASK_KEY_RELEASE |
+                        XCB_EVENT_MASK_KEY_RELEASE |
+                        XCB_EVENT_MASK_EXPOSURE |
+                        XCB_EVENT_MASK_STRUCTURE_NOTIFY |
+                        XCB_EVENT_MASK_BUTTON_PRESS |
+                        XCB_EVENT_MASK_BUTTON_RELEASE |
+                        XCB_EVENT_MASK_POINTER_MOTION |
+                        XCB_EVENT_MASK_BUTTON_MOTION |
+                        XCB_EVENT_MASK_BUTTON_1_MOTION |
+                        XCB_EVENT_MASK_BUTTON_2_MOTION |
+                        XCB_EVENT_MASK_BUTTON_3_MOTION |
+                        XCB_EVENT_MASK_BUTTON_4_MOTION |
+                        XCB_EVENT_MASK_BUTTON_5_MOTION
+        ;
 
         xcb_create_window(info.connection, XCB_COPY_FROM_PARENT, info.window, screen->root, 0, 0, info.width, info.height, 0,
                 XCB_WINDOW_CLASS_INPUT_OUTPUT, screen->root_visual, value_mask, value_list);
@@ -125,6 +160,48 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title)
         while ((e = xcb_wait_for_event(info.connection)))
         {
                 if ((e->response_type & ~0x80) == XCB_EXPOSE) break;
+        }
+}
+
+void XCBWindow::HandleEvents()
+{
+        xcb_generic_event_t* event = nullptr;
+        while ((event = xcb_poll_for_event(info.connection)) != nullptr)
+        {
+                bool imgui_handled = static_cast<Diligent::ImGuiImplLinuxXCB*>(m_pImGuiImpl.get())->HandleXCBEvent(event);
+                if (imgui_handled)
+                        continue;
+                switch (event->response_type & 0x7f)
+                {
+                case XCB_CLIENT_MESSAGE:
+                        if ((*(xcb_client_message_event_t*)event).data.data32[0] ==
+                            (*info.atom_wm_delete_window).atom)
+                        {
+                                Quit = true;
+                        }
+                        break;
+
+                case XCB_DESTROY_NOTIFY:
+                        Quit = true;
+                        break;
+
+                case XCB_CONFIGURE_NOTIFY:
+                {
+                        const auto* cfgEvent = reinterpret_cast<const xcb_configure_notify_event_t*>(event);
+                        if ((cfgEvent->width != info.width) || (cfgEvent->height != info.height))
+                        {
+                                info.width = cfgEvent->width;
+                                info.height = cfgEvent->height;
+                                if ((info.width > 0) && (info.height > 0))
+                                {
+                                        OnWindowResize(info.width, info.height);
+                                }
+                        }
+                }
+                break;
+                }
+                //Send input to application or whatever
+                free(event);
         }
 }
 

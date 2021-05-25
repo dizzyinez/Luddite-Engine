@@ -13,6 +13,7 @@ add_subdirectory(ThirdParty/DiligentCore)
 add_subdirectory(ThirdParty/DiligentFX)
 add_subdirectory(ThirdParty/DiligentTools)
 add_subdirectory(ThirdParty/spdlog)
+#add_subdirectory(ThirdParty/imgui)
 
 set (ENGINE_COMPILE_DEFINES LD_BUILD_LIB)
 if (LINUX)
@@ -51,31 +52,38 @@ target_include_directories(Luddite-Engine PUBLIC ${LUDDITE_INCLUDE}
 "ThirdParty/entt/single_include"
 "ThirdParty/glm"
 "ThirdParty/OBJ-Loader/Source"
+#"ThirdParty/imgui"
 )
 
-target_precompile_headers(Luddite-Engine PRIVATE src/Luddite/pch.hpp)
+target_precompile_headers(Luddite-Engine PRIVATE src/Luddite/pch.hpp src/Luddite/Graphics/DiligentInclude.hpp)
 
-if (LINUX)
-    Set(DILIGENT_LIBS
-    Diligent-GraphicsEngineOpenGL-shared
-    Diligent-GraphicsEngineVk-shared
+set(DILIGENT_INSTALL_TOOLS true)
+
+Set(DILIGENT_LIBS
+    # Diligent-GraphicsEngineOpenGL-shared
+    # Diligent-GraphicsEngineVk-shared
     Diligent-GraphicsTools
     Diligent-TextureLoader
     DiligentFX
+    Diligent-Imgui
+)
+if (LINUX)
+    Set(DILIGENT_LIBS
+    ${DILIGENT_LIBS}
+    Diligent-GraphicsEngineOpenGL-shared
+    Diligent-GraphicsEngineVk-shared
     xcb
     )
 endif()
 if (WIN32)
     Set(DILIGENT_LIBS
+    ${DILIGENT_LIBS}
         Diligent-GraphicsEngineD3D11-shared
         Diligent-GraphicsEngineOpenGL-shared
         Diligent-GraphicsEngineD3D12-shared
         Diligent-GraphicsEngineVk-shared
-        Diligent-GraphicsTools
-        DiligentTools
-        DiligentFX
     )
 endif()
-target_link_libraries(Luddite-Engine PRIVATE ${DILIGENT_LIBS} spdlog)
+target_link_libraries(Luddite-Engine ${DILIGENT_LIBS} spdlog)
 #copy_required_dlls(Luddite-Engine)
 add_subdirectory(Apps)

@@ -1,4 +1,4 @@
-#include "Luddite/Graphics/ModelLoader.hpp"
+#include "Luddite/Graphics/ModelLibrary.hpp"
 #include "Luddite/Graphics/MaterialLibrary.hpp"
 
 #ifdef LD_DEBUG
@@ -38,21 +38,21 @@ void ModelLoader::BasicModelAllocator::LoadOBJ(std::shared_ptr<BasicModel> model
         loader.LoadFile(filepath);
 
         //load materials
-        std::vector<Material> materials;
-        materials.reserve(loader.LoadedMaterials.size());
-        for (auto obj_material : loader.LoadedMaterials)
-        {
-                MaterialDescription MatDesc;
-                MatDesc.Name = obj_material.name;
-                MatDesc.Diffuse = ColorRGB(*(glm::vec3*)&obj_material.Kd);
-                MatDesc.Specular = ColorRGB(*(glm::vec3*)&obj_material.Ks);
-                // MatDesc.
-                if (!obj_material.map_Kd.empty())
-                {
-                        //Load Texture
-                        //use texture
-                }
-        }
+        // std::vector<MaterialHandle> materials;
+        // materials.reserve(loader.LoadedMaterials.size());
+        // for (auto obj_material : loader.LoadedMaterials)
+        // {
+        //         MaterialDescription MatDesc;
+        //         MatDesc.Name = obj_material.name;
+        //         MatDesc.Diffuse = ColorRGB(*(glm::vec3*)&obj_material.Kd);
+        //         MatDesc.Specular = ColorRGB(*(glm::vec3*)&obj_material.Ks);
+        //         // MatDesc.
+        //         if (!obj_material.map_Kd.empty())
+        //         {
+        //                 //Load Texture
+        //                 //use texture
+        //         }
+        // }
 
         //load vertecies and indicies
         for (auto obj_mesh : loader.LoadedMeshes)

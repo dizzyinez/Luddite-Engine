@@ -41,3 +41,7 @@
 #ifdef LD_PLATFORM_ANDRIOD
     #define LD_PLATFORM_MOBILE
 #endif
+
+#ifdef LD_DEBUG
+    #define LD_ENABLE_IMGUI
+#endif

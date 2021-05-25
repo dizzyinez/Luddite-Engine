@@ -1,90 +1,55 @@
-#include "Luddite/Graphics/PBRRenderer.hpp"
-#include "Graphics/GraphicsTools/interface/GraphicsUtilities.h"
-#include "Graphics/GraphicsTools/interface/MapHelper.hpp"
+#include "Luddite/Graphics/DefferedRenderer.hpp"
+#include "Luddite/Graphics/Renderer.hpp"
 
-
-
-// #include "Graphics/GraphicsEngine/interface/Texture.h"
-#include "TextureLoader/interface/TextureUtilities.h"
-#include "Luddite/Graphics/TexturedCube.hpp"
 using namespace Diligent;
-
 namespace Luddite
 {
-struct ShaderConstants
-{
-        glm::mat4x4 ViewProjMatrix;
-        glm::mat4x4 ViewProjInvMatrix;
-        // float4 ViewportSize;
-        // int ShowLightVolumes;
-};
-struct ModelBuffer
-{
-        glm::mat4 ModelTransform;
-};
-void PBRRenderer::Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevice> pDevice,
-                             Diligent::RefCntAutoPtr<Diligent::IDeviceContext> pImmediateContext,
-                             Diligent::RefCntAutoPtr<Diligent::ISwapChain> pSwapChain,
-                             Diligent::TEXTURE_FORMAT RTVFormat,
-                             //      Diligent::TEXTURE_FORMAT DSVFormat,
-                             Diligent::RefCntAutoPtr<Diligent::IShaderSourceInputStreamFactory> pShaderSourceFactory,
-                             const std::string& VSFilePath,
-                             const std::string& PSFilePath)
+void DefferedRenderer::Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevice> pDevice,
+                                  Diligent::RefCntAutoPtr<Diligent::IDeviceContext> pImmediateContext,
+                                  Diligent::TEXTURE_FORMAT ColorBufferFormat,
+                                  Diligent::RefCntAutoPtr<Diligent::IShaderSourceInputStreamFactory> pShaderSourceFactory
+                                  )
 {
         m_pDevice = pDevice;
         m_pImmediateContext = pImmediateContext;
-        m_pSwapChain = pSwapChain;
-
-        CreateUniformBuffer(m_pDevice, sizeof(ShaderConstants), "ShaderConstantsCB", &m_pShaderConstantsCB);
-        CreateUniformBuffer(m_pDevice, sizeof(ModelBuffer), "ModelBufferCB", &m_pModelBufferCB);
-
-        // Load textured cube
-        m_CubeVertexBuffer = TexturedCube::CreateVertexBuffer(m_pDevice);
-        m_CubeIndexBuffer = TexturedCube::CreateIndexBuffer(m_pDevice);
-        m_CubeTextureSRV = TexturedCube::LoadTexture(m_pDevice, "Assets/awesome.jpg")->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE);
-        m_CubeTextureSRV2 = TexturedCube::LoadTexture(m_pDevice, "Assets/unknown.png")->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE);
-
-        CreateRenderPass(RTVFormat);
+        // m_pSwapChain = pSwapChain;
+        m_pShaderSourceFactory = pShaderSourceFactory;
+        CreateRenderPass(ColorBufferFormat);
         CreateAmbientLightPSO(pShaderSourceFactory);
-        CreatePipelineState(pShaderSourceFactory);
 
+        ShaderAttributeListDescription ConstantShaderAttributes;
+        ConstantShaderAttributes.AddMat4("g_CameraViewProj");
 
-        // CreatePipelineState(RTVFormat, DSVFormat, pShaderSourceFactory, VSFilePath, PSFilePath);
-
-        // m_QuadVertexBuffer = CreateVertexBuffer();
-        // m_QuadIndexBuffer = CreateIndexBuffer();
-
-        //Transition all resources to required states as no transitions are allowed within the render pass.
-        StateTransitionDesc Barriers[] = //
-        {
-                {m_pShaderConstantsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true},
-                {m_pModelBufferCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true},
-                {m_CubeVertexBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_VERTEX_BUFFER, true},
-                {m_CubeIndexBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_INDEX_BUFFER, true},
-                // {m_pLightsBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_VERTEX_BUFFER, true},
-                {m_CubeTextureSRV->GetTexture(), RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_SHADER_RESOURCE, true}, //
-                {m_CubeTextureSRV2->GetTexture(), RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_SHADER_RESOURCE, true} //
-        };
-
-        m_pImmediateContext->TransitionResourceStates(_countof(Barriers), Barriers);
-
-        LD_LOG_INFO("PBR Renderer Initialized");
-        // ReleaseWindowResources();
+        ShaderAttributeListDescription MaterialShaderAttributes;
+        MaterialShaderAttributes.AddVec3("Diffuse");
+        MaterialShaderAttributes.AddFloat("Metallic");
+        MaterialShaderAttributes.AddFloat("Roughness");
+        BasicShaderPipeline.Initialize(
+                m_pDevice,
+                m_pRenderPass,
+                m_pShaderSourceFactory,
+                "BasicPBR.vsh",
+                "BasicPBR.psh",
+                "Basic Shader Pipeline",
+                ConstantShaderAttributes,
+                MaterialShaderAttributes
+                );
 }
-void PBRRenderer::CreateRenderPass(Diligent::TEXTURE_FORMAT RTVFormat)
+
+void DefferedRenderer::CreateRenderPass(Diligent::TEXTURE_FORMAT RTVFormat)
 {
         //RenderPass Description
         constexpr Uint32 NumAttachments = 5;
         RenderPassAttachmentDesc Attachments[NumAttachments];
 
-        //Diffuse RGB and Metallic buffer
+        //Diffuse (RGB) and Metallic (A) buffer
         Attachments[0].Format = TEX_FORMAT_RGBA8_UNORM;
         Attachments[0].InitialState = RESOURCE_STATE_RENDER_TARGET;
         Attachments[0].FinalState = RESOURCE_STATE_INPUT_ATTACHMENT;
         Attachments[0].LoadOp = ATTACHMENT_LOAD_OP_CLEAR;
         Attachments[0].StoreOp = ATTACHMENT_STORE_OP_DISCARD;
 
-        //Normal and Roughness buffer
+        //Normal (RGB) and Roughness (A) buffer
         Attachments[1].Format = TEX_FORMAT_RGBA8_UNORM;
         Attachments[1].InitialState = RESOURCE_STATE_RENDER_TARGET;
         Attachments[1].FinalState = RESOURCE_STATE_INPUT_ATTACHMENT;
@@ -172,123 +137,20 @@ void PBRRenderer::CreateRenderPass(Diligent::TEXTURE_FORMAT RTVFormat)
         m_pDevice->CreateRenderPass(RPDesc, &m_pRenderPass);
         VERIFY_EXPR(m_pRenderPass != nullptr);
 }
-void PBRRenderer::CreatePipelineState(IShaderSourceInputStreamFactory* pShaderSourceFactory)
-{
-        GraphicsPipelineStateCreateInfo PSOCreateInfo;
-        PipelineStateDesc&              PSODesc = PSOCreateInfo.PSODesc;
 
-        // Pipeline state name is used by the engine to report issues.
-        PSODesc.Name = "PBR PSO";
-        PSODesc.PipelineType = Diligent::PIPELINE_TYPE_GRAPHICS;
-
-        PSOCreateInfo.GraphicsPipeline.pRenderPass = m_pRenderPass;
-        PSOCreateInfo.GraphicsPipeline.SubpassIndex = 0; // This PSO will be used within the first subpass
-        // When pRenderPass is not null, all RTVFormats and DSVFormat must be TEX_FORMAT_UNKNOWN,
-        // while NumRenderTargets must be 0
-
-        PSOCreateInfo.GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-        // PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_BACK;
-        PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_NONE;
-        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = True;
-
-        ShaderCreateInfo ShaderCI;
-        // Tell the system that the shader source code is in HLSL.
-        // For OpenGL, the engine will convert this into GLSL under the hood.
-        ShaderCI.SourceLanguage = SHADER_SOURCE_LANGUAGE_HLSL;
-
-        // OpenGL backend requires emulated combined HLSL texture samplers (g_Texture + g_Texture_sampler combination)
-        ShaderCI.UseCombinedTextureSamplers = true;
-
-        ShaderCI.pShaderSourceStreamFactory = pShaderSourceFactory;
-        // Create cube vertex shader
-        RefCntAutoPtr<IShader> pVS;
-        {
-                ShaderCI.Desc.ShaderType = SHADER_TYPE_VERTEX;
-                ShaderCI.EntryPoint = "main";
-                ShaderCI.Desc.Name = "Cube VS";
-                ShaderCI.FilePath = "cube.vsh";
-                m_pDevice->CreateShader(ShaderCI, &pVS);
-                VERIFY_EXPR(pVS != nullptr);
-        }
-
-        // Create cube pixel shader
-        RefCntAutoPtr<IShader> pPS;
-        {
-                ShaderCI.Desc.ShaderType = SHADER_TYPE_PIXEL;
-                ShaderCI.EntryPoint = "main";
-                ShaderCI.Desc.Name = "Cube PS";
-                ShaderCI.FilePath = "cube.psh";
-                m_pDevice->CreateShader(ShaderCI, &pPS);
-                VERIFY_EXPR(pPS != nullptr);
-        }
-
-        const LayoutElement LayoutElems[] =
-        {
-                LayoutElement{0, 0, 3, VT_FLOAT32, False}, // Attribute 0 - vertex position
-                LayoutElement{1, 0, 2, VT_FLOAT32, False} // Attribute 1 - texture coordinates
-        };
-
-        PSOCreateInfo.pVS = pVS;
-        PSOCreateInfo.pPS = pPS;
-
-        PSOCreateInfo.GraphicsPipeline.InputLayout.LayoutElements = LayoutElems;
-        PSOCreateInfo.GraphicsPipeline.InputLayout.NumElements = _countof(LayoutElems);
-
-        // Define variable type that will be used by default
-        PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE_STATIC;
-
-        // clang-format off
-        ShaderResourceVariableDesc Vars[] =
-        {
-                {SHADER_TYPE_VERTEX, "g_ModelTransform", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
-                {SHADER_TYPE_PIXEL, "g_Texture", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE}
-        };
-        // clang-format on
-        PSODesc.ResourceLayout.Variables = Vars;
-        PSODesc.ResourceLayout.NumVariables = _countof(Vars);
-
-        // clang-format off
-        // Define immutable sampler for g_Texture.
-        SamplerDesc SamLinearClampDesc
-        {
-                FILTER_TYPE_LINEAR, FILTER_TYPE_LINEAR, FILTER_TYPE_LINEAR,
-                TEXTURE_ADDRESS_CLAMP, TEXTURE_ADDRESS_CLAMP, TEXTURE_ADDRESS_CLAMP
-        };
-        ImmutableSamplerDesc ImtblSamplers[] =
-        {
-                {SHADER_TYPE_PIXEL, "g_Texture", SamLinearClampDesc}
-        };
-
-        // clang-format on
-        PSODesc.ResourceLayout.ImmutableSamplers = ImtblSamplers;
-        PSODesc.ResourceLayout.NumImmutableSamplers = _countof(ImtblSamplers);
-
-        m_pDevice->CreateGraphicsPipelineState(PSOCreateInfo, &m_pCubePSO);
-        VERIFY_EXPR(m_pCubePSO != nullptr);
-
-        m_pCubePSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "ShaderConstants")->Set(m_pShaderConstantsCB);
-        m_pCubePSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "ModelBuffer")->Set(m_pModelBufferCB);
-
-        m_pCubePSO->CreateShaderResourceBinding(&m_pCubeSRB, true);
-        VERIFY_EXPR(m_pCubeSRB != nullptr);
-        m_pCubeSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_Texture")->Set(m_CubeTextureSRV);
-
-        m_pCubePSO->CreateShaderResourceBinding(&m_pCubeSRB2, true);
-        VERIFY_EXPR(m_pCubeSRB2 != nullptr);
-        m_pCubeSRB2->GetVariableByName(SHADER_TYPE_PIXEL, "g_Texture")->Set(m_CubeTextureSRV2);
-}
-RefCntAutoPtr<IFramebuffer> PBRRenderer::CreateFramebuffer(ITextureView* pDstRenderTarget)
+Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuffer(Diligent::ITextureView* pDstRenderTarget)
 {
         const auto& RPDesc = m_pRenderPass->GetDesc();
-        const auto& SCDesc = m_pSwapChain->GetDesc();
+        // const auto& SCDesc = m_pSwapChain->GetDesc();
+
         // Create window-size offscreen render target
         TextureDesc TexDesc;
         TexDesc.Name = "Color G-buffer";
         TexDesc.Type = RESOURCE_DIM_TEX_2D;
         TexDesc.BindFlags = BIND_RENDER_TARGET | BIND_INPUT_ATTACHMENT;
         TexDesc.Format = RPDesc.pAttachments[0].Format;
-        TexDesc.Width = SCDesc.Width;
-        TexDesc.Height = SCDesc.Height;
+        TexDesc.Width = m_pCurrentRenderTarget->width;
+        TexDesc.Height = m_pCurrentRenderTarget->height;
         TexDesc.MipLevels = 1;
 
         // Define optimal clear value
@@ -305,8 +167,8 @@ RefCntAutoPtr<IFramebuffer> PBRRenderer::CreateFramebuffer(ITextureView* pDstRen
         RefCntAutoPtr<ITexture> pOpenGLOffsreenColorBuffer;
         if (pDstRenderTarget == nullptr)
         {
-                TexDesc.Name = "OpenGL Offscreen Render Target";
-                TexDesc.Format = SCDesc.ColorBufferFormat;
+                TexDesc.Name = "OpenGL Color Offscreen Render Target";
+                TexDesc.Format = Renderer::GetDefaultRTVFormat();
                 m_pDevice->CreateTexture(TexDesc, nullptr, &pOpenGLOffsreenColorBuffer);
                 pDstRenderTarget = pOpenGLOffsreenColorBuffer->GetDefaultView(TEXTURE_VIEW_RENDER_TARGET);
         }
@@ -317,8 +179,8 @@ RefCntAutoPtr<IFramebuffer> PBRRenderer::CreateFramebuffer(ITextureView* pDstRen
         TexDesc.Type = RESOURCE_DIM_TEX_2D;
         TexDesc.BindFlags = BIND_RENDER_TARGET | BIND_INPUT_ATTACHMENT;
         TexDesc.Format = RPDesc.pAttachments[1].Format;
-        TexDesc.Width = SCDesc.Width;
-        TexDesc.Height = SCDesc.Height;
+        TexDesc.Width = m_pCurrentRenderTarget->width;
+        TexDesc.Height = m_pCurrentRenderTarget->height;
         TexDesc.MipLevels = 1;
 
         // Define optimal clear value
@@ -330,12 +192,10 @@ RefCntAutoPtr<IFramebuffer> PBRRenderer::CreateFramebuffer(ITextureView* pDstRen
         RefCntAutoPtr<ITexture> pNormalBuffer;
         m_pDevice->CreateTexture(TexDesc, nullptr, &pNormalBuffer);
 
-        // OpenGL does not allow combining swap chain render target with any
-        // other render target, so we have to create an auxiliary texture.
         // RefCntAutoPtr<ITexture> pOpenGLOffsreenNormalBuffer;
         // if (pDstRenderTarget == nullptr)
         // {
-        //         TexDesc.Name = "OpenGL Offscreen Render Target";
+        //         TexDesc.Name = "OpenGL Normal Offscreen Render Target";
         //         TexDesc.Format = SCDesc.ColorBufferFormat;
         //         m_pDevice->CreateTexture(TexDesc, nullptr, &pOpenGLOffsreenNormalBuffer);
         //         pDstRenderTarget = pOpenGLOffsreenNormalBuffer->GetDefaultView(TEXTURE_VIEW_RENDER_TARGET);
@@ -387,15 +247,8 @@ RefCntAutoPtr<IFramebuffer> PBRRenderer::CreateFramebuffer(ITextureView* pDstRen
         VERIFY_EXPR(pFrameBuffer != nullptr);
 
 
+        //TEMP:
         // Create SRBs that reference the framebuffer textures
-
-        // if (!m_pLightVolumeSRB)
-        // {
-        //         m_pLightVolumePSO->CreateShaderResourceBinding(&m_pLightVolumeSRB, true);
-        //         m_pLightVolumeSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_SubpassInputColor")->Set(pColorBuffer->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
-        //         m_pLightVolumeSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_SubpassInputDepthZ")->Set(pDepthZBuffer->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
-        // }
-
         if (!m_pAmbientLightSRB)
         {
                 m_pAmbientLightPSO->CreateShaderResourceBinding(&m_pAmbientLightSRB, true);
@@ -406,11 +259,12 @@ RefCntAutoPtr<IFramebuffer> PBRRenderer::CreateFramebuffer(ITextureView* pDstRen
 
         return pFrameBuffer;
 }
-IFramebuffer* PBRRenderer::GetCurrentFramebuffer()
+
+Diligent::IFramebuffer* DefferedRenderer::GetCurrentFramebuffer()
 {
-        auto* pCurrentBackBufferRTV = m_pDevice->GetDeviceCaps().IsGLDevice() ?
+        auto* pCurrentBackBufferRTV = (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget->is_swap_chain) ?
                                       nullptr :
-                                      m_pSwapChain->GetCurrentBackBufferRTV();
+                                      m_pCurrentRenderTarget->RTV;
 
         auto fb_it = m_FramebufferCache.find(pCurrentBackBufferRTV);
         if (fb_it != m_FramebufferCache.end())
@@ -424,35 +278,15 @@ IFramebuffer* PBRRenderer::GetCurrentFramebuffer()
                 return it.first->second;
         }
 }
-void PBRRenderer::Draw()
+
+void DefferedRenderer::PrepareDraw(RenderTarget& render_target)
 {
-        const auto& SCDesc = m_pSwapChain->GetDesc();
-
-        {
-                // Update constant buffer
-                MapHelper<ShaderConstants> Constants(m_pImmediateContext, m_pShaderConstantsCB, MAP_WRITE, MAP_FLAG_DISCARD);
-
-                Constants->ViewProjMatrix = m_ViewProjMatrix;
-                // Constants->ViewProjInvMatrix = glm::inverse(m_ViewProjMatrix);
-                // Constants->ViewportSize = float4{
-                //         static_cast<float>(SCDesc.Width),
-                //         static_cast<float>(SCDesc.Height),
-                //         1.f / static_cast<float>(SCDesc.Width),
-                //         1.f / static_cast<float>(SCDesc.Height) //
-                // };
-                // Constants->ShowLightVolumes = m_ShowLightVolumes ? 1 : 0;
-        }
-        {
-                MapHelper<ModelBuffer> Constants(m_pImmediateContext, m_pModelBufferCB, MAP_WRITE, MAP_FLAG_DISCARD);
-
-                Constants->ModelTransform = glm::mat4(1.f);
-        }
-
-        auto* pFramebuffer = GetCurrentFramebuffer();
+        m_pCurrentRenderTarget = &render_target;
+        m_pDrawPeriodFrameBuffer = GetCurrentFramebuffer();
 
         BeginRenderPassAttribs RPBeginInfo;
         RPBeginInfo.pRenderPass = m_pRenderPass;
-        RPBeginInfo.pFramebuffer = pFramebuffer;
+        RPBeginInfo.pFramebuffer = m_pDrawPeriodFrameBuffer;
 
         OptimizedClearValue ClearValues[5];
         // Color
@@ -486,60 +320,15 @@ void PBRRenderer::Draw()
         RPBeginInfo.ClearValueCount = _countof(ClearValues);
         RPBeginInfo.StateTransitionMode = RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
         m_pImmediateContext->BeginRenderPass(RPBeginInfo);
+}
 
-
-
-
-        // Bind vertex and index buffers
-        Uint32 offset = 0;
-        IBuffer* pBuffs[] = {m_CubeVertexBuffer};
-        // Note that RESOURCE_STATE_TRANSITION_MODE_TRANSITION are not allowed inside render pass!
-        m_pImmediateContext->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
-        m_pImmediateContext->SetIndexBuffer(m_CubeIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-        // Set the cube's pipeline state
-        m_pImmediateContext->SetPipelineState(m_pCubePSO);
-
-        // Commit the cube shader's resources
-        m_pImmediateContext->CommitShaderResources(m_pCubeSRB, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-
-        // Draw the grid
-        DrawIndexedAttribs DrawAttrs;
-        DrawAttrs.IndexType = VT_UINT32; // Index type
-        DrawAttrs.NumIndices = 36;
-        DrawAttrs.NumInstances = 7;
-        DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL;    // Verify the state of vertex and index buffers
-        m_pImmediateContext->DrawIndexed(DrawAttrs);
-
-
-
-
-        {
-                MapHelper<ModelBuffer> Constants(m_pImmediateContext, m_pModelBufferCB, MAP_WRITE, MAP_FLAG_DISCARD);
-                Constants->ModelTransform = glm::translate(glm::vec3(0.f, 0.f, 5.f));
-        }
-
-        m_pImmediateContext->CommitShaderResources(m_pCubeSRB2, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-
-        // Draw the grid
-        DrawAttrs;
-        DrawAttrs.IndexType = VT_UINT32; // Index type
-        DrawAttrs.NumIndices = 36;
-        DrawAttrs.NumInstances = 7 * 7;
-        DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL;    // Verify the state of vertex and index buffers
-        m_pImmediateContext->DrawIndexed(DrawAttrs);
-
-
-
-
+void DefferedRenderer::ApplyLighting()
+{
         m_pImmediateContext->NextSubpass();
-
-
         // Set the lighting PSO
         m_pImmediateContext->SetPipelineState(m_pAmbientLightPSO);
-
         // Commit shader resources
         m_pImmediateContext->CommitShaderResources(m_pAmbientLightSRB, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-
         {
                 // Draw quad
                 DrawAttribs DrawAttrs;
@@ -547,22 +336,36 @@ void PBRRenderer::Draw()
                 DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL; // Verify the state of vertex and index buffers
                 m_pImmediateContext->Draw(DrawAttrs);
         }
+}
 
-
+void DefferedRenderer::FinalizeDraw()
+{
         m_pImmediateContext->EndRenderPass();
 
-        if (m_pDevice->GetDeviceCaps().IsGLDevice())
+        if (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget->is_swap_chain)
         {
                 // In OpenGL we now have to copy our off-screen buffer to the default framebuffer
-                auto* pOffscreenRenderTarget = pFramebuffer->GetDesc().ppAttachments[3]->GetTexture();
-                auto* pBackBuffer = m_pSwapChain->GetCurrentBackBufferRTV()->GetTexture();
+                auto* pOffscreenRenderTarget = m_pDrawPeriodFrameBuffer->GetDesc().ppAttachments[4]->GetTexture();
+                auto* pBackBuffer = m_pCurrentRenderTarget->RTV->GetTexture();//m_pSwapChain->GetCurrentBackBufferRTV()->GetTexture();
 
                 CopyTextureAttribs CopyAttribs{pOffscreenRenderTarget, RESOURCE_STATE_TRANSITION_MODE_TRANSITION,
                                                pBackBuffer, RESOURCE_STATE_TRANSITION_MODE_TRANSITION};
                 m_pImmediateContext->CopyTexture(CopyAttribs);
         }
 }
-void PBRRenderer::CreateAmbientLightPSO(Diligent::IShaderSourceInputStreamFactory* pShaderSourceFactory)
+
+void DefferedRenderer::OnWindowResize(int width, int height)
+{
+        ReleaseWindowResources();
+}
+void DefferedRenderer::ReleaseWindowResources()
+{
+        m_FramebufferCache.clear();
+        // m_pLightVolumeSRB.Release();
+        m_pAmbientLightSRB.Release();
+}
+//TEMP:
+void DefferedRenderer::CreateAmbientLightPSO(Diligent::IShaderSourceInputStreamFactory* pShaderSourceFactory)
 {
         GraphicsPipelineStateCreateInfo PSOCreateInfo;
         PipelineStateDesc&              PSODesc = PSOCreateInfo.PSODesc;
@@ -628,11 +431,5 @@ void PBRRenderer::CreateAmbientLightPSO(Diligent::IShaderSourceInputStreamFactor
         VERIFY_EXPR(m_pAmbientLightPSO != nullptr);
 
         LD_LOG_INFO("Ambient light pso created");
-}
-void PBRRenderer::ReleaseWindowResources()
-{
-        m_FramebufferCache.clear();
-        // m_pLightVolumeSRB.Release();
-        m_pAmbientLightSRB.Release();
 }
 }

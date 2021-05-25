@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Luddite/pch.hpp"
+#include "Luddite/Core.hpp"
 #include "Luddite/Application.hpp"
 #include "Luddite/EntryPoint.hpp"
 #include "Luddite/Logging.hpp"

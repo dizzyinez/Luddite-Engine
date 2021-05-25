@@ -3,13 +3,7 @@
 #include "Luddite/pch.hpp"
 
 #include "Luddite/Graphics/Texture.hpp"
-#include "Luddite/Platform/DiligentPlatform.hpp"
-#include "Graphics/GraphicsEngine/interface/RenderDevice.h"
-#include "Graphics/GraphicsEngine/interface/DeviceContext.h"
-#include "Graphics/GraphicsEngine/interface/SwapChain.h"
-#include "Graphics/GraphicsTools/interface/DynamicTextureAtlas.h"
-
-#include "Common/interface/RefCntAutoPtr.hpp"
+#include "Luddite/Graphics/DiligentInclude.hpp"
 
 namespace Luddite
 {
