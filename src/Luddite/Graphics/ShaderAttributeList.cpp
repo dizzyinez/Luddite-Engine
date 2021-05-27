@@ -4,7 +4,8 @@ namespace Luddite
 {
 void ShaderAttributeListDescription::MapBuffer(ShaderAttributeListData& data, Diligent::RefCntAutoPtr<Diligent::IBuffer> buffer)
 {
-        uint8_t* Data = (uint8_t*)malloc(GetSize());
+        void* DataVoid = malloc(GetSize());
+        uint8_t* Data = (uint8_t*)DataVoid;
         Renderer::GetContext()->MapBuffer(buffer, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD, (Diligent::PVoid&)Data);
 
         for (const auto& pair : Attributes)
@@ -38,7 +39,7 @@ void ShaderAttributeListDescription::MapBuffer(ShaderAttributeListData& data, Di
         }
 
         Renderer::GetContext()->UnmapBuffer(buffer, Diligent::MAP_WRITE);
-        free(Data);
+        free(DataVoid);
 }
 void ShaderAttributeListDescription::SetDefaultAttribs(ShaderAttributeListData& data)
 {

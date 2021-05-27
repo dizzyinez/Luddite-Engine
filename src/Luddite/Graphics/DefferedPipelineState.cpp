@@ -67,21 +67,20 @@ void DefferedPipelineState::Initialize(
 
         const LayoutElement LayoutElems[] =
         {
-                LayoutElement{0, 0, 3, VT_FLOAT32, False}, // Attribute 0 - vertex position
+                LayoutElement{0, 0, 3, VT_FLOAT32, False}, // Attribute 0 - Vertex position
                 LayoutElement{1, 0, 3, VT_FLOAT32, False}, // Attribute 1 - Normal direction
-                LayoutElement{2, 0, 2, VT_FLOAT32, False} // Attribute 2 - texture coordinates
+                LayoutElement{2, 0, 2, VT_FLOAT32, False} // Attribute 2 - Texture coordinates
         };
 
         PSOCreateInfo.GraphicsPipeline.InputLayout.LayoutElements = LayoutElems;
         PSOCreateInfo.GraphicsPipeline.InputLayout.NumElements = _countof(LayoutElems);
 
-        // clang-format off
         ShaderResourceVariableDesc Vars[] =
         {
                 {SHADER_TYPE_VERTEX, "ShaderConstants", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
                 {SHADER_TYPE_PIXEL, "MaterialConstants", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE}
         };
-        // clang-format on
+
         PSODesc.ResourceLayout.Variables = Vars;
         PSODesc.ResourceLayout.NumVariables = _countof(Vars);
 
