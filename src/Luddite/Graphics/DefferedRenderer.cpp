@@ -25,9 +25,7 @@ void DefferedRenderer::Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevic
         MaterialShaderAttributes.AddFloat("Metallic");
         MaterialShaderAttributes.AddFloat("Roughness");
         BasicShaderPipeline.Initialize(
-                m_pDevice,
                 m_pRenderPass,
-                m_pShaderSourceFactory,
                 "BasicPBR.vsh",
                 "BasicPBR.psh",
                 "Basic Shader Pipeline",
@@ -138,9 +136,10 @@ void DefferedRenderer::CreateRenderPass(Diligent::TEXTURE_FORMAT RTVFormat)
         VERIFY_EXPR(m_pRenderPass != nullptr);
 }
 
-Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuffer(Diligent::ITextureView* pDstRenderTarget)
+Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuffer()
 {
         const auto& RPDesc = m_pRenderPass->GetDesc();
+        const auto& RTDesc = m_pCurrentRenderTarget->RTV->GetDesc();
         // const auto& SCDesc = m_pSwapChain->GetDesc();
 
         // Create window-size offscreen render target
@@ -162,15 +161,21 @@ Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuf
         RefCntAutoPtr<ITexture> pColorBuffer;
         m_pDevice->CreateTexture(TexDesc, nullptr, &pColorBuffer);
 
+
+        Diligent::ITextureView* pDstRenderTarget;
         // OpenGL does not allow combining swap chain render target with any
         // other render target, so we have to create an auxiliary texture.
-        RefCntAutoPtr<ITexture> pOpenGLOffsreenColorBuffer;
-        if (pDstRenderTarget == nullptr)
+        RefCntAutoPtr<ITexture> pOpenGLOffsreenRenderTarget;
+        if (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget->is_swap_chain_buffer)
         {
                 TexDesc.Name = "OpenGL Color Offscreen Render Target";
                 TexDesc.Format = Renderer::GetDefaultRTVFormat();
-                m_pDevice->CreateTexture(TexDesc, nullptr, &pOpenGLOffsreenColorBuffer);
-                pDstRenderTarget = pOpenGLOffsreenColorBuffer->GetDefaultView(TEXTURE_VIEW_RENDER_TARGET);
+                m_pDevice->CreateTexture(TexDesc, nullptr, &pOpenGLOffsreenRenderTarget);
+                pDstRenderTarget = pOpenGLOffsreenRenderTarget->GetDefaultView(TEXTURE_VIEW_RENDER_TARGET);
+        }
+        else
+        {
+                pDstRenderTarget = m_pCurrentRenderTarget->RTV;
         }
 
 
@@ -247,8 +252,6 @@ Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuf
         VERIFY_EXPR(pFrameBuffer != nullptr);
 
 
-        //TEMP:
-        // Create SRBs that reference the framebuffer textures
         if (!m_pAmbientLightSRB)
         {
                 m_pAmbientLightPSO->CreateShaderResourceBinding(&m_pAmbientLightSRB, true);
@@ -262,18 +265,19 @@ Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuf
 
 Diligent::IFramebuffer* DefferedRenderer::GetCurrentFramebuffer()
 {
-        auto* pCurrentBackBufferRTV = (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget->is_swap_chain) ?
-                                      nullptr :
-                                      m_pCurrentRenderTarget->RTV;
+        // auto* pCurrentBackBufferRTV = ( m_pCurrentRenderTarget->is_swap_chain_buffer) ?
+        //                               nullptr :
+        //                               m_pCurrentRenderTarget->RTV;
 
-        auto fb_it = m_FramebufferCache.find(pCurrentBackBufferRTV);
+
+        auto fb_it = m_FramebufferCache.find(m_pCurrentRenderTarget->RTV);
         if (fb_it != m_FramebufferCache.end())
         {
                 return fb_it->second;
         }
         else
         {
-                auto it = m_FramebufferCache.emplace(pCurrentBackBufferRTV, CreateFramebuffer(pCurrentBackBufferRTV));
+                auto it = m_FramebufferCache.emplace(m_pCurrentRenderTarget->RTV, CreateFramebuffer());
                 VERIFY_EXPR(it.second);
                 return it.first->second;
         }
@@ -295,7 +299,7 @@ void DefferedRenderer::PrepareDraw(RenderTarget& render_target)
         ClearValues[0].Color[2] = 0.f;
         ClearValues[0].Color[3] = 0.f;
 
-        // Normal
+        // NormalBasicShaderPipeline
         ClearValues[1].Color[0] = 0.f;
         ClearValues[1].Color[1] = 0.f;
         ClearValues[1].Color[2] = 0.f;
@@ -342,8 +346,9 @@ void DefferedRenderer::FinalizeDraw()
 {
         m_pImmediateContext->EndRenderPass();
 
-        if (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget->is_swap_chain)
+        if (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget->is_swap_chain_buffer)
         {
+                // LD_LOG_TRACE("COPYING FROM OFFSCREEN TEXTURE");
                 // In OpenGL we now have to copy our off-screen buffer to the default framebuffer
                 auto* pOffscreenRenderTarget = m_pDrawPeriodFrameBuffer->GetDesc().ppAttachments[4]->GetTexture();
                 auto* pBackBuffer = m_pCurrentRenderTarget->RTV->GetTexture();//m_pSwapChain->GetCurrentBackBufferRTV()->GetTexture();
@@ -361,8 +366,6 @@ void DefferedRenderer::OnWindowResize(int width, int height)
 void DefferedRenderer::ReleaseWindowResources()
 {
         m_FramebufferCache.clear();
-        // m_pLightVolumeSRB.Release();
-        m_pAmbientLightSRB.Release();
 }
 //TEMP:
 void DefferedRenderer::CreateAmbientLightPSO(Diligent::IShaderSourceInputStreamFactory* pShaderSourceFactory)
@@ -402,11 +405,11 @@ void DefferedRenderer::CreateAmbientLightPSO(Diligent::IShaderSourceInputStreamF
         // Create a pixel shader
         RefCntAutoPtr<IShader> pPS;
         {
-                ShaderCI.SourceLanguage = IsVulkan ? SHADER_SOURCE_LANGUAGE_GLSL : SHADER_SOURCE_LANGUAGE_HLSL;
+                ShaderCI.SourceLanguage = SHADER_SOURCE_LANGUAGE_HLSL;
                 ShaderCI.Desc.ShaderType = SHADER_TYPE_PIXEL;
                 ShaderCI.EntryPoint = "main";
                 ShaderCI.Desc.Name = "Ambient light PS";
-                ShaderCI.FilePath = IsVulkan ? "ambient_light_glsl.psh" : "ambient_light_hlsl.psh";
+                ShaderCI.FilePath = "ambient_light.psh";
                 m_pDevice->CreateShader(ShaderCI, &pPS);
                 VERIFY_EXPR(pPS != nullptr);
         }

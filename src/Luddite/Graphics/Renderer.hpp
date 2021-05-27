@@ -6,7 +6,6 @@
 #include "Luddite/Graphics/QuadBatchRenderer.hpp"
 #include "Luddite/Graphics/PBRRenderer.hpp"
 #include "Luddite/Graphics/DefferedRenderer.hpp"
-#include "Luddite/Graphics/ShaderPipeline.hpp"
 #include "Luddite/Graphics/ModelLibrary.hpp"
 #include "Luddite/Graphics/RenderTarget.hpp"
 // #include "Luddite/Graphics/"
@@ -17,12 +16,13 @@ constexpr float DefaultClearColor[4] = {0.f, 0.f, 0.f, 0.f};
 
 namespace Luddite
 {
-class LUDDITE_API Application;
+// class LUDDITE_API Application;
 class LUDDITE_API Renderer
 {
 public:
         static void Initialize();
         static void BeginScene();
+        static void SubmitMesh(BasicMeshHandle mesh);
         static void EndScene();
         static void Draw(RenderTarget& render_target);
         static void Present();
@@ -45,6 +45,7 @@ public:
 
 private:
         friend class Application;
+        friend class Window;
         static void SetMatricies();
         static void PrepareDraw();
         static void OnWindowResize(int width, int height);
@@ -56,11 +57,16 @@ private:
         // Diligent::float4x4 m_WorldViewProjMatrix;
         // float accum = 0.0f;
 
-        static inline ShaderPipeline m_ShaderPipeline;
+        // static inline DefferedPipelineState m_PipelineState;
         static inline DefferedRenderer m_DefferedRenderer;
         static inline QuadBatchRenderer m_basic_quad_renderer;
         static inline PBRRenderer m_PBRRenderer;
-        static inline ModelLoader m_ModelLoader;
+        // static inline ModelLoader m_ModelLoader;
+
+        static inline struct RenderScene
+        {
+                std::vector<BasicMeshHandle> meshes;
+        } m_RenderScene;
 
         // Window* m_pWindow;
         // Texture t;

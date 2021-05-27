@@ -17,6 +17,6 @@ void main()
     }
 
     // out_Color = vec4(1.0,1.0,1.0,1.0);
-    out_Color.rgb = subpassLoad(g_SubpassInputColor).rgb * 0.2 + subpassLoad(g_SubpassInputNormal).rgb * 0.2;
+    out_Color.rgb = subpassLoad(g_SubpassInputColor).rgb * 1 + subpassLoad(g_SubpassInputNormal).rgb * 0.00001;
     out_Color.a = 1.0;
 }

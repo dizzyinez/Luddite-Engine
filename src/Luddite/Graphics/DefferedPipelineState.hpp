@@ -11,33 +11,31 @@
 
 namespace Luddite
 {
-class ShaderPipeline
+class DefferedPipelineState
 {
 public:
         void Initialize(
-                Diligent::RefCntAutoPtr<Diligent::IRenderDevice> pDevice,
                 Diligent::RefCntAutoPtr<Diligent::IRenderPass> pRenderPass,
-                Diligent::RefCntAutoPtr<Diligent::IShaderSourceInputStreamFactory> pShaderSourceFactory,
                 const std::string& VSFilePath,
                 const std::string& PSFilePath,
                 const std::string& Name,
-                // Diligent::LayoutElement* ShaderLayoutElements,
                 ShaderAttributeListDescription ConstantShaderAttributes,
                 ShaderAttributeListDescription MaterialShaderAttributes
                 );
         void PrepareDraw();
-        void DrawBasicMesh(const BasicMesh& Mesh);
+        void DrawBasicMesh(const BasicMeshHandle Mesh);
         void SetMaterial(MaterialHandle Material);
+        void SetViewProjMatrix(const glm::mat4& ViewProj);
         // void SetModelAttribs();
         MaterialHandle GetMaterial(const std::string& Name);
 private:
-        Diligent::RefCntAutoPtr<Diligent::IRenderDevice> m_pDevice;
-        Diligent::RefCntAutoPtr<Diligent::IBuffer> m_pShaderConstantsBuffer;
-        Diligent::RefCntAutoPtr<Diligent::IBuffer> m_pMaterialConstantsBuffer;
-
+        Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pPSO;
 
         ShaderAttributeListDescription m_ConstantShaderAttributes;
-        ShaderAttributeListDescription m_MaterialShaderAttributes;
+        ShaderAttributeListData m_ConstantShaderData;
+        Diligent::RefCntAutoPtr<Diligent::IBuffer> m_pShaderConstantsBuffer;
+
         std::unique_ptr<MaterialLibrary> m_pMaterialLibrary;
+        MaterialHandle m_pCurrentMaterial;
 };
 }

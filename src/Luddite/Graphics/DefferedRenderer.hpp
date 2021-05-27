@@ -4,7 +4,8 @@
 
 #include "Luddite/Graphics/Texture.hpp"
 #include "Luddite/Graphics/ShaderAttributeList.hpp"
-#include "Luddite/Graphics/ShaderPipeline.hpp"
+#include "Luddite/Graphics/DefferedPipelineState.hpp"
+#include "Luddite/Graphics/DefferedLightingPipelineState.hpp"
 #include "Luddite/Graphics/MaterialLibrary.hpp"
 #include "Luddite/Graphics/RenderTarget.hpp"
 
@@ -12,6 +13,7 @@
 
 namespace Luddite
 {
+class LUDDITE_API Renderer;
 class LUDDITE_API DefferedRenderer
 {
 public:
@@ -26,10 +28,12 @@ public:
         void PrepareDraw(RenderTarget& render_target);
         void ApplyLighting();
         void FinalizeDraw();
-        ShaderPipeline BasicShaderPipeline;
+        DefferedPipelineState BasicShaderPipeline;
+        DefferedLightingPipelineState EnvironmentalLightingPipeline;
 private:
+        friend class Renderer;
         void CreateRenderPass(Diligent::TEXTURE_FORMAT RTVFormat);
-        Diligent::RefCntAutoPtr<Diligent::IFramebuffer> CreateFramebuffer(Diligent::ITextureView* pDstRenderTarget);
+        Diligent::RefCntAutoPtr<Diligent::IFramebuffer> CreateFramebuffer();
         void ReleaseWindowResources();
         Diligent::IFramebuffer* GetCurrentFramebuffer();
 

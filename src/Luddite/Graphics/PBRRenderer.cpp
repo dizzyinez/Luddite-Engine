@@ -140,9 +140,9 @@ void PBRRenderer::CreateRenderPass(Diligent::TEXTURE_FORMAT RTVFormat)
 
         AttachmentReference InputAttachmentRefs1[] =
         {
-                {0, RESOURCE_STATE_INPUT_ATTACHMENT},
-                {1, RESOURCE_STATE_INPUT_ATTACHMENT},
-                {2, RESOURCE_STATE_INPUT_ATTACHMENT}
+                {0, RESOURCE_STATE_SHADER_RESOURCE},
+                {1, RESOURCE_STATE_SHADER_RESOURCE},
+                {2, RESOURCE_STATE_SHADER_RESOURCE}
         };
 
         Subpasses[1].RenderTargetAttachmentCount = _countof(RTAttachmentRefs1);

@@ -22,11 +22,12 @@ struct LUDDITE_API BasicMesh
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_pIndexBuffer;
         // MaterialHandle material;
 };
+typedef std::shared_ptr<BasicMesh> BasicMeshHandle;
 
 struct LUDDITE_API BasicModel
 {
         std::string name;
-        std::vector<BasicMesh> meshes;
+        std::vector<BasicMeshHandle> meshes;
 };
 typedef std::shared_ptr<BasicModel> BasicModelHandle;
 

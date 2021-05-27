@@ -13,6 +13,7 @@ struct Material
 {
         ShaderAttributeListData m_data;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_pMaterialConstantsBuffer;
+        Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> m_pMaterialShaderResourceBinding;
 };
 typedef std::shared_ptr<Material> MaterialHandle;
 }

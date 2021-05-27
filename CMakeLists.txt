@@ -73,6 +73,8 @@ if (LINUX)
     Diligent-GraphicsEngineOpenGL-shared
     Diligent-GraphicsEngineVk-shared
     xcb
+    GL
+    GLU
     )
 endif()
 if (WIN32)

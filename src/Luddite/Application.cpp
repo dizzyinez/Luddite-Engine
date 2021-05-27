@@ -30,23 +30,31 @@ void Application::Run()
                 // m_Renderer.Present();
 
                 auto MainWindowRenderTarget = m_MainWindow->GetRenderTarget();
+                // Renderer::TransitionRenderTextureToRenderTarget(rt);
+                // Renderer::Draw(rt.GetRenderTarget());
+
+
+                // Renderer::TransitionRenderTextureToShaderResource(rt);
+
+
                 Renderer::BindRenderTarget(MainWindowRenderTarget);
                 Renderer::ClearRenderTarget(MainWindowRenderTarget);
-
-                Renderer::TransitionRenderTextureToRenderTarget(rt);
-
-
+                Renderer::Draw(MainWindowRenderTarget);
                 Renderer::Draw(rt.GetRenderTarget());
-                Renderer::BindRenderTarget(MainWindowRenderTarget);
-                Renderer::TransitionRenderTextureToShaderResource(rt);
 
+                Renderer::BindRenderTarget(MainWindowRenderTarget);
                 m_MainWindow->ImGuiNewFrame();
                 ImGui::Begin("Viewport");
                 ImGui::Image(rt.GetShaderResourceView(), ImVec2(rt.GetRenderTarget().width, rt.GetRenderTarget().height));
                 ImGui::End();
-                #ifdef LD_ENABLE_IMGUI
                 m_MainWindow->GetImGuiImpl()->Render(Renderer::m_pImmediateContext);
-                #endif
+
+                // ImGui::Begin("Viewport2");
+                // ImGui::Image(rt.GetShaderResourceView(), ImVec2(rt.GetRenderTarget().width, rt.GetRenderTarget().height));
+                // ImGui::End();
+                // ImGui::Begin("Viewport3");
+                // ImGui::Image(rt.GetShaderResourceView(), ImVec2(rt.GetRenderTarget().width, rt.GetRenderTarget().height));
+                // ImGui::End();
                 // m_MainWindow->
                 m_MainWindow->SwapBuffers();
         }
@@ -54,7 +62,9 @@ void Application::Run()
 void Application::CreateMainWindow(const std::string& Name, int width, int height)
 {
         //TEMP
-        NativeVulkanWindow::InitNativeEngineFactory();
-        m_MainWindow = std::make_shared<NativeVulkanWindow>(Name);
+        // NativeVulkanWindow::InitNativeEngineFactory();
+        // m_MainWindow = std::make_shared<NativeVulkanWindow>(Name, width, height);
+
+        m_MainWindow = std::make_shared<NativeOpenGLWindow>(Name);
 }
 }

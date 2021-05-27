@@ -6,6 +6,7 @@
 namespace Luddite
 {
 MaterialHandle awesome_material;
+BasicModelHandle awesome_model;
 void Renderer::Initialize()
 {
         m_pEngineFactory->CreateDefaultShaderSourceStreamFactory("./Assets/Shaders/;", &m_pShaderSourceFactory);
@@ -20,6 +21,7 @@ void Renderer::Initialize()
         //         );
         SetMatricies();
 
+
         m_DefferedRenderer.Initialize(
                 m_pDevice,
                 m_pImmediateContext,
@@ -27,20 +29,19 @@ void Renderer::Initialize()
                 m_pShaderSourceFactory
                 );
         awesome_material = m_DefferedRenderer.BasicShaderPipeline.GetMaterial("AWESOME");
-        awesome_material->m_data.SetVec3("Diffuse", glm::vec3(0.4f, 0.6f, 0.9f));
+        awesome_material->m_data.SetVec3("Diffuse", glm::vec3(0.5f, 0.5f, 1.f));
 
 
-        // m_ModelLoader.GetBasicModel("Assets/box_stack.obj");
+        awesome_model = ModelLoader::GetBasicModel("Assets/teapot.obj");
+        for (auto mesh : awesome_model->meshes)
+                SubmitMesh(mesh);
+
         // m_pImGui->CreateDeviceObjects();
 
         // m_pImGui = std::make_unique<ImGuiImplDiligent>()
 
         // m_ModelLoader.GetBasicModel("Assets/ox_stack.obj");
 
-        // m_ShaderPipeline.Initialize(
-        //         m_pDevice,
-        //         m_PBRRenderer.
-        // )
 
         // std::stringstream FileNameSS;
         // FileNameSS << "DGLogo" << tex << ".png";
@@ -56,6 +57,12 @@ void Renderer::Initialize()
         // RefCntAutoPtr<ITexture> SrcTex = TexturedCube::LoadTexture(m_pDevice, FileName.c_str());
         // const auto&             TexDesc = SrcTex->GetDesc();
 }
+
+void Renderer::SubmitMesh(BasicMeshHandle mesh)
+{
+        m_RenderScene.meshes.emplace_back(mesh);
+}
+
 void Renderer::SetMatricies()
 {
         glm::mat4 view = glm::lookAt(glm::vec3(0, 0, 25.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
@@ -72,7 +79,8 @@ void Renderer::SetMatricies()
         auto SrfPreTransform = glm::mat4();// GetSurfacePretransformMatrix(glm::vec3{0.f, 0.f, 1.f});
 
         // Get projection matrix adjusted to the current screen orientation
-        auto Proj = glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1000.f);// GetAdjustedProjectionMatrix(glm::pi<float>() / 4.0f, 0.1f, 100.f);
+        auto Proj = glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1000.f);
+        // GetAdjustedProjectionMatrix(glm::pi<float>() / 4.0f, 0.1f, 100.f);
 
         auto vp = Proj * SrfPreTransform * view;
         // m_CameraViewProjInvMatrix = m_CameraViewProjMatrix.Inverse();
@@ -149,6 +157,19 @@ void Renderer::Draw(RenderTarget& render_target)
         BindRenderTarget(render_target);
 
         m_DefferedRenderer.PrepareDraw(render_target);
+
+        //TEMP
+        glm::mat4 view = glm::lookAt(glm::vec3(0, 0, 25.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+        auto Proj = glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1000.f);
+        auto vp = Proj * view;
+        m_DefferedRenderer.BasicShaderPipeline.SetViewProjMatrix(vp);
+
+
+
+        m_DefferedRenderer.BasicShaderPipeline.PrepareDraw();
+        m_DefferedRenderer.BasicShaderPipeline.SetMaterial(awesome_material);
+        for (auto mesh : m_RenderScene.meshes)
+                m_DefferedRenderer.BasicShaderPipeline.DrawBasicMesh(mesh);
 
         m_DefferedRenderer.ApplyLighting();
         m_DefferedRenderer.FinalizeDraw();

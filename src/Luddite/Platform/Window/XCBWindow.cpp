@@ -32,9 +32,9 @@ struct xcb_size_hints_t
 
 namespace Luddite
 {
-XCBWindow::XCBWindow(const std::string& title)
+XCBWindow::XCBWindow(const std::string& title, int width, int height, int min_width, int min_height)
 {
-        InitXCBConnectionAndWindow(title);
+        InitXCBConnectionAndWindow(title, width, height, min_width, min_height);
         InitVulkan();
         xcb_flush(info.connection);
 }
@@ -60,14 +60,6 @@ bool XCBWindow::InitVulkan()
                         SCDesc.Height
                         ));
         m_pImGuiImpl->CreateDeviceObjects();
-        // auto& PlatformIO = ImGui::GetPlatformIO();
-        // PlatformIO.Platform_CreateWindow = [] (ImGuiViewport* vp) {};
-        // PlatformIO.Platform_DestroyWindow = [] (ImGuiViewport* vp) {};
-        // PlatformIO.Platform_GetWindowPos = [] (ImGuiViewport* vp) {return ImVec2(0.f, 0.f);};
-        // PlatformIO.Platform_SetWindowPos = [] (ImGuiViewport* vp, ImVec2 pos) {};
-        // PlatformIO.Platform_GetWindowSize = [] (ImGuiViewport* vp) {return ImVec2(0.f, 0.f);};
-        // PlatformIO.Platform_SetWindowSize = [] (ImGuiViewport* vp, ImVec2 pos) {};
-        // PlatformIO.Monitors.push_back()
         return true;
 }
 
@@ -82,7 +74,7 @@ bool XCBWindow::InitNativeEngineFactory()
         return true;
 }
 
-void XCBWindow::InitXCBConnectionAndWindow(const std::string& title)
+void XCBWindow::InitXCBConnectionAndWindow(const std::string& title, int width, int height, int min_width, int min_height)
 {
         int scr = 0;
         info.connection = xcb_connect(nullptr, &scr);
@@ -99,8 +91,8 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title)
 
         auto screen = iter.data;
 
-        info.width = 1024;
-        info.height = 768;
+        info.width = width;
+        info.height = height;
 
         uint32_t value_mask, value_list[32];
 
@@ -143,8 +135,8 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title)
         // https://stackoverflow.com/a/27771295
         xcb_size_hints_t hints = {};
         hints.flags = XCB_SIZE_HINT_P_MIN_SIZE;
-        hints.min_width = 320;
-        hints.min_height = 240;
+        hints.min_width = min_width;
+        hints.min_height = min_height;
         xcb_change_property(info.connection, XCB_PROP_MODE_REPLACE, info.window, XCB_ATOM_WM_NORMAL_HINTS, XCB_ATOM_WM_SIZE_HINTS,
                 32, sizeof(xcb_size_hints_t), &hints);
 
@@ -161,6 +153,7 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title)
         {
                 if ((e->response_type & ~0x80) == XCB_EXPOSE) break;
         }
+        OnWindowResize(width, height);
 }
 
 void XCBWindow::HandleEvents()

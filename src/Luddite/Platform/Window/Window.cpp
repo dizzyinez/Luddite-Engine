@@ -8,7 +8,9 @@ Window::Window()
 Window::~Window() {}
 void Window::OnWindowResize(int width, int height)
 {
-        // m_renderer.OnWindowResize(width, height);
+        m_WindowWidth = width;
+        m_WindowHeight = height;
+        Renderer::OnWindowResize(width, height);
 }
 
 void Window::SwapBuffers()

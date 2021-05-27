@@ -12,7 +12,7 @@ struct LUDDITE_API RenderTarget
         Diligent::ITextureView* DSV;
         unsigned int width = 0;
         unsigned int height = 0;
-        bool is_swap_chain = false;
+        bool is_swap_chain_buffer = false;
 };
 struct LUDDITE_API RenderTexture
 {

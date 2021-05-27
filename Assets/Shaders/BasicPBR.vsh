@@ -28,20 +28,11 @@ struct PSInput
 // Note that if separate shader objects are not supported (this is only the case for old GLES3.0 devices), vertex
 // shader output variable name must match exactly the name of the pixel shader input variable.
 // If the variable has structure type (like in this example), the structure declarations must also be indentical.
-void main(in  uint    InstID : SV_InstanceID,
-          in  VSInput VSIn,
+void main(in  VSInput VSIn,
           out PSInput PSIn) 
-{
-    const uint GridDim = 7u;
-    int GridX = int(InstID % GridDim) - int(GridDim) / 2;
-    int GridY = int(InstID / GridDim) - int(GridDim) / 2;
-
-    float3 Pos = VSIn.Pos * 0.9;
-    Pos.x += float(GridX) * 2.0;
-    Pos.y += float(GridY) * 2.0;
-    Pos.z += float(GridX + (GridY % 2));
-    
-    PSIn.Pos = mul(g_CameraViewProj, float4(Pos, 1.0));
-    PSIn.Normal = mul(g_CameraViewProj, float4(VSIn.Normal, 0.0));
+{    
+    PSIn.Pos = mul(g_CameraViewProj, float4(VSIn.Pos, 1.0));
+    float4 Normal = mul(g_CameraViewProj, float4(VSIn.Normal, 0.0));
+    PSIn.Normal = Normal.rgb;
     PSIn.UV  = VSIn.UV;
 }
