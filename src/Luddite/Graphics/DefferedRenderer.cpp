@@ -15,23 +15,42 @@ void DefferedRenderer::Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevic
         // m_pSwapChain = pSwapChain;
         m_pShaderSourceFactory = pShaderSourceFactory;
         CreateRenderPass(ColorBufferFormat);
-        CreateAmbientLightPSO(pShaderSourceFactory);
 
-        ShaderAttributeListDescription ConstantShaderAttributes;
-        ConstantShaderAttributes.AddMat4("g_CameraViewProj");
+        {
+                ShaderAttributeListDescription ConstantShaderAttributes;
+                ConstantShaderAttributes.AddMat4("g_CameraViewProj");
 
-        ShaderAttributeListDescription MaterialShaderAttributes;
-        MaterialShaderAttributes.AddVec3("Diffuse");
-        MaterialShaderAttributes.AddFloat("Metallic");
-        MaterialShaderAttributes.AddFloat("Roughness");
-        BasicShaderPipeline.Initialize(
-                m_pRenderPass,
-                "BasicPBR.vsh",
-                "BasicPBR.psh",
-                "Basic Shader Pipeline",
-                ConstantShaderAttributes,
-                MaterialShaderAttributes
-                );
+                ShaderAttributeListDescription MaterialShaderAttributes;
+                MaterialShaderAttributes.AddVec3("Diffuse");
+                MaterialShaderAttributes.AddFloat("Metallic");
+                MaterialShaderAttributes.AddFloat("Roughness");
+
+                BasicShaderPipeline.Initialize(
+                        m_pRenderPass,
+                        "Deffered/BasicMesh.vsh",
+                        "Deffered/BasicMesh.psh",
+                        "BasicPBR Pipeline",
+                        ConstantShaderAttributes,
+                        MaterialShaderAttributes
+                        );
+        }
+        {
+                ShaderAttributeListDescription ConstantShaderAttributes;
+                // ConstantShaderAttributes.AddFloat("g_AmbientPower");
+
+                EnvironmentalLightingPipeline.Initialize(
+                        m_pRenderPass,
+                        "Deffered/WholeScreen.vsh",
+                        // "Deffered/Debug/ViewNormal.psh",
+                        "Deffered/AmbientPBR.psh",
+                        "AmbientPBR Pipeline",
+                        ConstantShaderAttributes,
+                        static_cast<uint8_t>(G_BUFFER_FLAGS::COLOR) |
+                        static_cast<uint8_t>(G_BUFFER_FLAGS::NORMAL) |
+                        static_cast<uint8_t>(G_BUFFER_FLAGS::DEPTH)
+                        );
+                // EnvironmentalLightingPipeline.GetConstantData().SetFloat("g_AmbientPower", 0.1f);
+        }
 }
 
 void DefferedRenderer::CreateRenderPass(Diligent::TEXTURE_FORMAT RTVFormat)
@@ -136,10 +155,10 @@ void DefferedRenderer::CreateRenderPass(Diligent::TEXTURE_FORMAT RTVFormat)
         VERIFY_EXPR(m_pRenderPass != nullptr);
 }
 
-Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuffer()
+DefferedRenderer::FrameBufferData DefferedRenderer::CreateFramebuffer()
 {
         const auto& RPDesc = m_pRenderPass->GetDesc();
-        const auto& RTDesc = m_pCurrentRenderTarget->RTV->GetDesc();
+        const auto& RTDesc = m_pCurrentRenderTarget.RTV->GetDesc();
         // const auto& SCDesc = m_pSwapChain->GetDesc();
 
         // Create window-size offscreen render target
@@ -148,8 +167,8 @@ Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuf
         TexDesc.Type = RESOURCE_DIM_TEX_2D;
         TexDesc.BindFlags = BIND_RENDER_TARGET | BIND_INPUT_ATTACHMENT;
         TexDesc.Format = RPDesc.pAttachments[0].Format;
-        TexDesc.Width = m_pCurrentRenderTarget->width;
-        TexDesc.Height = m_pCurrentRenderTarget->height;
+        TexDesc.Width = m_pCurrentRenderTarget.width;
+        TexDesc.Height = m_pCurrentRenderTarget.height;
         TexDesc.MipLevels = 1;
 
         // Define optimal clear value
@@ -161,12 +180,11 @@ Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuf
         RefCntAutoPtr<ITexture> pColorBuffer;
         m_pDevice->CreateTexture(TexDesc, nullptr, &pColorBuffer);
 
-
         Diligent::ITextureView* pDstRenderTarget;
         // OpenGL does not allow combining swap chain render target with any
         // other render target, so we have to create an auxiliary texture.
         RefCntAutoPtr<ITexture> pOpenGLOffsreenRenderTarget;
-        if (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget->is_swap_chain_buffer)
+        if (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget.is_swap_chain_buffer)
         {
                 TexDesc.Name = "OpenGL Color Offscreen Render Target";
                 TexDesc.Format = Renderer::GetDefaultRTVFormat();
@@ -175,17 +193,15 @@ Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuf
         }
         else
         {
-                pDstRenderTarget = m_pCurrentRenderTarget->RTV;
+                pDstRenderTarget = m_pCurrentRenderTarget.RTV;
         }
-
-
 
         TexDesc.Name = "Normal G-buffer";
         TexDesc.Type = RESOURCE_DIM_TEX_2D;
         TexDesc.BindFlags = BIND_RENDER_TARGET | BIND_INPUT_ATTACHMENT;
         TexDesc.Format = RPDesc.pAttachments[1].Format;
-        TexDesc.Width = m_pCurrentRenderTarget->width;
-        TexDesc.Height = m_pCurrentRenderTarget->height;
+        TexDesc.Width = m_pCurrentRenderTarget.width;
+        TexDesc.Height = m_pCurrentRenderTarget.height;
         TexDesc.MipLevels = 1;
 
         // Define optimal clear value
@@ -197,17 +213,6 @@ Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuf
         RefCntAutoPtr<ITexture> pNormalBuffer;
         m_pDevice->CreateTexture(TexDesc, nullptr, &pNormalBuffer);
 
-        // RefCntAutoPtr<ITexture> pOpenGLOffsreenNormalBuffer;
-        // if (pDstRenderTarget == nullptr)
-        // {
-        //         TexDesc.Name = "OpenGL Normal Offscreen Render Target";
-        //         TexDesc.Format = SCDesc.ColorBufferFormat;
-        //         m_pDevice->CreateTexture(TexDesc, nullptr, &pOpenGLOffsreenNormalBuffer);
-        //         pDstRenderTarget = pOpenGLOffsreenNormalBuffer->GetDefaultView(TEXTURE_VIEW_RENDER_TARGET);
-        // }
-
-
-
         TexDesc.Name = "Depth Z G-buffer";
         TexDesc.Format = RPDesc.pAttachments[2].Format;
 
@@ -218,7 +223,6 @@ Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuf
         TexDesc.ClearValue.Color[3] = 1.f;
         RefCntAutoPtr<ITexture> pDepthZBuffer;
         m_pDevice->CreateTexture(TexDesc, nullptr, &pDepthZBuffer);
-
 
 
         TexDesc.Name = "Depth buffer";
@@ -252,45 +256,43 @@ Diligent::RefCntAutoPtr<Diligent::IFramebuffer> DefferedRenderer::CreateFramebuf
         VERIFY_EXPR(pFrameBuffer != nullptr);
 
 
-        if (!m_pAmbientLightSRB)
-        {
-                m_pAmbientLightPSO->CreateShaderResourceBinding(&m_pAmbientLightSRB, true);
-                m_pAmbientLightSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_SubpassInputColor")->Set(pColorBuffer->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
-                m_pAmbientLightSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_SubpassInputNormal")->Set(pNormalBuffer->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
-                m_pAmbientLightSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_SubpassInputDepthZ")->Set(pDepthZBuffer->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
-        }
+        int SRBIndex = EnvironmentalLightingPipeline.CreateSRB(
+                pColorBuffer->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE),
+                pNormalBuffer->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE),
+                pDepthZBuffer->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE)
+                );
 
-        return pFrameBuffer;
+        return {pFrameBuffer, pOpenGLOffsreenRenderTarget, SRBIndex};
 }
 
-Diligent::IFramebuffer* DefferedRenderer::GetCurrentFramebuffer()
+DefferedRenderer::FrameBufferData* DefferedRenderer::GetCurrentFramebufferData()
 {
         // auto* pCurrentBackBufferRTV = ( m_pCurrentRenderTarget->is_swap_chain_buffer) ?
         //                               nullptr :
         //                               m_pCurrentRenderTarget->RTV;
 
 
-        auto fb_it = m_FramebufferCache.find(m_pCurrentRenderTarget->RTV);
+        auto fb_it = m_FramebufferCache.find(m_pCurrentRenderTarget.RTV);
         if (fb_it != m_FramebufferCache.end())
         {
-                return fb_it->second;
+                return &fb_it->second;
         }
         else
         {
-                auto it = m_FramebufferCache.emplace(m_pCurrentRenderTarget->RTV, CreateFramebuffer());
+                auto it = m_FramebufferCache.emplace(m_pCurrentRenderTarget.RTV, CreateFramebuffer());
                 VERIFY_EXPR(it.second);
-                return it.first->second;
+                return &it.first->second;
         }
 }
 
 void DefferedRenderer::PrepareDraw(RenderTarget& render_target)
 {
-        m_pCurrentRenderTarget = &render_target;
-        m_pDrawPeriodFrameBuffer = GetCurrentFramebuffer();
+        m_pCurrentRenderTarget = render_target;
+        m_DrawPeriodFrameBufferData = GetCurrentFramebufferData();
 
         BeginRenderPassAttribs RPBeginInfo;
         RPBeginInfo.pRenderPass = m_pRenderPass;
-        RPBeginInfo.pFramebuffer = m_pDrawPeriodFrameBuffer;
+        RPBeginInfo.pFramebuffer = m_DrawPeriodFrameBufferData->pFrameBuffer;
 
         OptimizedClearValue ClearValues[5];
         // Color
@@ -329,29 +331,33 @@ void DefferedRenderer::PrepareDraw(RenderTarget& render_target)
 void DefferedRenderer::ApplyLighting()
 {
         m_pImmediateContext->NextSubpass();
-        // Set the lighting PSO
-        m_pImmediateContext->SetPipelineState(m_pAmbientLightPSO);
-        // Commit shader resources
-        m_pImmediateContext->CommitShaderResources(m_pAmbientLightSRB, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-        {
-                // Draw quad
-                DrawAttribs DrawAttrs;
-                DrawAttrs.NumVertices = 4;
-                DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL; // Verify the state of vertex and index buffers
-                m_pImmediateContext->Draw(DrawAttrs);
-        }
+
+        EnvironmentalLightingPipeline.PrepareDraw(m_DrawPeriodFrameBufferData->SRBIndex);
+        EnvironmentalLightingPipeline.Draw();
+
+        // // Set the lighting PSO
+        // m_pImmediateContext->SetPipelineState(m_pAmbientLightPSO);
+        // // Commit shader resources
+        // m_pImmediateContext->CommitShaderResources(m_pAmbientLightSRB, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
+        // {
+        //         // Draw quad
+        //         DrawAttribs DrawAttrs;
+        //         DrawAttrs.NumVertices = 4;
+        //         DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL; // Verify the state of vertex and index buffers
+        //         m_pImmediateContext->Draw(DrawAttrs);
+        // }
 }
 
 void DefferedRenderer::FinalizeDraw()
 {
         m_pImmediateContext->EndRenderPass();
 
-        if (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget->is_swap_chain_buffer)
+        if (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget.is_swap_chain_buffer)
         {
                 // LD_LOG_TRACE("COPYING FROM OFFSCREEN TEXTURE");
                 // In OpenGL we now have to copy our off-screen buffer to the default framebuffer
-                auto* pOffscreenRenderTarget = m_pDrawPeriodFrameBuffer->GetDesc().ppAttachments[4]->GetTexture();
-                auto* pBackBuffer = m_pCurrentRenderTarget->RTV->GetTexture();//m_pSwapChain->GetCurrentBackBufferRTV()->GetTexture();
+                auto pOffscreenRenderTarget = m_DrawPeriodFrameBufferData->pOpenGLRenderTexture;//pFrameBuffer->GetDesc().ppAttachments[4]->GetTexture();
+                auto* pBackBuffer = m_pCurrentRenderTarget.RTV->GetTexture();
 
                 CopyTextureAttribs CopyAttribs{pOffscreenRenderTarget, RESOURCE_STATE_TRANSITION_MODE_TRANSITION,
                                                pBackBuffer, RESOURCE_STATE_TRANSITION_MODE_TRANSITION};
@@ -365,74 +371,15 @@ void DefferedRenderer::OnWindowResize(int width, int height)
 }
 void DefferedRenderer::ReleaseWindowResources()
 {
+        // LD_LOG_INFO("released window resources");
+        // m_DrawPeriodFrameBufferData->pFrameBuffer.Release();
+        // m_DrawPeriodFrameBufferData->pOpenGLRenderTexture.Release();
+        for (auto& fb : m_FramebufferCache)
+        {
+                fb.second.pFrameBuffer.Release();
+                fb.second.pOpenGLRenderTexture.Release();
+        }
         m_FramebufferCache.clear();
-}
-//TEMP:
-void DefferedRenderer::CreateAmbientLightPSO(Diligent::IShaderSourceInputStreamFactory* pShaderSourceFactory)
-{
-        GraphicsPipelineStateCreateInfo PSOCreateInfo;
-        PipelineStateDesc&              PSODesc = PSOCreateInfo.PSODesc;
-
-        PSODesc.Name = "Ambient light PSO";
-        PSODesc.PipelineType = Diligent::PIPELINE_TYPE_GRAPHICS;
-
-        PSOCreateInfo.GraphicsPipeline.pRenderPass = m_pRenderPass;
-        PSOCreateInfo.GraphicsPipeline.SubpassIndex = 1; // This PSO will be used within the second subpass
-
-        PSOCreateInfo.GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
-        PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_NONE;
-        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = False; // Disable depth
-
-        ShaderCreateInfo ShaderCI;
-        ShaderCI.SourceLanguage = SHADER_SOURCE_LANGUAGE_HLSL;
-
-        ShaderCI.UseCombinedTextureSamplers = true;
-
-        ShaderCI.pShaderSourceStreamFactory = pShaderSourceFactory;
-        // Create a vertex shader
-        RefCntAutoPtr<IShader> pVS;
-        {
-                ShaderCI.Desc.ShaderType = SHADER_TYPE_VERTEX;
-                ShaderCI.EntryPoint = "main";
-                ShaderCI.Desc.Name = "Ambient light VS";
-                ShaderCI.FilePath = "ambient_light.vsh";
-                m_pDevice->CreateShader(ShaderCI, &pVS);
-                VERIFY_EXPR(pVS != nullptr);
-        }
-
-        const auto IsVulkan = m_pDevice->GetDeviceCaps().IsVulkanDevice();
-
-        // Create a pixel shader
-        RefCntAutoPtr<IShader> pPS;
-        {
-                ShaderCI.SourceLanguage = SHADER_SOURCE_LANGUAGE_HLSL;
-                ShaderCI.Desc.ShaderType = SHADER_TYPE_PIXEL;
-                ShaderCI.EntryPoint = "main";
-                ShaderCI.Desc.Name = "Ambient light PS";
-                ShaderCI.FilePath = "ambient_light.psh";
-                m_pDevice->CreateShader(ShaderCI, &pPS);
-                VERIFY_EXPR(pPS != nullptr);
-        }
-
-        PSOCreateInfo.pVS = pVS;
-        PSOCreateInfo.pPS = pPS;
-
-        PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE_STATIC;
-
-        // clang-format off
-        ShaderResourceVariableDesc Vars[] =
-        {
-                {SHADER_TYPE_PIXEL, "g_SubpassInputColor", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
-                {SHADER_TYPE_PIXEL, "g_SubpassInputNormal", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
-                {SHADER_TYPE_PIXEL, "g_SubpassInputDepthZ", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE}
-        };
-        // clang-format on
-        PSODesc.ResourceLayout.Variables = Vars;
-        PSODesc.ResourceLayout.NumVariables = _countof(Vars);
-
-        m_pDevice->CreateGraphicsPipelineState(PSOCreateInfo, &m_pAmbientLightPSO);
-        VERIFY_EXPR(m_pAmbientLightPSO != nullptr);
-
-        LD_LOG_INFO("Ambient light pso created");
+        EnvironmentalLightingPipeline.ClearSRBs();
 }
 }

@@ -115,7 +115,6 @@ void DefferedPipelineState::Initialize(
 void DefferedPipelineState::PrepareDraw()
 {
         Renderer::GetContext()->SetPipelineState(m_pPSO);
-        // m_ConstantShaderData.SetMat4[""]
         m_ConstantShaderAttributes.MapBuffer(m_ConstantShaderData, m_pShaderConstantsBuffer);
 }
 
@@ -166,9 +165,5 @@ MaterialHandle DefferedPipelineState::GetMaterial(const std::string& Name)
 
         material->m_pMaterialShaderResourceBinding->GetVariableByName(SHADER_TYPE_PIXEL, "MaterialConstants")->Set(material->m_pMaterialConstantsBuffer);
         return material;
-}
-void DefferedPipelineState::SetViewProjMatrix(const glm::mat4& ViewProj)
-{
-        m_ConstantShaderData.SetMat4("g_CameraViewProj", ViewProj);
 }
 }

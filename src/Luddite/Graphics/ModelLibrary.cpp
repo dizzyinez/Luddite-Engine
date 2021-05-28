@@ -111,9 +111,10 @@ void ModelLoader::BasicModelAllocator::LoadOBJ(std::shared_ptr<BasicModel> model
                                 });
                 }
                 temp_mesh->indicies.reserve(obj_mesh.Indices.size());
-                for (auto obj_index : obj_mesh.Indices)
+                //put indicies in reverse order to correct normal directions
+                for (auto rit = obj_mesh.Indices.rbegin(); rit != obj_mesh.Indices.rend(); ++rit)
                 {
-                        temp_mesh->indicies.push_back(obj_index);
+                        temp_mesh->indicies.push_back(*rit);
                 }
                 model->meshes.emplace_back(temp_mesh);
         }

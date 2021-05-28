@@ -24,7 +24,7 @@ public:
         static void BeginScene();
         static void SubmitMesh(BasicMeshHandle mesh);
         static void EndScene();
-        static void Draw(RenderTarget& render_target);
+        static void Draw(RenderTarget& render_target, const Camera& camera);
         static void Present();
 
         static inline Diligent::RefCntAutoPtr<Diligent::IRenderDevice>&  GetDevice() {return m_pDevice;}

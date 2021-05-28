@@ -37,6 +37,7 @@ XCBWindow::XCBWindow(const std::string& title, int width, int height, int min_wi
         InitXCBConnectionAndWindow(title, width, height, min_width, min_height);
         InitVulkan();
         xcb_flush(info.connection);
+        OnWindowResize(width, height);
 }
 
 bool XCBWindow::InitVulkan()
@@ -153,7 +154,6 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title, int width, 
         {
                 if ((e->response_type & ~0x80) == XCB_EXPOSE) break;
         }
-        OnWindowResize(width, height);
 }
 
 void XCBWindow::HandleEvents()

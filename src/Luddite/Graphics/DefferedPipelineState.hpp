@@ -25,7 +25,7 @@ public:
         void PrepareDraw();
         void DrawBasicMesh(const BasicMeshHandle Mesh);
         void SetMaterial(MaterialHandle Material);
-        void SetViewProjMatrix(const glm::mat4& ViewProj);
+        inline ShaderAttributeListData& GetConstantData() {return m_ConstantShaderData;}
         // void SetModelAttribs();
         MaterialHandle GetMaterial(const std::string& Name);
 private:

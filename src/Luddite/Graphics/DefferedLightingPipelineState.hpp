@@ -18,15 +18,20 @@ public:
                 Diligent::RefCntAutoPtr<Diligent::IRenderPass> pRenderPass,
                 const std::string& VSFilePath,
                 const std::string& PSFilePath,
-                const std::string& Name
-                // ShaderAttributeListDescription ConstantShaderAttributes,
-                // ShaderAttributeListDescription MaterialShaderAttributes
+                const std::string& Name,
+                ShaderAttributeListDescription ConstantShaderAttributes,
+                uint8_t Buffers
                 );
         void SetMaterial(MaterialHandle Material);
+        void PrepareDraw(int SRBIndex);
         void Draw();
-        // void SetModelAttribs();
-        MaterialHandle GetMaterial(const std::string& Name);
-        // int CreateSRB();
+
+        inline ShaderAttributeListData& GetConstantData() {return m_ConstantShaderData;}
+
+        int CreateSRB(Diligent::ITextureView* ColorSRV,
+                      Diligent::ITextureView* NormalSRV,
+                      Diligent::ITextureView* DepthZSRV);
+        void ClearSRBs();
 private:
         Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pPSO;
         std::vector<Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> > m_SRBs;
@@ -34,7 +39,7 @@ private:
         ShaderAttributeListDescription m_ConstantShaderAttributes;
         ShaderAttributeListData m_ConstantShaderData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_pShaderConstantsBuffer;
-
+        uint8_t m_Buffers;
         // std::unique_ptr<MaterialLibrary> m_pMaterialLibrary;
         // MaterialHandle m_pCurrentMaterial;
 };

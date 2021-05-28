@@ -2,6 +2,7 @@
 #include "Luddite/pch.hpp"
 #include "Luddite/Core.hpp"
 #include "Luddite/Graphics/DiligentInclude.hpp"
+#include "Luddite/Graphics/Camera.hpp"
 
 namespace Luddite
 {
@@ -13,6 +14,8 @@ struct LUDDITE_API RenderTarget
         unsigned int width = 0;
         unsigned int height = 0;
         bool is_swap_chain_buffer = false;
+        Diligent::SURFACE_TRANSFORM PreTransform = Diligent::SURFACE_TRANSFORM_IDENTITY;
+        glm::mat4 GetViewProjection(const Camera& camera) const;
 };
 struct LUDDITE_API RenderTexture
 {

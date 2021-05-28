@@ -21,7 +21,7 @@ struct VSInput
 struct PSInput 
 { 
     float4 Pos : SV_POSITION; 
-    float3 Normal : NORMAL;
+    float3 Normal : SV_NORMAL;
     float2 UV  : TEX_COORD; 
 };
 
@@ -32,7 +32,7 @@ void main(in  VSInput VSIn,
           out PSInput PSIn) 
 {    
     PSIn.Pos = mul(g_CameraViewProj, float4(VSIn.Pos, 1.0));
-    float4 Normal = mul(g_CameraViewProj, float4(VSIn.Normal, 0.0));
-    PSIn.Normal = Normal.rgb;
+    float3 Normal = (VSIn.Normal + 1.0f) * 0.5f;
+    PSIn.Normal = Normal;
     PSIn.UV  = VSIn.UV;
 }

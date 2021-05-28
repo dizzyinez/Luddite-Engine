@@ -32,7 +32,7 @@ void Renderer::Initialize()
         awesome_material->m_data.SetVec3("Diffuse", glm::vec3(0.5f, 0.5f, 1.f));
 
 
-        awesome_model = ModelLoader::GetBasicModel("Assets/teapot.obj");
+        awesome_model = ModelLoader::GetBasicModel("Assets/suzanne.obj");
         for (auto mesh : awesome_model->meshes)
                 SubmitMesh(mesh);
 
@@ -65,7 +65,7 @@ void Renderer::SubmitMesh(BasicMeshHandle mesh)
 
 void Renderer::SetMatricies()
 {
-        glm::mat4 view = glm::lookAt(glm::vec3(0, 0, 25.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+        glm::mat4 view = glm::lookAt(glm::vec3(0, 0, 1.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
         // glm::mat4 view = glm::lookAt(
         //         glm::vec3(2.5f, 2.5f, 2.0f),
         //         glm::vec3(0.0f, 0.0f, 0.0f),
@@ -151,7 +151,7 @@ RenderTexture Renderer::CreateRenderTexture(uint32_t width, uint32_t height,
 
         return rt;
 }
-void Renderer::Draw(RenderTarget& render_target)
+void Renderer::Draw(RenderTarget& render_target, const Camera& camera)
 {
         SetMatricies();
         BindRenderTarget(render_target);
@@ -159,10 +159,13 @@ void Renderer::Draw(RenderTarget& render_target)
         m_DefferedRenderer.PrepareDraw(render_target);
 
         //TEMP
-        glm::mat4 view = glm::lookAt(glm::vec3(0, 0, 25.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-        auto Proj = glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1000.f);
-        auto vp = Proj * view;
-        m_DefferedRenderer.BasicShaderPipeline.SetViewProjMatrix(vp);
+        // glm::mat4 view = glm::lookAt(glm::vec3(0, 0, -5.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+        // auto Proj = glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1000.f);
+        // auto vpbad = Proj * view;
+
+        auto vp = render_target.GetViewProjection(camera);
+
+        m_DefferedRenderer.BasicShaderPipeline.GetConstantData().SetMat4("g_CameraViewProj", vp);
 
 
 

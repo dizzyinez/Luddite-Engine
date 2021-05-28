@@ -17,6 +17,20 @@ class LUDDITE_API Renderer;
 class LUDDITE_API DefferedRenderer
 {
 public:
+        enum class G_BUFFER_FLAGS : uint8_t
+        {
+                COLOR = 1,
+                NORMAL = 2,
+                DEPTH = 4
+        };
+private:
+        struct FrameBufferData
+        {
+                Diligent::RefCntAutoPtr<Diligent::IFramebuffer> pFrameBuffer;
+                Diligent::RefCntAutoPtr<Diligent::ITexture> pOpenGLRenderTexture;
+                int SRBIndex;
+        };
+public:
         void Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevice> pDevice,
                         Diligent::RefCntAutoPtr<Diligent::IDeviceContext> pImmediateContext,
                         Diligent::TEXTURE_FORMAT ColorBufferFormat,
@@ -33,20 +47,20 @@ public:
 private:
         friend class Renderer;
         void CreateRenderPass(Diligent::TEXTURE_FORMAT RTVFormat);
-        Diligent::RefCntAutoPtr<Diligent::IFramebuffer> CreateFramebuffer();
+        FrameBufferData* GetCurrentFramebufferData();
+        FrameBufferData CreateFramebuffer();
         void ReleaseWindowResources();
-        Diligent::IFramebuffer* GetCurrentFramebuffer();
 
-        RenderTarget* m_pCurrentRenderTarget;
+        RenderTarget m_pCurrentRenderTarget;
 
         Diligent::RefCntAutoPtr<Diligent::IRenderDevice> m_pDevice;
         Diligent::RefCntAutoPtr<Diligent::IDeviceContext> m_pImmediateContext;
         Diligent::RefCntAutoPtr<Diligent::IShaderSourceInputStreamFactory> m_pShaderSourceFactory;
-        Diligent::IFramebuffer* m_pDrawPeriodFrameBuffer;
+        FrameBufferData* m_DrawPeriodFrameBufferData;
 
         Diligent::RefCntAutoPtr<Diligent::IRenderPass> m_pRenderPass;
         glm::mat4 m_ViewProjMatrix;
-        std::unordered_map<Diligent::ITextureView*, Diligent::RefCntAutoPtr<Diligent::IFramebuffer> > m_FramebufferCache;
+        std::unordered_map<Diligent::ITextureView*, FrameBufferData> m_FramebufferCache;
 
         #ifdef LD_PLATFORM_DESKTOP
         static constexpr Diligent::TEXTURE_FORMAT DepthBufferFormat = Diligent::TEX_FORMAT_D32_FLOAT;
@@ -55,10 +69,5 @@ private:
         #ifdef LD_PLATFORM_MOBILE
         static constexpr Diligent::TEXTURE_FORMAT DepthBufferFormat = Diligent::TEX_FORMAT_D16_UNORM;
         #endif
-
-        //Temp:
-        Diligent::RefCntAutoPtr<Diligent::IPipelineState>         m_pAmbientLightPSO;
-        Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> m_pAmbientLightSRB;
-        void CreateAmbientLightPSO(Diligent::IShaderSourceInputStreamFactory* pShaderSourceFactory);
 };
 }
