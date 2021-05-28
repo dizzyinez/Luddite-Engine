@@ -32,7 +32,8 @@ void main(in  VSInput VSIn,
           out PSInput PSIn) 
 {    
     PSIn.Pos = mul(g_CameraViewProj, float4(VSIn.Pos, 1.0));
-    float3 Normal = (VSIn.Normal + 1.0f) * 0.5f;
+    // float3 Normal = (VSIn.Normal + 1.0f) * 0.5f;
+    float3 Normal = VSIn.Normal;
     PSIn.Normal = Normal;
     PSIn.UV  = VSIn.UV;
 }

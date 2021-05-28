@@ -31,10 +31,9 @@ void main(in  PSInput  PSIn,
         discard;
 
     float3 normaldir = normalize((g_SubpassInputNormal.Load(int3(PSIn.Pos.xy, 0)).rgb * 2.0f) - 1.0f);
-    float3 lightdir = normalize(float3(-2.0, -1.0, 1.0));
+    float3 lightdir = normalize(float3(-2.0, 1.0, 1.0));
     float light = dot(normaldir, lightdir);
-    light = abs(light);
-    clamp(light, 0.0, 1.0);
+    light = clamp(light, 0.0, 1.0);
 
     PSOut.Color.rgb = g_SubpassInputColor.Load(int3(PSIn.Pos.xy, 0)).rgb * (0.5 + light);
     //  * 0.0;

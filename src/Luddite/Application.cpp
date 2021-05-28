@@ -78,9 +78,9 @@ void Application::Run()
 void Application::CreateMainWindow(const std::string& Name, int width, int height)
 {
         //TEMP
-        NativeVulkanWindow::InitNativeEngineFactory();
-        m_MainWindow = std::make_shared<NativeVulkanWindow>(Name, width, height);
+        // NativeVulkanWindow::InitNativeEngineFactory();
+        // m_MainWindow = std::make_shared<NativeVulkanWindow>(Name, width, height);
 
-        // m_MainWindow = std::make_shared<NativeOpenGLWindow>(Name);
+        m_MainWindow = std::make_shared<NativeOpenGLWindow>(Name);
 }
 }
