@@ -1,5 +1,7 @@
+#include "Luddite/Core/pch.hpp"
+#ifdef LD_PLATFORM_LINUX
 #include "Luddite/Platform/Window/XCBWindow.hpp"
-#include "Luddite/Logging.hpp"
+#include "Luddite/Core/Logging.hpp"
 #include "Imgui/interface/ImGuiImplLinuxXCB.hpp"
 
 enum XCB_SIZE_HINT
@@ -52,14 +54,14 @@ bool XCBWindow::InitVulkan()
 
         auto& SCDesc = m_pSwapChain->GetDesc();
         Renderer::SetDefaultRTVFormat(SCDesc.ColorBufferFormat);
-        m_pImGuiImpl.reset( //std::make_unique<Diligent::ImGuiImplDiligent>(
-                new Diligent::ImGuiImplLinuxXCB(info.connection,
-                        Renderer::GetDevice(),
-                        SCDesc.ColorBufferFormat,
-                        SCDesc.DepthBufferFormat,
-                        SCDesc.Width,
-                        SCDesc.Height
-                        ));
+        m_pImGuiImpl.reset(new Diligent::ImGuiImplLinuxXCB(
+                info.connection,
+                Renderer::GetDevice(),
+                SCDesc.ColorBufferFormat,
+                SCDesc.DepthBufferFormat,
+                SCDesc.Width,
+                SCDesc.Height
+                ));
         m_pImGuiImpl->CreateDeviceObjects();
         return true;
 }
@@ -214,3 +216,5 @@ XCBWindow::~XCBWindow()
         xcb_disconnect(info.connection);
 }
 }
+
+#endif // LD_PLATFORM_LINUX

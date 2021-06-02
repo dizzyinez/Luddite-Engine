@@ -1,6 +1,6 @@
 #pragma once
-#include "Luddite/pch.hpp"
-#include "Luddite/Core.hpp"
+#include "Luddite/Core/pch.hpp"
+#include "Luddite/Core/Core.hpp"
 
 #ifdef LD_PLATFORM_LINUX
 #include "Luddite/Platform/Window/XCBWindow.hpp"
@@ -12,3 +12,12 @@ using NativeOpenGLWindow = GLXWindow;
 // using NativeOpenGLWindow = XWindow;
 }
 #endif // LD_PLATFORM_LINUX
+
+#ifdef LD_PLATFORM_WINDOWS
+#include "Luddite/Platform/Window/WindowsWindow.hpp"
+#include "Luddite/Platform/Window/D3D12Window.hpp"
+namespace Luddite
+{
+using NativeD3D12Window = D3D12Window;
+}
+#endif //LD_PLATFORM_WINDOWS

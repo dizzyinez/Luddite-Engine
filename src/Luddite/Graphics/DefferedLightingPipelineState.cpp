@@ -69,7 +69,8 @@ void DefferedLightingPipelineState::Initialize(
         bool UsingDepthBuffer = m_Buffers & static_cast<uint8_t>(DefferedRenderer::G_BUFFER_FLAGS::DEPTH);
 
         std::vector<ShaderResourceVariableDesc> Vars;
-        Vars.push_back({SHADER_TYPE_VERTEX, "ShaderConstants", SHADER_RESOURCE_VARIABLE_TYPE_STATIC});
+        if (m_ConstantShaderAttributes.GetSize() > 0)
+                Vars.push_back({SHADER_TYPE_PIXEL, "ShaderConstants", SHADER_RESOURCE_VARIABLE_TYPE_STATIC});
 
 
         if (UsingColorBuffer)
@@ -79,8 +80,11 @@ void DefferedLightingPipelineState::Initialize(
         if (UsingDepthBuffer)
                 Vars.push_back({SHADER_TYPE_PIXEL, "g_SubpassInputDepthZ", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE});
 
-        PSODesc.ResourceLayout.Variables = Vars.data();
-        PSODesc.ResourceLayout.NumVariables = Vars.size();
+        if (Vars.size() > 0)
+        {
+                PSODesc.ResourceLayout.Variables = Vars.data();
+                PSODesc.ResourceLayout.NumVariables = Vars.size();
+        }
 
         Renderer::GetDevice()->CreateGraphicsPipelineState(PSOCreateInfo, &m_pPSO);
         VERIFY_EXPR(m_pPSO != nullptr);
@@ -128,8 +132,8 @@ int DefferedLightingPipelineState::CreateSRB(Diligent::ITextureView* ColorSRV,
         bool UsingNormalBuffer = m_Buffers & static_cast<uint8_t>(DefferedRenderer::G_BUFFER_FLAGS::NORMAL);
         bool UsingDepthBuffer = m_Buffers & static_cast<uint8_t>(DefferedRenderer::G_BUFFER_FLAGS::DEPTH);
 
-        std::vector<ShaderResourceVariableDesc> Vars;
-        Vars.push_back({SHADER_TYPE_VERTEX, "ShaderConstants", SHADER_RESOURCE_VARIABLE_TYPE_STATIC});
+        // std::vector<ShaderResourceVariableDesc> Vars;
+        // Vars.push_back({SHADER_TYPE_VERTEX, "ShaderConstants", SHADER_RESOURCE_VARIABLE_TYPE_STATIC});
 
 
         if (UsingColorBuffer)

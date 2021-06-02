@@ -1,11 +1,4 @@
 #pragma once
-#ifdef LD_PLATFORM_WINDOWS
-    #ifdef LD_BUILD_LIB
-        #define LUDDITE_API __declspec(dllexport)
-    #else
-        #define LUDDITE_API __declspec(dllimport)
-    #endif
-#endif
 
 #ifdef LD_PLATFORM_LINUX
     #define LUDDITE_API
@@ -19,8 +12,29 @@
 #ifndef LUDDITE_API
     #define LUDDITE_API
 #endif
+#ifndef LD_PLATFORM_WINDOWS
+    #define LD_PLATFORM_WINDOWS
+#endif
+#ifndef LD_DEBUG
+    #define LD_DEBUG
+#endif
 
 
+
+
+
+
+
+
+
+#ifdef LD_PLATFORM_WINDOWS
+    #ifdef LD_BUILD_LIB
+        #define LUDDITE_API __declspec(dllexport)
+    #else
+        #define LUDDITE_API __declspec(dllimport)
+    #endif
+#include "Luddite/Platform/Compatibility/Windows.hpp"
+#endif
 
 #ifdef LD_PLATFORM_WINDOWS
     #define LD_PLATFORM_DESKTOP

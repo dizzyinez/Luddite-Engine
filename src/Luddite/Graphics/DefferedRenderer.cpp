@@ -36,7 +36,7 @@ void DefferedRenderer::Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevic
         }
         {
                 ShaderAttributeListDescription ConstantShaderAttributes;
-                // ConstantShaderAttributes.AddFloat("g_AmbientPower");
+                ConstantShaderAttributes.AddFloat("g_AmbientPower");
 
                 EnvironmentalLightingPipeline.Initialize(
                         m_pRenderPass,
@@ -49,7 +49,7 @@ void DefferedRenderer::Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevic
                         static_cast<uint8_t>(G_BUFFER_FLAGS::NORMAL) |
                         static_cast<uint8_t>(G_BUFFER_FLAGS::DEPTH)
                         );
-                // EnvironmentalLightingPipeline.GetConstantData().SetFloat("g_AmbientPower", 0.1f);
+                EnvironmentalLightingPipeline.GetConstantData().SetFloat("g_AmbientPower", 0.1f);
         }
 }
 
@@ -184,7 +184,7 @@ DefferedRenderer::FrameBufferData DefferedRenderer::CreateFramebuffer()
         // OpenGL does not allow combining swap chain render target with any
         // other render target, so we have to create an auxiliary texture.
         RefCntAutoPtr<ITexture> pOpenGLOffsreenRenderTarget;
-        if (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget.is_swap_chain_buffer)
+        if (m_pDevice->GetDeviceInfo().IsGLDevice() && m_pCurrentRenderTarget.is_swap_chain_buffer)
         {
                 TexDesc.Name = "OpenGL Color Offscreen Render Target";
                 TexDesc.Format = Renderer::GetDefaultRTVFormat();
@@ -352,7 +352,7 @@ void DefferedRenderer::FinalizeDraw()
 {
         m_pImmediateContext->EndRenderPass();
 
-        if (m_pDevice->GetDeviceCaps().IsGLDevice() && m_pCurrentRenderTarget.is_swap_chain_buffer)
+        if (m_pDevice->GetDeviceInfo().IsGLDevice() && m_pCurrentRenderTarget.is_swap_chain_buffer)
         {
                 // LD_LOG_TRACE("COPYING FROM OFFSCREEN TEXTURE");
                 // In OpenGL we now have to copy our off-screen buffer to the default framebuffer

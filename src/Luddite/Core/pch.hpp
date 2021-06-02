@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <memory>
+#include <optional>
+#include <queue>
 #include <algorithm>
 #include <utility>
 #include <functional>
@@ -9,6 +11,8 @@
 #include <stdint.h>
 
 #include <string>
+#include <locale>
+#include <codecvt>
 #include <sstream>
 #include <vector>
 #include <array>
@@ -23,5 +27,6 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/string_cast.hpp"
 
-#include "Luddite/Logging.hpp"
-#include "Luddite/Primitives.hpp"
+#include "Luddite/Core/Core.hpp"
+#include "Luddite/Core/DebugTools.hpp"
+#include "Luddite/Core/Primitives.hpp"

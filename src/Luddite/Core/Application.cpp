@@ -1,4 +1,4 @@
-#include "Application.hpp"
+#include "Luddite/Core/Application.hpp"
 //TEMP
 #include "Luddite/Platform/Window/NativeWindow.hpp"
 
@@ -6,7 +6,7 @@ namespace Luddite
 {
 Application::Application()
 {
-        m_RenderingBackend = RenderingBackend::VULKAN;
+        // m_RenderingBackend = RenderingBackend::VULKAN;
 }
 Application::~Application()
 {}
@@ -15,7 +15,7 @@ void Application::Run()
         #ifdef LD_DEBUG
         if (!m_MainWindow)
         {
-                LD_LOG_CRITICAL("Main window was never created !Call the CreateMainWindow function in the app's constructor.");
+                LD_LOG_CRITICAL("Main window was never created! Call the CreateMainWindow function in the app's constructor.");
                 exit(0);
         }
         #endif // LD_DEBUG
@@ -30,6 +30,8 @@ void Application::Run()
 
         while (!m_MainWindow->ShouldQuit())
         {
+                m_MainWindow->ClearEvents();
+                m_MainWindow->PollEvents();
                 m_MainWindow->HandleEvents();
                 // m_Renderer.Draw();
                 // m_Renderer.Present();
@@ -75,12 +77,13 @@ void Application::Run()
                 m_MainWindow->SwapBuffers();
         }
 }
-void Application::CreateMainWindow(const std::string& Name, int width, int height)
+void Application::CreateMainWindow(const std::string& Name, int width, int height, int min_width, int min_height)
 {
         //TEMP
         // NativeVulkanWindow::InitNativeEngineFactory();
         // m_MainWindow = std::make_shared<NativeVulkanWindow>(Name, width, height);
 
-        m_MainWindow = std::make_shared<NativeOpenGLWindow>(Name);
+        // m_MainWindow = std::make_shared<NativeOpenGLWindow>(Name, width, height);
+        m_MainWindow = std::make_shared<NativeD3D12Window>(Name, width, height, min_width, min_height);
 }
 }

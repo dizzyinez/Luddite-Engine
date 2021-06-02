@@ -1,4 +1,5 @@
 #pragma once
+#include "Luddite/Core/Queue.hpp"
 
 namespace Luddite
 {

@@ -1,7 +1,7 @@
 #pragma once
-#include "Luddite/pch.hpp"
-#include "Luddite/Core.hpp"
-#include "Luddite/BasicAllocator.hpp"
+#include "Luddite/Core/pch.hpp"
+#include "Luddite/Core/Core.hpp"
+#include "Luddite/Core/BasicAllocator.hpp"
 
 #include "Luddite/Graphics/ShaderAttributeList.hpp"
 #include "Luddite/Graphics/DiligentInclude.hpp"

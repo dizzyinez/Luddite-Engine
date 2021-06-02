@@ -18,3 +18,11 @@
 #ifdef LD_PLATFORM_IOS
     #define PLATFORM_IOS 1
 #endif
+
+#ifdef LD_DEBUG
+    #define DILIGENT_DEBUG
+#else
+    #ifdef DILIGENT_DEBUG
+        #undef DILIGENT_DEBUG
+    #endif
+#endif

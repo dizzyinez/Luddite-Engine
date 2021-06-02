@@ -1,6 +1,6 @@
 #pragma once
-#include "Luddite/pch.hpp"
-#include "Luddite/Core.hpp"
+#include "Luddite/Core/pch.hpp"
+#include "Luddite/Core/Core.hpp"
 #include "entt/entt.hpp"
 
 namespace Luddite

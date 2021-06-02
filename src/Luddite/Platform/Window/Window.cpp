@@ -8,15 +8,33 @@ Window::Window()
 Window::~Window() {}
 void Window::OnWindowResize(int width, int height)
 {
-        m_pSwapChain->Resize(width, height);
         m_WindowWidth = width;
         m_WindowHeight = height;
         Renderer::OnWindowResize(width, height);
+        m_pSwapChain->Resize(width, height);
 }
 
 void Window::SwapBuffers()
 {
         m_pSwapChain->Present();
+}
+
+void Window::HandleEvents()
+{
+        {
+        }
+        unsigned int new_width = 0;
+        unsigned int new_height = 0;
+        for (auto& event : m_EventPool.GetList<WindowSizeEvent>())
+        {
+                new_width = event.width;
+                new_height = event.height;
+                event.SetHandled();
+        }
+        if (new_width != 0 && new_height != 0)
+        {
+                OnWindowResize(new_width, new_height);
+        }
 }
 
 glm::mat4x4 Window::GetAdjustedProjectionMatrix(float FOV, float NearPlane, float FarPlane) const

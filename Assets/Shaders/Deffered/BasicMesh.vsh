@@ -21,7 +21,7 @@ struct VSInput
 struct PSInput 
 { 
     float4 Pos : SV_POSITION; 
-    float3 Normal : SV_NORMAL;
+    float3 Normal : NORMAL;
     float2 UV  : TEX_COORD; 
 };
 

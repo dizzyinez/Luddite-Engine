@@ -32,7 +32,7 @@ void Renderer::Initialize()
         awesome_material->m_data.SetVec3("Diffuse", glm::vec3(0.5f, 0.5f, 1.f));
 
 
-        awesome_model = ModelLoader::GetBasicModel("Assets/suzanne.obj");
+        awesome_model = ModelLoader::GetBasicModel("Assets/pingpong.obj");
         for (auto mesh : awesome_model->meshes)
                 SubmitMesh(mesh);
 

@@ -1,7 +1,7 @@
 #pragma once
-#include "Luddite/pch.hpp"
-#include "Luddite/Core.hpp"
-#include "Luddite/Logging.hpp"
+#include "Luddite/Core/pch.hpp"
+#include "Luddite/Core/Core.hpp"
+#include "Luddite/Core/Logging.hpp"
 
 namespace Luddite
 {

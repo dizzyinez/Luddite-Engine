@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Luddite/pch.hpp"
-#include "Luddite/Core.hpp"
-#include "Luddite/Application.hpp"
-#include "Luddite/EntryPoint.hpp"
-#include "Luddite/Logging.hpp"
+#include "Luddite/Core/pch.hpp"
+#include "Luddite/Core/Core.hpp"
+#include "Luddite/Core/Application.hpp"
+#include "Luddite/Core/EntryPoint.hpp"
+#include "Luddite/Core/Logging.hpp"
+#include "Luddite/Core/LayerStack.hpp"
 #include "Luddite/Platform/Window/Window.hpp"
-#include "Luddite/LayerStack.hpp"
 #include "Luddite/ECS/World.hpp"
 #include "Luddite/ECS/Entity.hpp"
 

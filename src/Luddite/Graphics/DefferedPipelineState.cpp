@@ -99,6 +99,7 @@ void DefferedPipelineState::Initialize(
         // PSODesc.ResourceLayout.NumImmutableSamplers = _countof(ImtblSamplers);
 
         Renderer::GetDevice()->CreateGraphicsPipelineState(PSOCreateInfo, &m_pPSO);
+        VERIFY_EXPR(m_pPSO != nullptr);
 
         m_ConstantShaderAttributes.SetDefaultAttribs(m_ConstantShaderData);
 

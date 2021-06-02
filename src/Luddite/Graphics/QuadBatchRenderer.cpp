@@ -120,7 +120,7 @@ void QuadBatchRenderer::DrawBatch()
 void QuadBatchRenderer::AddQuad(const Texture& texture, const glm::mat4& transform)
 {
         instance_data_iterator++;
-        if (instance_data_iterator = instance_data.end())
+        if (instance_data_iterator == instance_data.end())
         {
                 instance_data_iterator--;
                 UploadBatch();

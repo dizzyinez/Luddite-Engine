@@ -1,6 +1,6 @@
 #pragma once
-#include "Luddite/Core.hpp"
-#include "Luddite/pch.hpp"
+#include "Luddite/Core/Core.hpp"
+#include "Luddite/Core/pch.hpp"
 
 #include "Luddite/Graphics/Texture.hpp"
 #include "Luddite/Graphics/DiligentInclude.hpp"
@@ -53,7 +53,7 @@ private:
                 float TextureIndex;
         };
 
-        glm::mat4 m_ViewProjMatrix;
+        glm::mat4 m_ViewProjMatrix = glm::mat4();
         static constexpr int MaxInstances = 4096;
         static constexpr int MaxTextures = 4;
         std::array<InstanceData, MaxInstances> instance_data;

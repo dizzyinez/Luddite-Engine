@@ -1,17 +1,17 @@
 #pragma once
-#include "Luddite/pch.hpp"
-#include "Luddite/Core.hpp"
+#include "Luddite/Core/pch.hpp"
+#include "Luddite/Core/Core.hpp"
 
 #include "Luddite/Graphics/Color.hpp"
 #pragma once
-// #include "Luddite/pch.hpp"
+// #include "Luddite/Core/pch.hpp"
 // #include "Luddite/Platform/DiligentPlatform.hpp"
 // #include "Graphics/GraphicsEngine/interface/RenderDevice.h"
 // #include "Graphics/GraphicsEngine/interface/DeviceContext.h"
 // #include "Graphics/GraphicsEngine/interface/SwapChain.h"
 
 // #include "Common/interface/RefCntAutoPtr.hpp"
-// // #include "Luddite/Core.hpp"
+// // #include "Luddite/Core/Core.hpp"
 
 namespace Luddite
 {

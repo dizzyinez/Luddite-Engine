@@ -408,7 +408,7 @@ RefCntAutoPtr<IFramebuffer> PBRRenderer::CreateFramebuffer(ITextureView* pDstRen
 }
 IFramebuffer* PBRRenderer::GetCurrentFramebuffer()
 {
-        auto* pCurrentBackBufferRTV = m_pDevice->GetDeviceCaps().IsGLDevice() ?
+        auto* pCurrentBackBufferRTV = m_pDevice->GetDeviceInfo().IsGLDevice() ?
                                       nullptr :
                                       m_pSwapChain->GetCurrentBackBufferRTV();
 
@@ -551,7 +551,7 @@ void PBRRenderer::Draw()
 
         m_pImmediateContext->EndRenderPass();
 
-        if (m_pDevice->GetDeviceCaps().IsGLDevice())
+        if (m_pDevice->GetDeviceInfo().IsGLDevice())
         {
                 // In OpenGL we now have to copy our off-screen buffer to the default framebuffer
                 auto* pOffscreenRenderTarget = pFramebuffer->GetDesc().ppAttachments[3]->GetTexture();
@@ -594,7 +594,7 @@ void PBRRenderer::CreateAmbientLightPSO(Diligent::IShaderSourceInputStreamFactor
                 VERIFY_EXPR(pVS != nullptr);
         }
 
-        const auto IsVulkan = m_pDevice->GetDeviceCaps().IsVulkanDevice();
+        const auto IsVulkan = m_pDevice->GetDeviceInfo().IsVulkanDevice();
 
         // Create a pixel shader
         RefCntAutoPtr<IShader> pPS;

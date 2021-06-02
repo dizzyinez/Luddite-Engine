@@ -1,5 +1,6 @@
 #pragma once
-#include "Luddite/pch.hpp"
+#include "Luddite/Core/pch.hpp"
+#ifdef LD_PLATFORM_LINUX
 #include "Luddite/Platform/Window/Window.hpp"
 #include <xcb/xcb.h>
 
@@ -32,3 +33,5 @@ private:
         XCBInfo info;
 };
 }
+
+#endif // LD_PLATFORM_LINUX

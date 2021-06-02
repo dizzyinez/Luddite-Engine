@@ -1,7 +1,8 @@
 #pragma once
-#include "Luddite/pch.hpp"
-#include "Luddite/Core.hpp"
-#include "Luddite/LayerStack.hpp"
+#include "Luddite/Core/pch.hpp"
+#include "Luddite/Core/Core.hpp"
+#include "Luddite/Core/LayerStack.hpp"
+#include "Luddite/Core/EventPool.hpp"
 #include "Luddite/Graphics/Renderer.hpp"
 #include "Luddite/Graphics/RenderTarget.hpp"
 
@@ -17,7 +18,11 @@ public:
         inline uint32_t GetWidth() {return m_pSwapChain->GetDesc().Width;}
         inline uint32_t GetHeight() {return m_pSwapChain->GetDesc().Height;}
         LayerStack& GetLayerStack() {return m_layer_stack;}
-        virtual void HandleEvents() = 0;
+
+        inline void ClearEvents() {m_EventPool.Clear();}
+        virtual void PollEvents() {};
+        void HandleEvents();
+
         inline bool ShouldQuit() const {return Quit;}
         void SwapBuffers();
 
@@ -34,8 +39,6 @@ public:
 
         glm::mat4x4 GetAdjustedProjectionMatrix(float FOV, float NearPlane, float FarPlane) const;
         glm::mat4x4 GetSurfacePretransformMatrix(const glm::vec3& f3CameraViewAxis) const;
-
-
 
         #ifdef LD_ENABLE_IMGUI
         inline std::unique_ptr<Diligent::ImGuiImplDiligent>& GetImGuiImpl() {return m_pImGuiImpl;}
@@ -59,5 +62,6 @@ protected:
         #endif // LD_ENABLE_IMGUI
 
         LayerStack m_layer_stack;
+        EventPool m_EventPool;
 };
 }

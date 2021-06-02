@@ -1,12 +1,13 @@
 [submodule "ThirdParty/DiligentCore"]
 	path = ThirdParty/DiligentCore
-	url = https://github.com/DiligentGraphics/DiligentCore
+	url = https://github.com/Aquaticholic/DiligentCore
 [submodule "ThirdParty/DiligentFX"]
 	path = ThirdParty/DiligentFX
 	url = https://github.com/DiligentGraphics/DiligentFX
 [submodule "ThirdParty/spdlog"]
 	path = ThirdParty/spdlog
 	url = https://github.com/gabime/spdlog
+	branch = v1.x
 [submodule "ThirdParty/entt"]
 	path = ThirdParty/entt
 	url = https://github.com/skypjack/entt

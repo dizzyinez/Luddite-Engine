@@ -6,6 +6,7 @@
 
 #include "Primitives/interface/Errors.hpp"
 #include "Platforms/Basic/interface/DebugUtilities.hpp"
+#include "Common/interface/BasicMath.hpp"
 
 // #include "Common/include/pch.h"
 // #include "PlatformDefinitions.h"

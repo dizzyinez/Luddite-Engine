@@ -1,3 +1,5 @@
+#include "Luddite/Core/pch.hpp"
+#ifdef LD_PLATFORM_LINUX
 #include "Luddite/Platform/Window/GLXWindow.hpp"
 #include "Imgui/interface/ImGuiImplLinuxX11.hpp"
 
@@ -83,25 +85,24 @@ void GLXWindow::HandleEvents()
         }
 }
 
-bool GLXWindow::InitNativeEngineFactory()
-{
-        // auto* pFactoryOpenGL = GetEngineFactoryOpenGL();
-        // Renderer::GetEngineFactory() = pFactoryOpenGL;
-        // pFactoryOpenGL->CreateDeviceAndSwapChainGL
+// bool GLXWindow::InitNativeEngineFactory()
+// {
+//         // auto* pFactoryOpenGL = GetEngineFactoryOpenGL();
+//         // Renderer::GetEngineFactory() = pFactoryOpenGL;
+//         // pFactoryOpenGL->CreateDeviceAndSwapChainGL
 
 
-        // EngineGLCreateInfo EngineCI;
-        // EngineCI.Window.WindowId = NativeWindowHandle;
-        // EngineCI.Window.pDisplay = m_pDisplay;
+//         // EngineGLCreateInfo EngineCI;
+//         // EngineCI.Window.WindowId = NativeWindowHandle;
+//         // EngineCI.Window.pDisplay = m_pDisplay;
 
-        // pFactoryOpenGL->CreateDeviceAndSwapChainGL(EngineCI, &m_pDevice, &m_pImmediateContext, SCDesc, &m_pSwapChain);
-}
+//         // pFactoryOpenGL->CreateDeviceAndSwapChainGL(EngineCI, &m_pDevice, &m_pImmediateContext, SCDesc, &m_pSwapChain);
+// }
 
 void GLXWindow::InitGLXWindow(const std::string& title, int width, int height, int min_width, int min_height)
 {
         m_pDisplay = XOpenDisplay(0);
 
-        // clang-format off
         static int visual_attribs[] =
         {
                 GLX_RENDER_TYPE, GLX_RGBA_BIT,
@@ -123,7 +124,6 @@ void GLXWindow::InitGLXWindow(const std::string& title, int width, int height, i
                 GLX_SAMPLES, 1,
                 None
         };
-        // clang-format on
 
         int fbcount = 0;
         GLXFBConfig* fbc = glXChooseFBConfig(m_pDisplay, DefaultScreen(m_pDisplay), visual_attribs, &fbcount);
@@ -189,7 +189,6 @@ void GLXWindow::InitGLXWindow(const std::string& title, int width, int height, i
 
         int major_version = 4;
         int minor_version = 3;
-        // clang-format off
         static int context_attribs[] =
         {
                 GLX_CONTEXT_MAJOR_VERSION_ARB, major_version,
@@ -197,7 +196,6 @@ void GLXWindow::InitGLXWindow(const std::string& title, int width, int height, i
                 GLX_CONTEXT_FLAGS_ARB, Flags,
                 None
         };
-        // clang-format on
 
         m_Context = glXCreateContextAttribsARB(m_pDisplay, fbc[0], NULL, 1, context_attribs);
         if (!m_Context)
@@ -239,3 +237,5 @@ void GLXWindow::InitGLXWindow(const std::string& title, int width, int height, i
         XStoreName(m_pDisplay, m_Window, title.c_str());
 }
 }
+
+#endif // LD_PLATFORM_LINUX
