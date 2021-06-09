@@ -1,6 +1,6 @@
 #pragma once
 #include "Luddite/Core/pch.hpp"
-#include "Luddite/Core/Core.hpp"
+
 #ifdef LD_PLATFORM_WINDOWS
 void LUDDITE_API RedirectIOToConsole();
 

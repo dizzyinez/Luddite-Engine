@@ -2,6 +2,7 @@
 #include "Luddite/Core/pch.hpp"
 #include "Luddite/Core/Core.hpp"
 
+#include "Luddite/Graphics/DiligentInclude.hpp"
 #include "Luddite/Graphics/Texture.hpp"
 #include "Luddite/Graphics/QuadBatchRenderer.hpp"
 #include "Luddite/Graphics/PBRRenderer.hpp"
@@ -19,10 +20,10 @@ namespace Luddite
 // class LUDDITE_API Application;
 class LUDDITE_API Renderer
 {
-public:
+        public:
         static void Initialize();
         static void BeginScene();
-        static void SubmitMesh(BasicMeshHandle mesh);
+        static void SubmitMesh(BasicMeshHandle mesh, const glm::mat4& transform);
         static void EndScene();
         static void Draw(RenderTarget& render_target, const Camera& camera);
         static void Present();
@@ -41,9 +42,10 @@ public:
                                                  Diligent::TEXTURE_FORMAT depth_format = Diligent::TEX_FORMAT_D32_FLOAT);
         static void TransitionRenderTextureToRenderTarget(RenderTexture& RenderTexture);
         static void TransitionRenderTextureToShaderResource(RenderTexture& RenderTexture);
+        static void ReleaseBufferResources();
 
 
-private:
+        private:
         friend class Application;
         friend class Window;
         static void SetMatricies();
@@ -65,7 +67,7 @@ private:
 
         static inline struct RenderScene
         {
-                std::vector<BasicMeshHandle> meshes;
+                std::unordered_map<BasicMeshHandle, std::vector<glm::mat4> > m_BasicMeshes;
         } m_RenderScene;
 
         // Window* m_pWindow;

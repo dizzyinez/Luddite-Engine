@@ -1,30 +1,34 @@
 #pragma once
 #include "Luddite/Core/pch.hpp"
-#include "Luddite/Core/Core.hpp"
+#include "Luddite/ECS/World.hpp"
+#include "Luddite/Graphics/RenderTarget.hpp"
 
 namespace Luddite
 {
 class LUDDITE_API LayerStack;
 class LUDDITE_API Layer
 {
-public:
+        public:
         virtual ~Layer() {}
-protected:
+        protected:
         friend class LayerStack;
         virtual void Initialize() {}
         virtual void HandleEvents() {}
         virtual void Update(double delta_time) {}
-        virtual void Render(double alpha) {}
-        entt::registry m_Registry;
+        virtual void Render(double alpha, RenderTarget window_render_target) {}
+        virtual void RenderImGui(double alpha, RenderTarget window_render_target) {}
+        World m_World;
+        bool initialized;
 };
 class LUDDITE_API LayerStack
 {
-public:
+        public:
         void UpdateLayers(double delta_time);
-        void RenderLayers(double alpha);
+        void RenderLayers(double alpha, Luddite::RenderTarget window_render_target);
+        void RenderLayersImGui(double alpha, Luddite::RenderTarget window_render_target);
         void PushLayer(std::shared_ptr<Layer> layer);
         void PopLayer(std::shared_ptr<Layer> layer);
-private:
+        private:
         void UpdateStack();
         void DefferedPushLayer(std::shared_ptr<Layer> layer);
         void DefferedPopLayer(std::shared_ptr<Layer> layer);

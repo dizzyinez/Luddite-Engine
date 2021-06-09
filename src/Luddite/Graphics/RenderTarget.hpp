@@ -15,7 +15,9 @@ struct LUDDITE_API RenderTarget
         unsigned int height = 0;
         bool is_swap_chain_buffer = false;
         Diligent::SURFACE_TRANSFORM PreTransform = Diligent::SURFACE_TRANSFORM_IDENTITY;
-        glm::mat4 GetViewProjection(const Camera& camera) const;
+
+        glm::mat4 GetProjectionMatrix(const Camera& camera) const;
+        glm::mat4 GetViewMatrix(const Camera& camera) const;
 };
 struct LUDDITE_API RenderTexture
 {
@@ -23,9 +25,17 @@ struct LUDDITE_API RenderTexture
         inline Diligent::RefCntAutoPtr<Diligent::ITextureView> GetShaderResourceView() {return m_pSRV;}
         inline Diligent::RefCntAutoPtr<Diligent::ITextureView> GetDepthStencilView() {return m_pDSV;}
         inline RenderTarget& GetRenderTarget() {return m_RenderTarget;}
+        // RenderTexture& operator=(const RenderTexture& other)
+        // {
+        //         // m_pRTV.Release();
+        //         m_pRTV = other.m_pRTV;
+        //         m_pSRV = other.m_pSRV;
+        //         m_pDSV = other.m_pDSV;
+        //         return *this;
+        // }
         // Diligent::RefCntAutoPtr<Diligent::ITextureView> GetDepthShaderResourceSRV();
 
-private:
+        private:
         friend class Renderer;
         RenderTarget m_RenderTarget;
         // Diligent::RefCntAutoPtr<Diligent::IRenderDevice>  m_pDevice;

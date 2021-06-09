@@ -1,0 +1,70 @@
+{
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target"
+		],
+		"files" : 
+		[
+			"ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 361,
+				"parent" : 0
+			}
+		]
+	},
+	"folder" : 
+	{
+		"name" : "DiligentCore/ThirdParty/SPIRV-Tools"
+	},
+	"id" : "spirv-tools-shared-pkg-config::@3d46d0ec93984ca603b3",
+	"name" : "spirv-tools-shared-pkg-config",
+	"paths" : 
+	{
+		"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools",
+		"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"isGenerated" : true,
+			"path" : "build/ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/CMakeFiles/spirv-tools-shared-pkg-config",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/CMakeFiles/spirv-tools-shared-pkg-config.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

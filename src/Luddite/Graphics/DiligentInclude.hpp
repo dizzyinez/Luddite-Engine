@@ -27,8 +27,13 @@
 #include "Graphics/GraphicsEngine/interface/RenderDevice.h"
 #include "Graphics/GraphicsEngine/interface/DeviceContext.h"
 #include "Graphics/GraphicsEngine/interface/SwapChain.h"
+#include "Graphics/GraphicsEngine/interface/Texture.h"
 
 #include "Graphics/GraphicsTools/interface/DynamicTextureAtlas.h"
+#include "Graphics/GraphicsTools/interface/GraphicsUtilities.h"
+#include "TextureLoader/interface/TextureLoader.h"
+#include "TextureLoader/interface/TextureUtilities.h"
+
 
 //pointer
 #include "Common/interface/RefCntAutoPtr.hpp"

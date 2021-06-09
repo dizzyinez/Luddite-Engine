@@ -1,0 +1,84 @@
+{
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_custom_target",
+			"spvtools_extinst_lang_headers"
+		],
+		"files" : 
+		[
+			"ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 152,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 136,
+				"parent" : 1
+			}
+		]
+	},
+	"folder" : 
+	{
+		"name" : "DiligentCore/ThirdParty/SPIRV-Tools/SPIRV-Tools build"
+	},
+	"id" : "spirv-tools-header-DebugInfo::@b35941e5c33dcdb0337e",
+	"name" : "spirv-tools-header-DebugInfo",
+	"paths" : 
+	{
+		"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source",
+		"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"name" : "CMake Rules",
+			"sourceIndexes" : 
+			[
+				1,
+				2
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"isGenerated" : true,
+			"path" : "build/ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source/CMakeFiles/spirv-tools-header-DebugInfo",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source/CMakeFiles/spirv-tools-header-DebugInfo.rule",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 0,
+			"isGenerated" : true,
+			"path" : "build/ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/DebugInfo.h.rule",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "UTILITY"
+}

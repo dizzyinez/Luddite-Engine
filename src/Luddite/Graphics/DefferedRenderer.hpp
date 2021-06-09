@@ -16,35 +16,31 @@ namespace Luddite
 class LUDDITE_API Renderer;
 class LUDDITE_API DefferedRenderer
 {
-public:
+        public:
         enum class G_BUFFER_FLAGS : uint8_t
         {
                 COLOR = 1,
                 NORMAL = 2,
                 DEPTH = 4
         };
-private:
+        private:
         struct FrameBufferData
         {
                 Diligent::RefCntAutoPtr<Diligent::IFramebuffer> pFrameBuffer;
                 Diligent::RefCntAutoPtr<Diligent::ITexture> pOpenGLRenderTexture;
                 int SRBIndex;
         };
-public:
-        void Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevice> pDevice,
-                        Diligent::RefCntAutoPtr<Diligent::IDeviceContext> pImmediateContext,
-                        Diligent::TEXTURE_FORMAT ColorBufferFormat,
-                        Diligent::RefCntAutoPtr<Diligent::IShaderSourceInputStreamFactory> pShaderSourceFactory
-                        );
+        public:
+        void Initialize(Diligent::TEXTURE_FORMAT ColorBufferFormat);
 
         void OnWindowResize(int width, int height);
-        inline void SetViewProjMatrix(const glm::mat4& matrix) {m_ViewProjMatrix = matrix;}
+        // inline void SetViewProjMatrix(const glm::mat4& matrix) {m_ViewProjMatrix = matrix;}
         void PrepareDraw(RenderTarget& render_target);
         void ApplyLighting();
         void FinalizeDraw();
         DefferedPipelineState BasicShaderPipeline;
         DefferedLightingPipelineState EnvironmentalLightingPipeline;
-private:
+        private:
         friend class Renderer;
         void CreateRenderPass(Diligent::TEXTURE_FORMAT RTVFormat);
         FrameBufferData* GetCurrentFramebufferData();
@@ -52,14 +48,10 @@ private:
         void ReleaseWindowResources();
 
         RenderTarget m_pCurrentRenderTarget;
-
-        Diligent::RefCntAutoPtr<Diligent::IRenderDevice> m_pDevice;
-        Diligent::RefCntAutoPtr<Diligent::IDeviceContext> m_pImmediateContext;
-        Diligent::RefCntAutoPtr<Diligent::IShaderSourceInputStreamFactory> m_pShaderSourceFactory;
         FrameBufferData* m_DrawPeriodFrameBufferData;
 
         Diligent::RefCntAutoPtr<Diligent::IRenderPass> m_pRenderPass;
-        glm::mat4 m_ViewProjMatrix;
+        // glm::mat4 m_ViewProjMatrix;
         std::unordered_map<Diligent::ITextureView*, FrameBufferData> m_FramebufferCache;
 
         #ifdef LD_PLATFORM_DESKTOP

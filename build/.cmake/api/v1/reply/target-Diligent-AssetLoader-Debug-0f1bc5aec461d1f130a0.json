@@ -1,0 +1,283 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "ThirdParty/DiligentTools/AssetLoader/libDiligent-AssetLoader.a"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"target_link_libraries",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"ThirdParty/DiligentTools/AssetLoader/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 21,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 35,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 24,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -fPIC -g -fPIC -fvisibility=hidden -fvisibility-inlines-hidden"
+				},
+				{
+					"fragment" : "-std=c++14"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 2,
+					"define" : "D3D11_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "D3D12_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DILIGENT_DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DILIGENT_DEVELOPMENT"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "GLES_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "GL_SUPPORTED=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "METAL_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "PLATFORM_LINUX=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "VULKAN_SUPPORTED=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "_DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "__forceinline=inline"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 3,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentTools/AssetLoader/interface"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentTools/AssetLoader/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Common/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/Linux/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/Basic/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Primitives/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsEngine/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsAccessories/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsTools/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentTools/TextureLoader/interface"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-Primitives::@f4a6de4feb48bb4fb172"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-BasicPlatform::@760b174ea397fc9846bf"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-LinuxPlatform::@52630ed17942c0730333"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-Common::@6638c40ea799aa0aaff2"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-GraphicsAccessories::@d5b1a2200193ade104d8"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-GraphicsTools::@f49ae3a318cd187f391c"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "LibJpeg::@951d41a053d54b51d148"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "LibTiff::@ba49864e3e5bb8bd990a"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "ZLib::@c328416e4da7a3f60c1c"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "LibPng::@6c56f4c4ccf6b65beeef"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-TextureLoader::@5fded19d797de2e57b9a"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "DiligentTools"
+	},
+	"id" : "Diligent-AssetLoader::@e7dda97e45a54fb15228",
+	"name" : "Diligent-AssetLoader",
+	"nameOnDisk" : "libDiligent-AssetLoader.a",
+	"paths" : 
+	{
+		"build" : "ThirdParty/DiligentTools/AssetLoader",
+		"source" : "ThirdParty/DiligentTools/AssetLoader"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "source",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2
+			]
+		},
+		{
+			"name" : "interface",
+			"sourceIndexes" : 
+			[
+				3,
+				4,
+				5
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentTools/AssetLoader/src/GLTFLoader.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentTools/AssetLoader/src/DXSDKMeshLoader.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentTools/AssetLoader/src/GLTFResourceManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentTools/AssetLoader/interface/GLTFLoader.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentTools/AssetLoader/interface/DXSDKMeshLoader.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentTools/AssetLoader/interface/GLTFResourceManager.hpp",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

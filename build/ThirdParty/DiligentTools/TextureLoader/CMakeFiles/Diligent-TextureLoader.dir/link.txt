@@ -1,0 +1,2 @@
+/bin/x86_64-linux-gnu-ar qc libDiligent-TextureLoader.a CMakeFiles/Diligent-TextureLoader.dir/src/DDSLoader.cpp.o CMakeFiles/Diligent-TextureLoader.dir/src/JPEGCodec.c.o CMakeFiles/Diligent-TextureLoader.dir/src/Image.cpp.o CMakeFiles/Diligent-TextureLoader.dir/src/KTXLoader.cpp.o CMakeFiles/Diligent-TextureLoader.dir/src/PNGCodec.c.o CMakeFiles/Diligent-TextureLoader.dir/src/TextureLoader.cpp.o CMakeFiles/Diligent-TextureLoader.dir/src/TextureUtilities.cpp.o
+/bin/x86_64-linux-gnu-ranlib libDiligent-TextureLoader.a

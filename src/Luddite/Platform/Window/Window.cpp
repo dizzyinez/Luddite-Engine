@@ -16,7 +16,7 @@ void Window::OnWindowResize(int width, int height)
 
 void Window::SwapBuffers()
 {
-        m_pSwapChain->Present();
+        m_pSwapChain->Present(m_Vsync ? 1 : 0);
 }
 
 void Window::HandleEvents()

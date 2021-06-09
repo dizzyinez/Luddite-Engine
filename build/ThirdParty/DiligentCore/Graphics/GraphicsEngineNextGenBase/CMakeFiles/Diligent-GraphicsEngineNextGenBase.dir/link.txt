@@ -1,0 +1,2 @@
+/bin/x86_64-linux-gnu-ar qc libDiligent-GraphicsEngineNextGenBase.a CMakeFiles/Diligent-GraphicsEngineNextGenBase.dir/src/dummy.cpp.o
+/bin/x86_64-linux-gnu-ranlib libDiligent-GraphicsEngineNextGenBase.a

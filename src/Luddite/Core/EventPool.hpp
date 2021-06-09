@@ -74,7 +74,7 @@ private:
                 for (auto pair : m_EventMap)
                         pair.second->Clear();
         }
-        std::unordered_map<EventID, EventList<BaseEvent>* > m_EventMap;
+        std::unordered_map<EventIDType, EventList<BaseEvent>* > m_EventMap;
         // mutable std::mutex m_Mutex;
 };
 }

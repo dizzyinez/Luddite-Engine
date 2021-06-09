@@ -24,7 +24,7 @@ public:
         XCBWindow(const std::string& title = "Luddite Engine Application", int width = 1024, int height = 768, int min_width = 320, int min_height = 240);
         ~XCBWindow() override;
         void SetTitle(const std::string& title) override;
-        void HandleEvents() override;
+        void PollEvents() override;
 
         static bool InitNativeEngineFactory();
 private:

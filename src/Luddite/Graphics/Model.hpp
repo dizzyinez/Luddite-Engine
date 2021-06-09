@@ -29,12 +29,12 @@ struct LUDDITE_API BasicModel
         std::string name;
         std::vector<BasicMeshHandle> meshes;
 };
-typedef std::shared_ptr<BasicModel> BasicModelHandle;
+using BasicModelHandle = std::shared_ptr<BasicModel>;
 
 class LUDDITE_API BasicModelLibrary : public BasicAllocator<BasicModel, std::string>
 {
-public:
+        public:
         // BasicModelHandle Allocate(const std::string& id) override;
-private:
+        private:
 };
 }

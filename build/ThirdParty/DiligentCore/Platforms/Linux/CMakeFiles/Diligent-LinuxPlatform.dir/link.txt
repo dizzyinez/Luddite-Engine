@@ -1,0 +1,2 @@
+/bin/x86_64-linux-gnu-ar qc libDiligent-LinuxPlatform.a CMakeFiles/Diligent-LinuxPlatform.dir/src/LinuxDebug.cpp.o CMakeFiles/Diligent-LinuxPlatform.dir/src/LinuxFileSystem.cpp.o
+/bin/x86_64-linux-gnu-ranlib libDiligent-LinuxPlatform.a

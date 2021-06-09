@@ -1,0 +1,206 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "ThirdParty/DiligentCore/ThirdParty/glslang/hlsl/libHLSL.a"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"install",
+			"add_compile_options"
+		],
+		"files" : 
+		[
+			"ThirdParty/DiligentCore/ThirdParty/glslang/hlsl/CMakeLists.txt",
+			"ThirdParty/DiligentCore/ThirdParty/CMakeLists.txt",
+			"ThirdParty/DiligentCore/ThirdParty/glslang/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 40,
+				"parent" : 0
+			},
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 93,
+				"parent" : 2
+			},
+			{
+				"file" : 2
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 152,
+				"parent" : 4
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 154,
+				"parent" : 4
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 156,
+				"parent" : 4
+			},
+			{
+				"command" : 2,
+				"file" : 2,
+				"line" : 162,
+				"parent" : 4
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -fPIC -g -fPIC -fvisibility=hidden -fvisibility-inlines-hidden"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wall"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wmaybe-uninitialized"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wuninitialized"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wunused"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wunused-local-typedefs"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wunused-parameter"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wunused-value"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wunused-variable"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wunused-but-set-parameter"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-Wunused-but-set-variable"
+				},
+				{
+					"backtrace" : 5,
+					"fragment" : "-fno-exceptions"
+				},
+				{
+					"backtrace" : 6,
+					"fragment" : "-Wno-reorder"
+				},
+				{
+					"backtrace" : 7,
+					"fragment" : "-fno-rtti"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "-Werror=deprecated-copy"
+				},
+				{
+					"fragment" : "-std=c++11"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"define" : "ENABLE_HLSL"
+				},
+				{
+					"define" : "ENABLE_OPT=1"
+				},
+				{
+					"define" : "GLSLANG_OSINCLUDE_UNIX"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"folder" : 
+	{
+		"name" : "DiligentCore/ThirdParty/glslang/hlsl"
+	},
+	"id" : "HLSL::@22835f866e579754f94a",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 3,
+				"path" : "lib/ThirdParty/DiligentCore/Debug"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "/usr/local"
+		}
+	},
+	"name" : "HLSL",
+	"nameOnDisk" : "libHLSL.a",
+	"paths" : 
+	{
+		"build" : "ThirdParty/DiligentCore/ThirdParty/glslang/hlsl",
+		"source" : "ThirdParty/DiligentCore/ThirdParty/glslang/hlsl"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/ThirdParty/glslang/hlsl/stub.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

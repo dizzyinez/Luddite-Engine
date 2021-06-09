@@ -1,0 +1,383 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/libDiligent-GraphicsTools.a"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"target_link_libraries",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"ThirdParty/DiligentCore/Graphics/GraphicsTools/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 51,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 60,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 53,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -fPIC -g -fPIC -fvisibility=hidden -fvisibility-inlines-hidden"
+				},
+				{
+					"fragment" : "-std=c++14"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 2,
+					"define" : "D3D11_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "D3D12_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DILIGENT_DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DILIGENT_DEVELOPMENT"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "GLES_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "GL_SUPPORTED=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "METAL_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "PLATFORM_LINUX=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "VULKAN_SUPPORTED=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "_DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "__forceinline=inline"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 3,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsTools/interface"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsTools/../GraphicsEngineD3DBase/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Common/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/Linux/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/Basic/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Primitives/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsAccessories/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsEngine/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsEngineOpenGL/interface"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-Primitives::@f4a6de4feb48bb4fb172"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-BasicPlatform::@760b174ea397fc9846bf"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-LinuxPlatform::@52630ed17942c0730333"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-Common::@6638c40ea799aa0aaff2"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-GraphicsAccessories::@d5b1a2200193ade104d8"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "DiligentCore/Graphics"
+	},
+	"id" : "Diligent-GraphicsTools::@f49ae3a318cd187f391c",
+	"name" : "Diligent-GraphicsTools",
+	"nameOnDisk" : "libDiligent-GraphicsTools.a",
+	"paths" : 
+	{
+		"build" : "ThirdParty/DiligentCore/Graphics/GraphicsTools",
+		"source" : "ThirdParty/DiligentCore/Graphics/GraphicsTools"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "src",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9
+			]
+		},
+		{
+			"name" : "interface",
+			"sourceIndexes" : 
+			[
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/src/BufferSuballocator.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/src/DurationQueryHelper.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/src/DynamicBuffer.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/src/DynamicTextureAtlas.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/src/GraphicsUtilities.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/src/ScopedQueryHelper.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/src/ScreenCapture.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/src/TextureUploader.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/src/TextureUploaderD3D12_Vk.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/src/TextureUploaderGL.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/BufferSuballocator.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/CommonlyUsedStates.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/DynamicBuffer.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/DynamicTextureAtlas.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/DurationQueryHelper.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/GraphicsUtilities.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/MapHelper.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/ScopedQueryHelper.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/ScreenCapture.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/ShaderMacroHelper.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/StreamingBuffer.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/TextureUploader.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/TextureUploaderBase.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/TextureUploaderD3D12_Vk.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsTools/interface/TextureUploaderGL.hpp",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

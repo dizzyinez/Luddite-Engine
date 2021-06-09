@@ -1,0 +1,2021 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						50,
+						56,
+						68,
+						69
+					],
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						31
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore",
+					"childIndexes" : 
+					[
+						2,
+						34,
+						36,
+						37,
+						40,
+						41
+					],
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "ThirdParty/DiligentCore",
+					"targetIndexes" : 
+					[
+						18,
+						19
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty",
+					"childIndexes" : 
+					[
+						3,
+						4,
+						26,
+						33
+					],
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "ThirdParty/DiligentCore/ThirdParty"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/glew",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.3"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 2,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/glew",
+					"targetIndexes" : 
+					[
+						47
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools",
+					"childIndexes" : 
+					[
+						5,
+						6,
+						11,
+						13,
+						24
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools",
+					"targetIndexes" : 
+					[
+						54,
+						55
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/external",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 4,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/external"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source",
+					"childIndexes" : 
+					[
+						7,
+						8,
+						9,
+						10
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 4,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source",
+					"targetIndexes" : 
+					[
+						39,
+						40,
+						44,
+						45,
+						46,
+						51,
+						52,
+						53,
+						56,
+						57,
+						58,
+						59,
+						60,
+						61,
+						62,
+						63
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source/opt",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source/opt",
+					"targetIndexes" : 
+					[
+						37
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source/reduce",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source/reduce",
+					"targetIndexes" : 
+					[
+						38
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source/fuzz",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source/fuzz"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source/link",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 6,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/source/link",
+					"targetIndexes" : 
+					[
+						36
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/tools",
+					"childIndexes" : 
+					[
+						12
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 4,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/tools"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/tools/emacs",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 11,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/tools/emacs"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test",
+					"childIndexes" : 
+					[
+						14,
+						15,
+						18,
+						19,
+						20,
+						22,
+						23
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 4,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/link",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 13,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/link"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/opt",
+					"childIndexes" : 
+					[
+						16,
+						17
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 13,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/opt"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/opt/dominator_tree",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 15,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/opt/dominator_tree"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/opt/loop_optimizations",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 15,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/opt/loop_optimizations"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/reduce",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 13,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/reduce"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/fuzz",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 13,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/fuzz"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/tools",
+					"childIndexes" : 
+					[
+						21
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 13,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/tools"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/opt",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 20,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/tools/opt"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/util",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 13,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/util"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/val",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 13,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/test/val"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/examples",
+					"childIndexes" : 
+					[
+						25
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 4,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/examples"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/examples/cpp-interface",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 24,
+					"projectIndex" : 3,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/examples/cpp-interface"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/glslang",
+					"childIndexes" : 
+					[
+						27,
+						28,
+						30,
+						31,
+						32
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 4,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/glslang"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/glslang/External",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 26,
+					"projectIndex" : 4,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/glslang/External"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/glslang/glslang",
+					"childIndexes" : 
+					[
+						29
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 26,
+					"projectIndex" : 4,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/glslang/glslang",
+					"targetIndexes" : 
+					[
+						25,
+						32,
+						48
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/glslang/glslang/OSDependent/Unix",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 28,
+					"projectIndex" : 4,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/glslang/glslang/OSDependent/Unix",
+					"targetIndexes" : 
+					[
+						34
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/glslang/OGLCompilersDLL",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 26,
+					"projectIndex" : 4,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/glslang/OGLCompilersDLL",
+					"targetIndexes" : 
+					[
+						33
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/glslang/SPIRV",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 26,
+					"projectIndex" : 4,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/glslang/SPIRV",
+					"targetIndexes" : 
+					[
+						35
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/glslang/hlsl",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"parentIndex" : 26,
+					"projectIndex" : 4,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/glslang/hlsl",
+					"targetIndexes" : 
+					[
+						26
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Cross",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0"
+					},
+					"parentIndex" : 2,
+					"projectIndex" : 5,
+					"source" : "ThirdParty/DiligentCore/ThirdParty/SPIRV-Cross",
+					"targetIndexes" : 
+					[
+						50
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/BuildTools",
+					"childIndexes" : 
+					[
+						35
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.3"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "ThirdParty/DiligentCore/BuildTools"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/BuildTools/File2Include",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 34,
+					"projectIndex" : 6,
+					"source" : "ThirdParty/DiligentCore/BuildTools/File2Include",
+					"targetIndexes" : 
+					[
+						24
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Primitives",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 7,
+					"source" : "ThirdParty/DiligentCore/Primitives",
+					"targetIndexes" : 
+					[
+						15
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Platforms",
+					"childIndexes" : 
+					[
+						38,
+						39
+					],
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "ThirdParty/DiligentCore/Platforms"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Platforms/Basic",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 37,
+					"projectIndex" : 8,
+					"source" : "ThirdParty/DiligentCore/Platforms/Basic",
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Platforms/Linux",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 37,
+					"projectIndex" : 9,
+					"source" : "ThirdParty/DiligentCore/Platforms/Linux",
+					"targetIndexes" : 
+					[
+						13
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Common",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 10,
+					"source" : "ThirdParty/DiligentCore/Common",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Graphics",
+					"childIndexes" : 
+					[
+						42,
+						43,
+						44,
+						45,
+						46,
+						47,
+						48,
+						49
+					],
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 1,
+					"projectIndex" : 1,
+					"source" : "ThirdParty/DiligentCore/Graphics"
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Graphics/GraphicsAccessories",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 41,
+					"projectIndex" : 11,
+					"source" : "ThirdParty/DiligentCore/Graphics/GraphicsAccessories",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Graphics/GraphicsEngine",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 41,
+					"projectIndex" : 12,
+					"source" : "ThirdParty/DiligentCore/Graphics/GraphicsEngine",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Graphics/HLSL2GLSLConverterLib",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 41,
+					"projectIndex" : 13,
+					"source" : "ThirdParty/DiligentCore/Graphics/HLSL2GLSLConverterLib",
+					"targetIndexes" : 
+					[
+						11
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Graphics/ShaderTools",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 41,
+					"projectIndex" : 14,
+					"source" : "ThirdParty/DiligentCore/Graphics/ShaderTools",
+					"targetIndexes" : 
+					[
+						16
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineNextGenBase",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 41,
+					"projectIndex" : 15,
+					"source" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineNextGenBase",
+					"targetIndexes" : 
+					[
+						5
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 41,
+					"projectIndex" : 16,
+					"source" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan",
+					"targetIndexes" : 
+					[
+						8,
+						9
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineOpenGL",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.3"
+					},
+					"parentIndex" : 41,
+					"projectIndex" : 17,
+					"source" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineOpenGL",
+					"targetIndexes" : 
+					[
+						6,
+						7
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentCore/Graphics/GraphicsTools",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 41,
+					"projectIndex" : 18,
+					"source" : "ThirdParty/DiligentCore/Graphics/GraphicsTools",
+					"targetIndexes" : 
+					[
+						10
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentFX",
+					"childIndexes" : 
+					[
+						51,
+						52,
+						53,
+						55
+					],
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 19,
+					"source" : "ThirdParty/DiligentFX",
+					"targetIndexes" : 
+					[
+						20,
+						21
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentFX/Utilities",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 50,
+					"projectIndex" : 19,
+					"source" : "ThirdParty/DiligentFX/Utilities"
+				},
+				{
+					"build" : "ThirdParty/DiligentFX/Components",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 50,
+					"projectIndex" : 19,
+					"source" : "ThirdParty/DiligentFX/Components"
+				},
+				{
+					"build" : "ThirdParty/DiligentFX/PostProcess",
+					"childIndexes" : 
+					[
+						54
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 50,
+					"projectIndex" : 19,
+					"source" : "ThirdParty/DiligentFX/PostProcess"
+				},
+				{
+					"build" : "ThirdParty/DiligentFX/PostProcess/EpipolarLightScattering",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 53,
+					"projectIndex" : 19,
+					"source" : "ThirdParty/DiligentFX/PostProcess/EpipolarLightScattering"
+				},
+				{
+					"build" : "ThirdParty/DiligentFX/GLTF_PBR_Renderer",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 50,
+					"projectIndex" : 19,
+					"source" : "ThirdParty/DiligentFX/GLTF_PBR_Renderer"
+				},
+				{
+					"build" : "ThirdParty/DiligentTools",
+					"childIndexes" : 
+					[
+						57,
+						62,
+						63,
+						64,
+						65,
+						67
+					],
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "ThirdParty/DiligentTools",
+					"targetIndexes" : 
+					[
+						22,
+						23
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentTools/ThirdParty",
+					"childIndexes" : 
+					[
+						58,
+						59,
+						60,
+						61
+					],
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 56,
+					"projectIndex" : 0,
+					"source" : "ThirdParty/DiligentTools/ThirdParty"
+				},
+				{
+					"build" : "ThirdParty/DiligentTools/ThirdParty/libjpeg-9a",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 57,
+					"projectIndex" : 20,
+					"source" : "ThirdParty/DiligentTools/ThirdParty/libjpeg-9a",
+					"targetIndexes" : 
+					[
+						28
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentTools/ThirdParty/libtiff",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 57,
+					"projectIndex" : 21,
+					"source" : "ThirdParty/DiligentTools/ThirdParty/libtiff",
+					"targetIndexes" : 
+					[
+						30
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentTools/ThirdParty/zlib-1.2.8",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 57,
+					"projectIndex" : 22,
+					"source" : "ThirdParty/DiligentTools/ThirdParty/zlib-1.2.8",
+					"targetIndexes" : 
+					[
+						43
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentTools/ThirdParty/lpng-1.6.17",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 57,
+					"projectIndex" : 23,
+					"source" : "ThirdParty/DiligentTools/ThirdParty/lpng-1.6.17",
+					"targetIndexes" : 
+					[
+						29
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentTools/TextureLoader",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 56,
+					"projectIndex" : 24,
+					"source" : "ThirdParty/DiligentTools/TextureLoader",
+					"targetIndexes" : 
+					[
+						17
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentTools/AssetLoader",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 56,
+					"projectIndex" : 25,
+					"source" : "ThirdParty/DiligentTools/AssetLoader",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentTools/Imgui",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 56,
+					"projectIndex" : 26,
+					"source" : "ThirdParty/DiligentTools/Imgui",
+					"targetIndexes" : 
+					[
+						12
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentTools/NativeApp",
+					"childIndexes" : 
+					[
+						66
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 56,
+					"projectIndex" : 27,
+					"source" : "ThirdParty/DiligentTools/NativeApp",
+					"targetIndexes" : 
+					[
+						14
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentTools/NativeApp/Linux",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 65,
+					"projectIndex" : 28,
+					"source" : "ThirdParty/DiligentTools/NativeApp/Linux",
+					"targetIndexes" : 
+					[
+						42
+					]
+				},
+				{
+					"build" : "ThirdParty/DiligentTools/HLSL2GLSLConverter",
+					"hasInstallRule" : true,
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 56,
+					"projectIndex" : 29,
+					"source" : "ThirdParty/DiligentTools/HLSL2GLSLConverter",
+					"targetIndexes" : 
+					[
+						27
+					]
+				},
+				{
+					"build" : "ThirdParty/spdlog",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.10"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 30,
+					"source" : "ThirdParty/spdlog",
+					"targetIndexes" : 
+					[
+						49
+					]
+				},
+				{
+					"build" : "Apps",
+					"childIndexes" : 
+					[
+						70
+					],
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "Apps"
+				},
+				{
+					"build" : "Apps/TestApp",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.6"
+					},
+					"parentIndex" : 69,
+					"projectIndex" : 31,
+					"source" : "Apps/TestApp",
+					"targetIndexes" : 
+					[
+						41
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						19,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25,
+						26,
+						27,
+						29,
+						30,
+						31
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						56,
+						57,
+						69
+					],
+					"name" : "Luddite-Engine",
+					"targetIndexes" : 
+					[
+						22,
+						23,
+						31
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18
+					],
+					"directoryIndexes" : 
+					[
+						1,
+						2,
+						34,
+						37,
+						41
+					],
+					"name" : "DiligentCore",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						18,
+						19
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "glew-static",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						47
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25
+					],
+					"name" : "spirv-tools",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						36,
+						37,
+						38,
+						39,
+						40,
+						44,
+						45,
+						46,
+						51,
+						52,
+						53,
+						54,
+						55,
+						56,
+						57,
+						58,
+						59,
+						60,
+						61,
+						62,
+						63
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						26,
+						27,
+						28,
+						29,
+						30,
+						31,
+						32
+					],
+					"name" : "glslang",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						25,
+						26,
+						32,
+						33,
+						34,
+						35,
+						48
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						33
+					],
+					"name" : "SPIRV-Cross",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						50
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						35
+					],
+					"name" : "File2Include",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						24
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						36
+					],
+					"name" : "Diligent-Primitives",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						15
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						38
+					],
+					"name" : "Diligent-BasicPlatform",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						1
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						39
+					],
+					"name" : "Diligent-LinuxPlatform",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						13
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						40
+					],
+					"name" : "Diligent-Common",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						42
+					],
+					"name" : "Diligent-GraphicsAccessories",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						43
+					],
+					"name" : "Diligent-GraphicsEngine",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						44
+					],
+					"name" : "Diligent-HLSL2GLSLConverterLib",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						11
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						45
+					],
+					"name" : "Diligent-ShaderTools",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						16
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						46
+					],
+					"name" : "Diligent-GraphicsEngineNextGenBase",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						5
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						47
+					],
+					"name" : "Diligent-GraphicsEngineVk",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						8,
+						9
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						48
+					],
+					"name" : "Diligent-GraphicsEngineOpenGL",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						6,
+						7
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						49
+					],
+					"name" : "Diligent-GraphicsTools",
+					"parentIndex" : 1,
+					"targetIndexes" : 
+					[
+						10
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						50,
+						51,
+						52,
+						53,
+						54,
+						55
+					],
+					"name" : "DiligentFX",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						20,
+						21
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						58
+					],
+					"name" : "LibJpeg",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						28
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						59
+					],
+					"name" : "LibTiff",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						30
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						60
+					],
+					"name" : "ZLib",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						43
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						61
+					],
+					"name" : "LibPng",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						29
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						62
+					],
+					"name" : "Diligent-TextureLoader",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						17
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						63
+					],
+					"name" : "Diligent-AssetLoader",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						64
+					],
+					"name" : "Diligent-Imgui",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						12
+					]
+				},
+				{
+					"childIndexes" : 
+					[
+						28
+					],
+					"directoryIndexes" : 
+					[
+						65
+					],
+					"name" : "Diligent-NativeAppBase",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						14
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						66
+					],
+					"name" : "XCBKeySyms",
+					"parentIndex" : 27,
+					"targetIndexes" : 
+					[
+						42
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						67
+					],
+					"name" : "HLSL2GLSLConverter",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						27
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						68
+					],
+					"name" : "spdlog",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						49
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						70
+					],
+					"name" : "TestApp",
+					"parentIndex" : 0,
+					"targetIndexes" : 
+					[
+						41
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 63,
+					"id" : "Diligent-AssetLoader::@e7dda97e45a54fb15228",
+					"jsonFile" : "target-Diligent-AssetLoader-Debug-0f1bc5aec461d1f130a0.json",
+					"name" : "Diligent-AssetLoader",
+					"projectIndex" : 25
+				},
+				{
+					"directoryIndex" : 38,
+					"id" : "Diligent-BasicPlatform::@760b174ea397fc9846bf",
+					"jsonFile" : "target-Diligent-BasicPlatform-Debug-8409a15ccd259441627b.json",
+					"name" : "Diligent-BasicPlatform",
+					"projectIndex" : 8
+				},
+				{
+					"directoryIndex" : 40,
+					"id" : "Diligent-Common::@6638c40ea799aa0aaff2",
+					"jsonFile" : "target-Diligent-Common-Debug-e9a5d1b1eba25efbbfc6.json",
+					"name" : "Diligent-Common",
+					"projectIndex" : 10
+				},
+				{
+					"directoryIndex" : 42,
+					"id" : "Diligent-GraphicsAccessories::@d5b1a2200193ade104d8",
+					"jsonFile" : "target-Diligent-GraphicsAccessories-Debug-9da4159714d98c8b8404.json",
+					"name" : "Diligent-GraphicsAccessories",
+					"projectIndex" : 11
+				},
+				{
+					"directoryIndex" : 43,
+					"id" : "Diligent-GraphicsEngine::@63b5886d55cfc461769a",
+					"jsonFile" : "target-Diligent-GraphicsEngine-Debug-354ce10d0bb50a470d30.json",
+					"name" : "Diligent-GraphicsEngine",
+					"projectIndex" : 12
+				},
+				{
+					"directoryIndex" : 46,
+					"id" : "Diligent-GraphicsEngineNextGenBase::@2fb165032eb1626e7f80",
+					"jsonFile" : "target-Diligent-GraphicsEngineNextGenBase-Debug-5af40e75b3dded03aca1.json",
+					"name" : "Diligent-GraphicsEngineNextGenBase",
+					"projectIndex" : 15
+				},
+				{
+					"directoryIndex" : 48,
+					"id" : "Diligent-GraphicsEngineOpenGL-shared::@e4d85f5206cfbed7dd73",
+					"jsonFile" : "target-Diligent-GraphicsEngineOpenGL-shared-Debug-db39977ab415e0fb50b4.json",
+					"name" : "Diligent-GraphicsEngineOpenGL-shared",
+					"projectIndex" : 17
+				},
+				{
+					"directoryIndex" : 48,
+					"id" : "Diligent-GraphicsEngineOpenGL-static::@e4d85f5206cfbed7dd73",
+					"jsonFile" : "target-Diligent-GraphicsEngineOpenGL-static-Debug-ab0197ca49ea5bec28de.json",
+					"name" : "Diligent-GraphicsEngineOpenGL-static",
+					"projectIndex" : 17
+				},
+				{
+					"directoryIndex" : 47,
+					"id" : "Diligent-GraphicsEngineVk-shared::@8781b1cb1dc37e0bcdd7",
+					"jsonFile" : "target-Diligent-GraphicsEngineVk-shared-Debug-9de0c7034527b3a36de9.json",
+					"name" : "Diligent-GraphicsEngineVk-shared",
+					"projectIndex" : 16
+				},
+				{
+					"directoryIndex" : 47,
+					"id" : "Diligent-GraphicsEngineVk-static::@8781b1cb1dc37e0bcdd7",
+					"jsonFile" : "target-Diligent-GraphicsEngineVk-static-Debug-f38eb94f269e30e46af1.json",
+					"name" : "Diligent-GraphicsEngineVk-static",
+					"projectIndex" : 16
+				},
+				{
+					"directoryIndex" : 49,
+					"id" : "Diligent-GraphicsTools::@f49ae3a318cd187f391c",
+					"jsonFile" : "target-Diligent-GraphicsTools-Debug-06347ddaf85ec0a13ec5.json",
+					"name" : "Diligent-GraphicsTools",
+					"projectIndex" : 18
+				},
+				{
+					"directoryIndex" : 44,
+					"id" : "Diligent-HLSL2GLSLConverterLib::@7d3e0fd90da137017873",
+					"jsonFile" : "target-Diligent-HLSL2GLSLConverterLib-Debug-340a9bdbd4df3c1cc404.json",
+					"name" : "Diligent-HLSL2GLSLConverterLib",
+					"projectIndex" : 13
+				},
+				{
+					"directoryIndex" : 64,
+					"id" : "Diligent-Imgui::@611776c0eea705495c2d",
+					"jsonFile" : "target-Diligent-Imgui-Debug-87290b0e12d82d2c144f.json",
+					"name" : "Diligent-Imgui",
+					"projectIndex" : 26
+				},
+				{
+					"directoryIndex" : 39,
+					"id" : "Diligent-LinuxPlatform::@52630ed17942c0730333",
+					"jsonFile" : "target-Diligent-LinuxPlatform-Debug-6daa3fe88e3dd5f89721.json",
+					"name" : "Diligent-LinuxPlatform",
+					"projectIndex" : 9
+				},
+				{
+					"directoryIndex" : 65,
+					"id" : "Diligent-NativeAppBase::@3c536b2297da1932e65a",
+					"jsonFile" : "target-Diligent-NativeAppBase-Debug-0aa1435c4cdcea6a31f9.json",
+					"name" : "Diligent-NativeAppBase",
+					"projectIndex" : 27
+				},
+				{
+					"directoryIndex" : 36,
+					"id" : "Diligent-Primitives::@f4a6de4feb48bb4fb172",
+					"jsonFile" : "target-Diligent-Primitives-Debug-bbd60646d2e91e3d005b.json",
+					"name" : "Diligent-Primitives",
+					"projectIndex" : 7
+				},
+				{
+					"directoryIndex" : 45,
+					"id" : "Diligent-ShaderTools::@d97e4251a115f97ec223",
+					"jsonFile" : "target-Diligent-ShaderTools-Debug-9f49579e7b5c503d4e4c.json",
+					"name" : "Diligent-ShaderTools",
+					"projectIndex" : 14
+				},
+				{
+					"directoryIndex" : 62,
+					"id" : "Diligent-TextureLoader::@5fded19d797de2e57b9a",
+					"jsonFile" : "target-Diligent-TextureLoader-Debug-bd8756cfb552c56d48e2.json",
+					"name" : "Diligent-TextureLoader",
+					"projectIndex" : 24
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "DiligentCore-ValidateFormatting::@baafc17c9859e2e79548",
+					"jsonFile" : "target-DiligentCore-ValidateFormatting-Debug-12ad20957ea7035e6ab7.json",
+					"name" : "DiligentCore-ValidateFormatting",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "DiligentCore-static::@baafc17c9859e2e79548",
+					"jsonFile" : "target-DiligentCore-static-Debug-a4f4bd43eec7c45a2cfa.json",
+					"name" : "DiligentCore-static",
+					"projectIndex" : 1
+				},
+				{
+					"directoryIndex" : 50,
+					"id" : "DiligentFX::@3ed4225707f7604457ed",
+					"jsonFile" : "target-DiligentFX-Debug-46b014dd2aa8933cc2b8.json",
+					"name" : "DiligentFX",
+					"projectIndex" : 19
+				},
+				{
+					"directoryIndex" : 50,
+					"id" : "DiligentFX-ValidateFormatting::@3ed4225707f7604457ed",
+					"jsonFile" : "target-DiligentFX-ValidateFormatting-Debug-43911d2bef3d283f4b8b.json",
+					"name" : "DiligentFX-ValidateFormatting",
+					"projectIndex" : 19
+				},
+				{
+					"directoryIndex" : 56,
+					"id" : "DiligentTools-ValidateFormatting::@84bb70f75bca02a1bf18",
+					"jsonFile" : "target-DiligentTools-ValidateFormatting-Debug-33ef6690e91909478dcb.json",
+					"name" : "DiligentTools-ValidateFormatting",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 56,
+					"id" : "DiligentTools-static::@84bb70f75bca02a1bf18",
+					"jsonFile" : "target-DiligentTools-static-Debug-cee19b3726ee57e0b6d8.json",
+					"name" : "DiligentTools-static",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 35,
+					"id" : "File2String::@a6edb673703dc4e3d61d",
+					"jsonFile" : "target-File2String-Debug-f07fea33acd0129f9992.json",
+					"name" : "File2String",
+					"projectIndex" : 6
+				},
+				{
+					"directoryIndex" : 28,
+					"id" : "GenericCodeGen::@f843c1f9de6785aaaaee",
+					"jsonFile" : "target-GenericCodeGen-Debug-f7ee93c6ccc9c91ce06d.json",
+					"name" : "GenericCodeGen",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 32,
+					"id" : "HLSL::@22835f866e579754f94a",
+					"jsonFile" : "target-HLSL-Debug-a38ad5b0a42e12289d2a.json",
+					"name" : "HLSL",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 67,
+					"id" : "HLSL2GLSLConverter::@ce42780eb39aea564f08",
+					"jsonFile" : "target-HLSL2GLSLConverter-Debug-5cdc4cb3305eb632e1a6.json",
+					"name" : "HLSL2GLSLConverter",
+					"projectIndex" : 29
+				},
+				{
+					"directoryIndex" : 58,
+					"id" : "LibJpeg::@951d41a053d54b51d148",
+					"jsonFile" : "target-LibJpeg-Debug-03101aaad69f71e88cf1.json",
+					"name" : "LibJpeg",
+					"projectIndex" : 20
+				},
+				{
+					"directoryIndex" : 61,
+					"id" : "LibPng::@6c56f4c4ccf6b65beeef",
+					"jsonFile" : "target-LibPng-Debug-a5508dd788be7c558d90.json",
+					"name" : "LibPng",
+					"projectIndex" : 23
+				},
+				{
+					"directoryIndex" : 59,
+					"id" : "LibTiff::@ba49864e3e5bb8bd990a",
+					"jsonFile" : "target-LibTiff-Debug-4dc1439b71c0e395370f.json",
+					"name" : "LibTiff",
+					"projectIndex" : 21
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Luddite-Engine::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Luddite-Engine-Debug-da0d9a9cd00e83980658.json",
+					"name" : "Luddite-Engine",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 28,
+					"id" : "MachineIndependent::@f843c1f9de6785aaaaee",
+					"jsonFile" : "target-MachineIndependent-Debug-58d5413d98c5c19b06b6.json",
+					"name" : "MachineIndependent",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 30,
+					"id" : "OGLCompiler::@34cd662487a890559267",
+					"jsonFile" : "target-OGLCompiler-Debug-8f42c136d03a8dcf2040.json",
+					"name" : "OGLCompiler",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 29,
+					"id" : "OSDependent::@45414441aae4f8bd09a0",
+					"jsonFile" : "target-OSDependent-Debug-3227637fdfb9d7bf95a0.json",
+					"name" : "OSDependent",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 31,
+					"id" : "SPIRV::@191184afd698ed7ef224",
+					"jsonFile" : "target-SPIRV-Debug-2dd05ef31e46c827bf93.json",
+					"name" : "SPIRV",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 10,
+					"id" : "SPIRV-Tools-link::@2e87919b2ce6d2c41130",
+					"jsonFile" : "target-SPIRV-Tools-link-Debug-219c3cf5154d5bdf4982.json",
+					"name" : "SPIRV-Tools-link",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 7,
+					"id" : "SPIRV-Tools-opt::@958996edb7eae43569ad",
+					"jsonFile" : "target-SPIRV-Tools-opt-Debug-e7d2e8489a79e7e6ffef.json",
+					"name" : "SPIRV-Tools-opt",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 8,
+					"id" : "SPIRV-Tools-reduce::@fc6fa92542e26798d244",
+					"jsonFile" : "target-SPIRV-Tools-reduce-Debug-cb57996aa7eba1c5e7e7.json",
+					"name" : "SPIRV-Tools-reduce",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "SPIRV-Tools-shared::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-SPIRV-Tools-shared-Debug-787d03f7485a77e67b26.json",
+					"name" : "SPIRV-Tools-shared",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "SPIRV-Tools-static::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-SPIRV-Tools-static-Debug-6f2fad066ad8269e3bcd.json",
+					"name" : "SPIRV-Tools-static",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 70,
+					"id" : "TestApp::@5cccd9e0001e7cba2d08",
+					"jsonFile" : "target-TestApp-Debug-0afa73fd871fe0deacf3.json",
+					"name" : "TestApp",
+					"projectIndex" : 31
+				},
+				{
+					"directoryIndex" : 66,
+					"id" : "XCBKeySyms::@3162c094a4b6a447fa34",
+					"jsonFile" : "target-XCBKeySyms-Debug-0d12e584f5c1c3fde0ce.json",
+					"name" : "XCBKeySyms",
+					"projectIndex" : 28
+				},
+				{
+					"directoryIndex" : 60,
+					"id" : "ZLib::@c328416e4da7a3f60c1c",
+					"jsonFile" : "target-ZLib-Debug-aae7f688cf569255b361.json",
+					"name" : "ZLib",
+					"projectIndex" : 22
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "core_tables::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-core_tables-Debug-7e3c08110203c1f0e4e7.json",
+					"name" : "core_tables",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "enum_string_mapping::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-enum_string_mapping-Debug-76cbf0d066c1d58e4e25.json",
+					"name" : "enum_string_mapping",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "extinst_tables::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-extinst_tables-Debug-5ec13885e0703bcd0734.json",
+					"name" : "extinst_tables",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "glew-static::@70fa2f537baeb3a8b19e",
+					"jsonFile" : "target-glew-static-Debug-43ab7c38923a1c4e6aca.json",
+					"name" : "glew-static",
+					"projectIndex" : 2
+				},
+				{
+					"directoryIndex" : 28,
+					"id" : "glslang::@f843c1f9de6785aaaaee",
+					"jsonFile" : "target-glslang-Debug-d6c4be01276efa0db6ac.json",
+					"name" : "glslang",
+					"projectIndex" : 4
+				},
+				{
+					"directoryIndex" : 68,
+					"id" : "spdlog::@02d7f2813b7835d0a429",
+					"jsonFile" : "target-spdlog-Debug-3d69c03d3f0c9655ff97.json",
+					"name" : "spdlog",
+					"projectIndex" : 30
+				},
+				{
+					"directoryIndex" : 33,
+					"id" : "spirv-cross-core::@c46fd54b9ae31043dc11",
+					"jsonFile" : "target-spirv-cross-core-Debug-402d49f2cdd89c958891.json",
+					"name" : "spirv-cross-core",
+					"projectIndex" : 5
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "spirv-tools-build-version::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-spirv-tools-build-version-Debug-f58e1dba553084b38853.json",
+					"name" : "spirv-tools-build-version",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "spirv-tools-header-DebugInfo::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-spirv-tools-header-DebugInfo-Debug-3f23e9b3e7aa377af9dc.json",
+					"name" : "spirv-tools-header-DebugInfo",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "spirv-tools-header-OpenCLDebugInfo100::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-spirv-tools-header-OpenCLDebugInfo100-Debug-beb453b7842d8ed7e073.json",
+					"name" : "spirv-tools-header-OpenCLDebugInfo100",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "spirv-tools-pkg-config::@3d46d0ec93984ca603b3",
+					"jsonFile" : "target-spirv-tools-pkg-config-Debug-ca194f21a6817578e685.json",
+					"name" : "spirv-tools-pkg-config",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "spirv-tools-shared-pkg-config::@3d46d0ec93984ca603b3",
+					"jsonFile" : "target-spirv-tools-shared-pkg-config-Debug-2a95b5f83223966021d5.json",
+					"name" : "spirv-tools-shared-pkg-config",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "spirv-tools-vimsyntax::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-spirv-tools-vimsyntax-Debug-bb9768e35a8c31b2308a.json",
+					"name" : "spirv-tools-vimsyntax",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "spv-tools-cldi100::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-spv-tools-cldi100-Debug-af533d6e07f3ddf3c598.json",
+					"name" : "spv-tools-cldi100",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "spv-tools-clspvreflection::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-spv-tools-clspvreflection-Debug-29d433a5143b64ffbcae.json",
+					"name" : "spv-tools-clspvreflection",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "spv-tools-debuginfo::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-spv-tools-debuginfo-Debug-9a1c1360d9a9efb5bab9.json",
+					"name" : "spv-tools-debuginfo",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "spv-tools-spv-amd-gs::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-spv-tools-spv-amd-gs-Debug-6100d864af657d2d7572.json",
+					"name" : "spv-tools-spv-amd-gs",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "spv-tools-spv-amd-sb::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-spv-tools-spv-amd-sb-Debug-672eb391b89993565c68.json",
+					"name" : "spv-tools-spv-amd-sb",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "spv-tools-spv-amd-sevp::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-spv-tools-spv-amd-sevp-Debug-799ae204ac6948b46937.json",
+					"name" : "spv-tools-spv-amd-sevp",
+					"projectIndex" : 3
+				},
+				{
+					"directoryIndex" : 6,
+					"id" : "spv-tools-spv-amd-stm::@b35941e5c33dcdb0337e",
+					"jsonFile" : "target-spv-tools-spv-amd-stm-Debug-19d99c28eca83e69ee8d.json",
+					"name" : "spv-tools-spv-amd-stm",
+					"projectIndex" : 3
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/evan/Documents/Dev/Luddite-Engine/build",
+		"source" : "/home/evan/Documents/Dev/Luddite-Engine"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 1
+	}
+}

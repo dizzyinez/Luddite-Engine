@@ -46,7 +46,7 @@ bool GLXWindow::InitOpenGL()
 {
 }
 
-void GLXWindow::HandleEvents()
+void GLXWindow::PollEvents()
 {
         XEvent xev;
         // Handle all events in the queue

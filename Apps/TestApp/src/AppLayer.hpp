@@ -4,5 +4,5 @@ class AppLayer : public Luddite::Layer
         void Initialize();
         void HandleEvents();
         void Update(double delta_time);
-        void Render(double alpha);
+        void Render(double alpha, Luddite::RenderTarget render_target);
 };

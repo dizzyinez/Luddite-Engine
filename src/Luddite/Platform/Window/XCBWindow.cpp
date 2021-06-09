@@ -158,7 +158,7 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title, int width, 
         }
 }
 
-void XCBWindow::HandleEvents()
+void XCBWindow::PollEvents()
 {
         xcb_generic_event_t* event = nullptr;
         while ((event = xcb_poll_for_event(info.connection)) != nullptr)
@@ -189,7 +189,7 @@ void XCBWindow::HandleEvents()
                                 info.height = cfgEvent->height;
                                 if ((info.width > 0) && (info.height > 0))
                                 {
-                                        OnWindowResize(info.width, info.height);
+                                        m_EventPool.GetList<WindowSizeEvent>().DispatchEvent(info.width, info.height);
                                 }
                         }
                 }

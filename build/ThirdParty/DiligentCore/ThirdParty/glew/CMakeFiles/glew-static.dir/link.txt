@@ -1,0 +1,2 @@
+/bin/x86_64-linux-gnu-ar qc libglew-static.a CMakeFiles/glew-static.dir/src/glew.c.o
+/bin/x86_64-linux-gnu-ranlib libglew-static.a

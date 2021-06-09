@@ -1,0 +1,1 @@
+/bin/x86_64-linux-gnu-g++-10  -fPIC -g CMakeFiles/File2String.dir/File2String.cpp.o -o File2String 

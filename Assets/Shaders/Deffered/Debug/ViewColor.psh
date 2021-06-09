@@ -25,12 +25,6 @@ void main(in  PSInput  PSIn,
     if (Depth == 1.0)
         discard;
 
-    // float3 normaldir = normalize(g_SubpassInputNormal.Load(int3(PSIn.Pos.xy, 0)).rgb);
-    // float3 lightdir = normalize(float3(-2.0, 1.0, 1.0));
-    // float light = dot(normaldir, lightdir);
-    // clamp(light, 0.0, 1.0);
-
     PSOut.Color.rgb = g_SubpassInputColor.Load(int3(PSIn.Pos.xy, 0)).rgb;
-    //  * 0.0;
     PSOut.Color.a = 1.0;
 }

@@ -3,7 +3,7 @@
 
 namespace Luddite
 {
-glm::mat4 RenderTarget::GetViewProjection(const Camera& camera) const
+glm::mat4 RenderTarget::GetProjectionMatrix(const Camera& camera) const
 {
         glm::mat4 ProjectionMatrix;
         float AspectRatio = static_cast<float>(width) / static_cast<float>(height);
@@ -23,7 +23,7 @@ glm::mat4 RenderTarget::GetViewProjection(const Camera& camera) const
                 YScale = 1.f / std::tan(camera.FOV / 2.f);
                 XScale = YScale / AspectRatio;
         }
-        switch (camera.ProjectionType)
+        switch (camera.Projection)
         {
         case Camera::ProjectionType::PERSPECTIVE:
         {
@@ -75,13 +75,15 @@ glm::mat4 RenderTarget::GetViewProjection(const Camera& camera) const
                 PreTransformMatrix = Diligent::float4x4::Identity();
         }
 
-        glm::mat4 ViewMatrix = glm::lookAt(camera.Position, camera.Position + camera.ViewDirection, glm::vec3(0.f, 1.f, 0.f));
-        // glm::mat4 ViewMatrix = glm::lookAt(camera.Position, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
-        // GLMViewMatrix = glm::transpose(GLMViewMatrix);
-        // Diligent::float4x4 ViewMatrix = Diligent::float4x4::Translation(0.f, 0.f, 100.f);
+        return ProjectionMatrix;
+}
 
-        // Diligent::float4x4 vp = ViewMatrix * ProjectionMatrix;
-        glm::mat4 vp = ProjectionMatrix * ViewMatrix;
-        return vp;
+glm::mat4 RenderTarget::GetViewMatrix(const Camera& camera) const
+{
+        glm::mat4 ViewMatrix = glm::lookAt(camera.Position, camera.Position + camera.ViewDirection, glm::vec3(0.f, 1.f, 0.f));
+        if (Renderer::GetDevice()->GetDeviceInfo().IsGLDevice())
+                ViewMatrix = glm::scale(ViewMatrix, {-1.f, -1.f, 1.f});
+
+        return ViewMatrix;
 }
 }

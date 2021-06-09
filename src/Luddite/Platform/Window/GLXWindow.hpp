@@ -22,7 +22,7 @@ public:
 
         void SetTitle(const std::string& title) override;
 
-        void HandleEvents() override;
+        void PollEvents() override;
 
         static bool InitNativeEngineFactory();
 private:

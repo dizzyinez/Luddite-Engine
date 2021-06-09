@@ -11,12 +11,14 @@ void DefferedPipelineState::Initialize(
         const std::string& PSFilePath,
         const std::string& PipelineName,
         ShaderAttributeListDescription ConstantShaderAttributes,
-        ShaderAttributeListDescription MaterialShaderAttributes
+        ShaderAttributeListDescription MaterialShaderAttributes,
+        ShaderAttributeListDescription ModelShaderAttributes
         )
 {
         auto& pDevice = Renderer::GetDevice();
         m_pMaterialLibrary = std::make_unique<MaterialLibrary>(MaterialShaderAttributes);
         m_ConstantShaderAttributes = ConstantShaderAttributes;
+        m_ModelShaderAttributes = ModelShaderAttributes;
 
         GraphicsPipelineStateCreateInfo PSOCreateInfo;
         PipelineStateDesc&              PSODesc = PSOCreateInfo.PSODesc;
@@ -77,6 +79,7 @@ void DefferedPipelineState::Initialize(
 
         ShaderResourceVariableDesc Vars[] =
         {
+                {SHADER_TYPE_VERTEX, "ModelConstants", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
                 {SHADER_TYPE_VERTEX, "ShaderConstants", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
                 {SHADER_TYPE_PIXEL, "MaterialConstants", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE}
         };
@@ -102,16 +105,20 @@ void DefferedPipelineState::Initialize(
         VERIFY_EXPR(m_pPSO != nullptr);
 
         m_ConstantShaderAttributes.SetDefaultAttribs(m_ConstantShaderData);
+        m_ModelShaderAttributes.SetDefaultAttribs(m_ModelShaderData);
 
         CreateUniformBuffer(Renderer::GetDevice(), m_ConstantShaderAttributes.GetSize(), "ShaderConstants", &m_pShaderConstantsBuffer);
-        StateTransitionDesc Barriers[] = //
-        {
-                {m_pShaderConstantsBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
-        };
+        CreateUniformBuffer(Renderer::GetDevice(), m_ModelShaderAttributes.GetSize(), "ModelConstants", &m_pShaderModelBuffer);
 
+        StateTransitionDesc Barriers[] =
+        {
+                {m_pShaderConstantsBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true},
+                {m_pShaderModelBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
+        };
         Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
 
         m_pPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "ShaderConstants")->Set(m_pShaderConstantsBuffer);
+        m_pPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "ModelConstants")->Set(m_pShaderModelBuffer);
 }
 void DefferedPipelineState::PrepareDraw()
 {
@@ -119,23 +126,9 @@ void DefferedPipelineState::PrepareDraw()
         m_ConstantShaderAttributes.MapBuffer(m_ConstantShaderData, m_pShaderConstantsBuffer);
 }
 
-void DefferedPipelineState::DrawBasicMesh(const BasicMeshHandle Mesh)
+void DefferedPipelineState::UploadModelData()
 {
-        // LD_LOG_TRACE("Drawing Mesh \"{}\"", Mesh->name);
-
-        Uint32 offset = 0;
-        IBuffer* pBuffs[] = {Mesh->m_pVertexBuffer};
-        Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
-        Renderer::GetContext()->SetIndexBuffer(Mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-
-        //For textures
-        // Renderer::GetContext()->CommitShaderResources(m_pCurrentMaterial->m_pMaterialConstantsBuffer->)
-
-        DrawIndexedAttribs DrawAttrs;
-        DrawAttrs.NumIndices = Mesh->indicies.size();
-        DrawAttrs.IndexType = VT_UINT32;
-        DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL;
-        Renderer::GetContext()->DrawIndexed(DrawAttrs);
+        m_ModelShaderAttributes.MapBuffer(m_ModelShaderData, m_pShaderModelBuffer);
 }
 void DefferedPipelineState::SetMaterial(MaterialHandle Material)
 {

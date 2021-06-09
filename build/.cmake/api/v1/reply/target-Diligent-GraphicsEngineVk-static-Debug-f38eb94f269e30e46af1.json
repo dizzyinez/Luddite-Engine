@@ -1,0 +1,1111 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/libDiligent-GraphicsEngineVk-static.a"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"target_link_libraries",
+			"target_compile_definitions",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 155,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 295,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 345,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 176,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -fPIC -g -fPIC -fvisibility=hidden -fvisibility-inlines-hidden"
+				},
+				{
+					"fragment" : "-std=c++14"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 2,
+					"define" : "D3D11_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "D3D12_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DILIGENT_DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DILIGENT_DEVELOPMENT"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "DILIGENT_NO_GLSLANG=0"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "DILIGENT_NO_HLSL=0"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "DILIGENT_USE_VOLK=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "GLES_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "GL_SUPPORTED=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "METAL_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "PLATFORM_LINUX=1"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "VK_USE_PLATFORM_XCB_KHR=1"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "VK_USE_PLATFORM_XLIB_KHR=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "VULKAN_SUPPORTED=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "_DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "__forceinline=inline"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 4,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/../../ThirdParty"
+				},
+				{
+					"backtrace" : 4,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/../../ThirdParty/Vulkan-Headers/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Common/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/Linux/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/Basic/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Primitives/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsEngineNextGenBase/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsAccessories/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsEngine/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsEngine/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/ShaderTools/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/ShaderTools/../../ThirdParty/DirectXShaderCompiler"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/ThirdParty/SPIRV-Tools/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/ThirdParty/SPIRV-Headers/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				39,
+				40
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "SPIRV-Tools-static::@b35941e5c33dcdb0337e"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "SPIRV-Tools-opt::@958996edb7eae43569ad"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "glslang::@f843c1f9de6785aaaaee"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "MachineIndependent::@f843c1f9de6785aaaaee"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "GenericCodeGen::@f843c1f9de6785aaaaee"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "OSDependent::@45414441aae4f8bd09a0"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "OGLCompiler::@34cd662487a890559267"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "SPIRV::@191184afd698ed7ef224"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "spirv-cross-core::@c46fd54b9ae31043dc11"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-Primitives::@f4a6de4feb48bb4fb172"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-BasicPlatform::@760b174ea397fc9846bf"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-LinuxPlatform::@52630ed17942c0730333"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-Common::@6638c40ea799aa0aaff2"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-GraphicsAccessories::@d5b1a2200193ade104d8"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-GraphicsEngine::@63b5886d55cfc461769a"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-HLSL2GLSLConverterLib::@7d3e0fd90da137017873"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-ShaderTools::@d97e4251a115f97ec223"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-GraphicsEngineNextGenBase::@2fb165032eb1626e7f80"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "DiligentCore/Graphics"
+	},
+	"id" : "Diligent-GraphicsEngineVk-static::@8781b1cb1dc37e0bcdd7",
+	"name" : "Diligent-GraphicsEngineVk-static",
+	"nameOnDisk" : "libDiligent-GraphicsEngineVk-static.a",
+	"paths" : 
+	{
+		"build" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan",
+		"source" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "src",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32
+			]
+		},
+		{
+			"name" : "src\\Vulkan Utilities",
+			"sourceIndexes" : 
+			[
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				39,
+				40
+			]
+		},
+		{
+			"name" : "interface",
+			"sourceIndexes" : 
+			[
+				41,
+				42,
+				43,
+				44,
+				45,
+				46,
+				47,
+				48,
+				49,
+				50,
+				51,
+				52,
+				53,
+				54,
+				55,
+				56,
+				57,
+				58,
+				59,
+				60
+			]
+		},
+		{
+			"name" : "include",
+			"sourceIndexes" : 
+			[
+				61,
+				62,
+				63,
+				64,
+				65,
+				66,
+				67,
+				68,
+				69,
+				70,
+				71,
+				72,
+				73,
+				74,
+				75,
+				76,
+				77,
+				78,
+				79,
+				80,
+				81,
+				82,
+				83,
+				84,
+				85,
+				86,
+				87,
+				88,
+				89,
+				90,
+				91,
+				92,
+				93,
+				94,
+				95,
+				96,
+				97,
+				98
+			]
+		},
+		{
+			"name" : "include\\Vulkan Utilities",
+			"sourceIndexes" : 
+			[
+				99,
+				100,
+				101,
+				102,
+				103,
+				104,
+				105,
+				106,
+				107,
+				108
+			]
+		},
+		{
+			"name" : "shaders",
+			"sourceIndexes" : 
+			[
+				109
+			]
+		},
+		{
+			"name" : "shaders\\generated",
+			"sourceIndexes" : 
+			[
+				110
+			]
+		},
+		{
+			"name" : "",
+			"sourceIndexes" : 
+			[
+				111
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/BufferVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/BufferViewVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/CommandPoolManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/CommandQueueVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/DescriptorPoolManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/DeviceContextVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/EngineFactoryVk.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/FenceVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/FramebufferVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/VulkanDynamicHeap.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/FramebufferCache.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/GenerateMipsVkHelper.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/PipelineLayoutVk.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/PipelineStateVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/QueryManagerVk.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/QueryVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/RenderDeviceVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/RenderPassVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/RenderPassCache.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/SamplerVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/ShaderVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/ShaderResourceBindingVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/ShaderResourceCacheVk.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/ShaderVariableManagerVk.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/SwapChainVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/TextureVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/TextureViewVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/VulkanTypeConversions.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/VulkanUploadHeap.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/BottomLevelASVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/TopLevelASVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/ShaderBindingTableVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/PipelineResourceSignatureVkImpl.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/VulkanUtilities/VulkanCommandBuffer.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/VulkanUtilities/VulkanCommandBufferPool.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/VulkanUtilities/VulkanDebug.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/VulkanUtilities/VulkanInstance.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/VulkanUtilities/VulkanLogicalDevice.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/VulkanUtilities/VulkanMemoryManager.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/VulkanUtilities/VulkanPhysicalDevice.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/src/VulkanUtilities/VulkanSyncObjectManager.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/BufferVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/BufferViewVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/CommandQueueVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/DeviceContextVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/FenceVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/FramebufferVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/PipelineStateVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/QueryVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/RenderDeviceVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/RenderPassVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/SamplerVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/ShaderVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/ShaderResourceBindingVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/SwapChainVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/TextureVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/TextureViewVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/BottomLevelASVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/TopLevelASVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/interface/ShaderBindingTableVk.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/BufferVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/BufferViewVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/CommandListVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/CommandPoolManager.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/CommandQueueVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/DescriptorPoolManager.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/DeviceContextVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/EngineVkImplTraits.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/FenceVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/FramebufferVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanDynamicHeap.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/FramebufferCache.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/GenerateMipsVkHelper.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/pch.h",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/PipelineLayoutVk.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/PipelineStateVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/QueryManagerVk.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/QueryVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/RenderDeviceVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/RenderPassVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/RenderPassCache.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/SamplerVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/ShaderVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/ManagedVulkanObject.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/ShaderResourceBindingVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/ShaderResourceCacheVk.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/ShaderVariableManagerVk.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/SwapChainVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/TextureVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/TextureViewVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanErrors.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanTypeConversions.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanUploadHeap.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/BottomLevelASVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/TopLevelASVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/ShaderBindingTableVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/PipelineResourceSignatureVkImpl.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/PipelineResourceAttribsVk.hpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanUtilities/VulkanCommandBuffer.hpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanUtilities/VulkanCommandBufferPool.hpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanUtilities/VulkanDebug.hpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanUtilities/VulkanInstance.hpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanUtilities/VulkanLogicalDevice.hpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanUtilities/VulkanMemoryManager.hpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanUtilities/VulkanObjectWrappers.hpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanUtilities/VulkanPhysicalDevice.hpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanUtilities/VulkanSyncObjectManager.hpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/include/VulkanUtilities/VulkanHeaders.h",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/shaders/GenerateMipsCS.csh",
+			"sourceGroupIndex" : 5
+		},
+		{
+			"backtrace" : 1,
+			"isGenerated" : true,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/shaders/GenerateMipsCS_inc.h",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Graphics/GraphicsEngineVulkan/readme.md",
+			"sourceGroupIndex" : 7
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

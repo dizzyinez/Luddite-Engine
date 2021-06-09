@@ -22,55 +22,74 @@ void Renderer::Initialize()
         SetMatricies();
 
 
-        m_DefferedRenderer.Initialize(
-                m_pDevice,
-                m_pImmediateContext,
-                m_DefaultRTVFormat,
-                m_pShaderSourceFactory
-                );
+        m_DefferedRenderer.Initialize(m_DefaultRTVFormat);
         awesome_material = m_DefferedRenderer.BasicShaderPipeline.GetMaterial("AWESOME");
-        awesome_material->m_data.SetVec3("Diffuse", glm::vec3(0.5f, 0.5f, 1.f));
+        awesome_material->m_data.SetVec3("Diffuse", glm::vec3(0.7f, 0.7f, 0.75f));
+        awesome_material->m_data.SetFloat("Metallic", 0.0f);
+        awesome_material->m_data.SetFloat("Roughness", 0.1f);
 
+        {
+                Diligent::TextureLoadInfo loadInfo;
+                loadInfo.IsSRGB = false;
+                loadInfo.GenerateMips = false;
+                loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
+                loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
+                Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
+                Diligent::CreateTextureFromFile("./Assets/irradiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
+                Texture awesome_texture(awesome_cubemap);
+                awesome_texture.TransitionToShaderResource();
+                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_IrradianceMap", awesome_texture);
+        }
 
-        awesome_model = ModelLoader::GetBasicModel("Assets/pingpong.obj");
-        for (auto mesh : awesome_model->meshes)
-                SubmitMesh(mesh);
+        {
+                Diligent::TextureLoadInfo loadInfo;
+                loadInfo.IsSRGB = false;
+                loadInfo.GenerateMips = false;
+                loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
+                loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
+                Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
+                Diligent::CreateTextureFromFile("./Assets/radiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
+                Texture awesome_texture(awesome_cubemap);
+                awesome_texture.TransitionToShaderResource();
+                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_RadianceMap", awesome_texture);
+        }
 
-        // m_pImGui->CreateDeviceObjects();
-
-        // m_pImGui = std::make_unique<ImGuiImplDiligent>()
-
-        // m_ModelLoader.GetBasicModel("Assets/ox_stack.obj");
-
-
-        // std::stringstream FileNameSS;
-        // FileNameSS << "DGLogo" << tex << ".png";
-        // auto FileName = FileNameSS.str();
-
-        // Diligent::TextureLoadInfo load_info;
-        // load_info.IsSRGB = true;
-        // // Diligent::RefCntAutoPtr<Diligent::ITexture> pTex;
-        // Diligent::CreateTextureFromFile(Path, load_info, pDevice, &t.GetTexture);
-        // return pTex;
-
-
-        // RefCntAutoPtr<ITexture> SrcTex = TexturedCube::LoadTexture(m_pDevice, FileName.c_str());
-        // const auto&             TexDesc = SrcTex->GetDesc();
+        {
+                Diligent::TextureLoadInfo loadInfo;
+                loadInfo.IsSRGB = false;
+                loadInfo.GenerateMips = false;
+                loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
+                loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
+                Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
+                Diligent::CreateTextureFromFile("./Assets/environment.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
+                Texture awesome_texture(awesome_cubemap);
+                awesome_texture.TransitionToShaderResource();
+                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_Skybox", awesome_texture);
+        }
 }
 
-void Renderer::SubmitMesh(BasicMeshHandle mesh)
+void Renderer::BeginScene()
 {
-        m_RenderScene.meshes.emplace_back(mesh);
+        m_RenderScene.m_BasicMeshes.clear();
+        // for (auto pair : m_RenderScene.m_BasicMeshes)
+        // {
+        //         LD_LOG_INFO("CLEAR");
+        //         pair.second.clear();
+        // }
+}
+
+void Renderer::SubmitMesh(BasicMeshHandle mesh, const glm::mat4& transform)
+{
+        m_RenderScene.m_BasicMeshes[mesh].push_back(transform);
+}
+
+void Renderer::EndScene()
+{
 }
 
 void Renderer::SetMatricies()
 {
         glm::mat4 view = glm::lookAt(glm::vec3(0, 0, 1.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-        // glm::mat4 view = glm::lookAt(
-        //         glm::vec3(2.5f, 2.5f, 2.0f),
-        //         glm::vec3(0.0f, 0.0f, 0.0f),
-        //         glm::vec3(0.0f, 0.0f, 1.0f));
-        // glm::mat4 view = glm::translate(glm::vec3{0.f, 0.f, 25.f});
 
 
         // glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(m_pWindow->GetWidth()), static_cast<float>(m_pWindow->GetHeight()), 0.0f); //reminder: this function only likes floats and seems to fail with integers
@@ -153,7 +172,7 @@ RenderTexture Renderer::CreateRenderTexture(uint32_t width, uint32_t height,
 }
 void Renderer::Draw(RenderTarget& render_target, const Camera& camera)
 {
-        SetMatricies();
+        // SetMatricies();
         BindRenderTarget(render_target);
 
         m_DefferedRenderer.PrepareDraw(render_target);
@@ -163,18 +182,47 @@ void Renderer::Draw(RenderTarget& render_target, const Camera& camera)
         // auto Proj = glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1000.f);
         // auto vpbad = Proj * view;
 
-        auto vp = render_target.GetViewProjection(camera);
+        auto projection = render_target.GetProjectionMatrix(camera);
+        auto view = render_target.GetViewMatrix(camera);
+        auto view_projection = projection * view;
+        auto inverse_projection = glm::inverse(projection);
+        auto inverse_view = glm::inverse(view);
 
-        m_DefferedRenderer.BasicShaderPipeline.GetConstantData().SetMat4("g_CameraViewProj", vp);
+        m_DefferedRenderer.BasicShaderPipeline.GetConstantData().SetMat4("g_CameraViewProj", view_projection);
 
 
 
         m_DefferedRenderer.BasicShaderPipeline.PrepareDraw();
         m_DefferedRenderer.BasicShaderPipeline.SetMaterial(awesome_material);
-        for (auto mesh : m_RenderScene.meshes)
-                m_DefferedRenderer.BasicShaderPipeline.DrawBasicMesh(mesh);
+        for (auto pair : m_RenderScene.m_BasicMeshes)
+        {
+                auto& mesh = pair.first;
+                Diligent::Uint32 offset = 0;
+                Diligent::IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
+                Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_VERIFY, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
+                Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_VERIFY);
+                for (auto& transform : pair.second)
+                {
+                        m_DefferedRenderer.BasicShaderPipeline.GetModelData().SetMat4("g_Transform", transform);
+                        m_DefferedRenderer.BasicShaderPipeline.UploadModelData();
+
+
+                        //For textures
+                        // Renderer::GetContext()->CommitShaderResources(m_pCurrentMaterial->m_pMaterialConstantsBuffer->)
+
+                        Diligent::DrawIndexedAttribs DrawAttrs;
+                        DrawAttrs.NumIndices = mesh->indicies.size();
+                        DrawAttrs.IndexType = Diligent::VT_UINT32;
+                        DrawAttrs.Flags = Diligent::DRAW_FLAG_VERIFY_ALL;
+                        Renderer::GetContext()->DrawIndexed(DrawAttrs);
+                }
+        }
+
+        m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetMat4("g_InverseProjectionMatrix", inverse_projection);
+        m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetMat4("g_InverseViewMatrix", inverse_view);
 
         m_DefferedRenderer.ApplyLighting();
+
         m_DefferedRenderer.FinalizeDraw();
 
         //set render targets
@@ -245,6 +293,10 @@ void Renderer::PrepareDraw()
 
 void Renderer::OnWindowResize(int width, int height)
 {
-        m_DefferedRenderer.OnWindowResize(width, height);
+        ReleaseBufferResources();
+}
+void Renderer::ReleaseBufferResources()
+{
+        m_DefferedRenderer.ReleaseWindowResources();
 }
 }

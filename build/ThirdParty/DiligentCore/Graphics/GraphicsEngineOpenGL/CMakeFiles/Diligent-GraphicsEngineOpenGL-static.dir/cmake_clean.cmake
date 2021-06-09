@@ -1,0 +1,43 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/BufferGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/BufferViewGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/DeviceContextGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/EngineFactoryOpenGL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/FBOCache.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/FenceGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/FramebufferGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/GLContextLinux.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/GLContextState.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/GLObjectWrapper.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/GLTypeConversions.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/PipelineResourceSignatureGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/PipelineStateGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/QueryGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/RenderDeviceGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/RenderPassGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/SamplerGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/ShaderGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/ShaderResourceBindingGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/ShaderResourceCacheGL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/ShaderResourcesGL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/ShaderVariableManagerGL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/SwapChainGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/TexRegionRender.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/Texture1DArray_GL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/Texture1D_GL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/Texture2DArray_GL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/Texture2D_GL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/Texture3D_GL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/TextureBaseGL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/TextureCubeArray_GL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/TextureCube_GL.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/TextureViewGLImpl.cpp.o"
+  "CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/src/VAOCache.cpp.o"
+  "libDiligent-GraphicsEngineOpenGL-static.a"
+  "libDiligent-GraphicsEngineOpenGL-static.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/Diligent-GraphicsEngineOpenGL-static.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

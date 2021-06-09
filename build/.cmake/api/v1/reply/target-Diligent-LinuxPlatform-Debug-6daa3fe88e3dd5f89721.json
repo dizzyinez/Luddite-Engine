@@ -1,0 +1,265 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "ThirdParty/DiligentCore/Platforms/Linux/libDiligent-LinuxPlatform.a"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"target_link_libraries",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"ThirdParty/DiligentCore/Platforms/Linux/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 18,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 26,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 21,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -fPIC -g -fPIC -fvisibility=hidden -fvisibility-inlines-hidden"
+				},
+				{
+					"fragment" : "-std=c++14"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 2,
+					"define" : "D3D11_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "D3D12_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DILIGENT_DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "DILIGENT_DEVELOPMENT"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "GLES_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "GL_SUPPORTED=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "METAL_SUPPORTED=0"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "PLATFORM_LINUX=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "VULKAN_SUPPORTED=1"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "_DEBUG"
+				},
+				{
+					"backtrace" : 2,
+					"define" : "__forceinline=inline"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 3,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/Linux/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/Basic/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Primitives/interface"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/home/evan/Documents/Dev/Luddite-Engine/ThirdParty/DiligentCore/Platforms/interface"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0,
+				1
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-Primitives::@f4a6de4feb48bb4fb172"
+		},
+		{
+			"backtrace" : 2,
+			"id" : "Diligent-BasicPlatform::@760b174ea397fc9846bf"
+		}
+	],
+	"folder" : 
+	{
+		"name" : "DiligentCore/Platforms"
+	},
+	"id" : "Diligent-LinuxPlatform::@52630ed17942c0730333",
+	"name" : "Diligent-LinuxPlatform",
+	"nameOnDisk" : "libDiligent-LinuxPlatform.a",
+	"paths" : 
+	{
+		"build" : "ThirdParty/DiligentCore/Platforms/Linux",
+		"source" : "ThirdParty/DiligentCore/Platforms/Linux"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "src",
+			"sourceIndexes" : 
+			[
+				0,
+				1
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				2,
+				3,
+				4,
+				5,
+				6
+			]
+		},
+		{
+			"name" : "interface",
+			"sourceIndexes" : 
+			[
+				7,
+				8,
+				9,
+				10,
+				11,
+				12
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Platforms/Linux/src/LinuxDebug.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "ThirdParty/DiligentCore/Platforms/Linux/src/LinuxFileSystem.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Platforms/Linux/interface/LinuxDebug.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Platforms/Linux/interface/LinuxFileSystem.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Platforms/Linux/interface/LinuxPlatformDefinitions.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Platforms/Linux/interface/LinuxPlatformMisc.hpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Platforms/Linux/interface/LinuxNativeWindow.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Platforms/interface/Atomics.hpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Platforms/interface/FileSystem.hpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Platforms/interface/PlatformDebug.hpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Platforms/interface/PlatformDefinitions.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Platforms/interface/PlatformMisc.hpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "ThirdParty/DiligentCore/Platforms/interface/NativeWindow.h",
+			"sourceGroupIndex" : 2
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

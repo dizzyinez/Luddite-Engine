@@ -1,0 +1,205 @@
+Texture2D<float4>   g_SubpassInputColor;
+SamplerState        g_SubpassInputColor_sampler;
+
+Texture2D<float4>   g_SubpassInputNormal;
+SamplerState        g_SubpassInputNormal_sampler;
+
+Texture2D<float4>   g_SubpassInputDepthZ;
+SamplerState        g_SubpassInputDepthZ_sampler;
+
+TextureCube<float4> g_IrradianceMap;
+SamplerState        g_IrradianceMap_sampler;
+
+TextureCube<float4> g_RadianceMap;
+SamplerState        g_RadianceMap_sampler;
+
+TextureCube<float4> g_Skybox;
+SamplerState        g_Skybox_sampler;
+
+
+cbuffer ShaderConstants
+{
+    float4x4 g_InverseProjectionMatrix;
+    float4x4 g_InverseViewMatrix;
+};
+
+struct PSInput
+{
+    float4 Pos    : SV_POSITION;
+    float2 UV     : TEX_COORD;
+};
+
+struct PSOutput
+{
+    float4 Color : SV_TARGET0;
+};
+
+struct GBufferData
+{
+    float3 Diffuse;
+    float3 Normal;
+    float Metallic;
+    float Roughness;
+    float Depth;
+};
+
+const float PI = 3.14159265359;
+
+GBufferData UnpackGBuffer(PSInput  PSIn)
+{
+    GBufferData output_data;
+    float4 Diffuse_Metallic = g_SubpassInputColor.Load(int3(PSIn.Pos.xy, 0));
+    output_data.Diffuse = Diffuse_Metallic.rgb;
+    output_data.Metallic = Diffuse_Metallic.a;
+
+    float4 Normal_Roughness = g_SubpassInputNormal.Load(int3(PSIn.Pos.xy, 0));
+    output_data.Normal = normalize((Normal_Roughness.rgb * 2.0f) - 1.0f);
+    output_data.Roughness = Normal_Roughness.a;
+
+    output_data.Depth = g_SubpassInputDepthZ.Load(int3(PSIn.Pos.xy, 0)).x;
+
+    return output_data;
+}
+
+float3 DepthToWorldPos(float2 uv, float depth, float4x4 inverse_projection_matrix, float4x4 inverse_view_matrix) {
+    float z = depth;
+
+    float4 clipSpacePosition = float4(uv * 2.0 - 1.0, z, 1.0);
+    float4 viewSpacePosition = mul(inverse_projection_matrix, clipSpacePosition);
+
+    viewSpacePosition /= viewSpacePosition.w;
+
+    float4 worldSpacePosition = mul(inverse_view_matrix, viewSpacePosition);
+
+    return worldSpacePosition.xyz;
+}
+
+float3 FresnelSchlick(float cos, float3 F0)
+{
+    return F0 + (1.0 - F0) * pow(max(1.0 - cos, 0.0), 5.0);
+}
+
+float3 FresnelSchlickRoughness(float cos, float3 F0, float roughness)
+{
+    return F0 + max(float3(1.0 - roughness) - F0, 0.0) * pow(max(1.0 - cos, 0.0), 5.0);
+}
+
+float DistributionGGX(float dotNH, float roughness)
+{
+    float alpha = max(0.001f, roughness * roughness);
+    float alpha2 = alpha * alpha;
+    float dotNH2 = dotNH*dotNH;
+
+    float denom = ((dotNH2 * (alpha2 - 1.0)) + 1.0);
+    denom = PI * denom * denom;
+
+    return alpha2 / denom;
+}
+
+float GeometrySchlickGGX(float dotNV, float roughness)
+{
+    float r = (roughness + 1.0);
+    float k = (r*r) / 8.0;
+
+    return (dotNV / ((dotNV * (1.0 - k)) + k));
+}
+
+float GeometrySmith(float dotNV, float dotNL, float roughness)
+{
+    float ggx1 = GeometrySchlickGGX(dotNL, roughness);
+    float ggx2 = GeometrySchlickGGX(dotNV, roughness);
+    return ggx1 * ggx2;
+}
+
+void main(in  PSInput  PSIn,
+          out PSOutput PSOut)
+{
+    GBufferData g_buffer_data = UnpackGBuffer(PSIn);
+
+
+    float3 cam_pos = DepthToWorldPos(float2(0.5, 0.5), -1.0, g_InverseProjectionMatrix, g_InverseViewMatrix);
+    float3 world_pos = DepthToWorldPos(PSIn.UV, g_buffer_data.Depth, g_InverseProjectionMatrix, g_InverseViewMatrix);
+    float3 view_dir = normalize(cam_pos - world_pos);
+
+    if (g_buffer_data.Depth == 1.0)
+    {
+    PSOut.Color.rgb = g_Skybox.SampleLevel(g_Skybox_sampler, -view_dir, 0.0).rgb;
+    PSOut.Color.a = 1.0;
+    return;
+    }
+
+
+    //calculate needed dot products
+    float dotNV = saturate(dot(g_buffer_data.Normal, view_dir));
+
+    //gamma correction
+    // float3 g_diffuse = pow(g_buffer_data.Diffuse, 2.2);
+
+    //real albedo
+    // float3 albedo = g_diffuse - (g_diffuse * g_buffer_data.Metallic);
+    float3 albedo = g_buffer_data.Diffuse;
+
+    //real specular
+    float3 F0 = lerp(float3(0.04), g_buffer_data.Diffuse, float3(g_buffer_data.Metallic));
+
+    // float3 F0 = float3(0.04);
+    // F0 = lerp(F0, albedo)
+
+    float3 Lo = float3(0.0);
+
+    //Calculate point light influence
+    {
+        float3 light_pos = float3(1.0, 2.0, 1.0);
+        float3 light_color = float3(1.0, 1.0, 1.0);
+        float3 light_dir = normalize(light_pos - world_pos);
+
+        //attenuation
+        float distance = distance(light_pos, world_pos);
+        float attenuation = 1.0 / (distance * distance);
+        float3 radiance = light_color * attenuation;
+
+        //calculate vectors and dot products
+        float3 H = normalize(view_dir + light_dir); //Halfway vector
+        float dotHV = saturate(dot(H, view_dir));
+        float dotNL = saturate(dot(g_buffer_data.Normal, light_dir));
+        float dotNH = saturate(dot(g_buffer_data.Normal, H));
+
+        //cook-torrance brdf
+        float NDF = DistributionGGX(dotNH, g_buffer_data.Roughness);
+        float G   = GeometrySmith(dotNV, dotNL, g_buffer_data.Roughness);
+        float3 F  = FresnelSchlick(dotHV, F0);
+
+        float3 kS = F;
+        float3 kD = float3(1.0) - kS;
+        kD *= 1.0 - g_buffer_data.Metallic;
+
+        float3 numerator   = NDF * G * F;
+        float  denominator = 4.0 * dotNV * dotNL;
+        float3 specular    = numerator / max(denominator, 0.001);
+        Lo += (kD * albedo / PI + specular) * radiance * dotNL; 
+    }
+
+    
+    //IBL Diffuse
+        float3 F = FresnelSchlickRoughness(dotNV, F0, g_buffer_data.Roughness);
+        float3 kS = F;
+        float3 kD = 1.0 - kS;
+        float3 irradiance = g_IrradianceMap.Sample(g_IrradianceMap_sampler, g_buffer_data.Normal).rgb;
+        float3 diffuse = irradiance * albedo;
+
+    //IBL Specular
+        float3 R = reflect(-view_dir, g_buffer_data.Normal);
+
+        const float MAX_REFLECTION_LOD = 9.0;
+        float3 radiance = g_RadianceMap.SampleLevel(g_RadianceMap_sampler, R, MAX_REFLECTION_LOD * g_buffer_data.Roughness);
+        float3 specular = radiance * F;
+        float3 ambient = (kD * diffuse + specular);
+
+    // float3 ambient = float3(0.03) * albedo; //* ao;
+    float3 color = ambient + Lo;
+
+    color = color / (color + float3(1.0));
+    color = pow(color, float3(1.0/2.2));  
+    PSOut.Color.rgb = color;
+    PSOut.Color.a = 1.0;
+}

@@ -9,6 +9,7 @@
 #include <functional>
 #include <future>
 #include <stdint.h>
+#include <chrono>
 
 #include <string>
 #include <locale>
@@ -21,6 +22,7 @@
 
 #include "entt/entt.hpp"
 
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtc/matrix_transform.hpp"

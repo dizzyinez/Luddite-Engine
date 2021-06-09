@@ -12,7 +12,7 @@ struct LUDDITE_API Camera
         {
                 PERSPECTIVE,
                 ORTHOGRAPHIC
-        } ProjectionType = ProjectionType::PERSPECTIVE;
+        } Projection = ProjectionType::PERSPECTIVE;
         float FOV = glm::radians(90.f);
         float OrthoScale = 100.f;
         float ClipNear = 0.1f;

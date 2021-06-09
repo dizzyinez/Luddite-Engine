@@ -4,18 +4,9 @@
 using namespace Diligent;
 namespace Luddite
 {
-void DefferedRenderer::Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevice> pDevice,
-                                  Diligent::RefCntAutoPtr<Diligent::IDeviceContext> pImmediateContext,
-                                  Diligent::TEXTURE_FORMAT ColorBufferFormat,
-                                  Diligent::RefCntAutoPtr<Diligent::IShaderSourceInputStreamFactory> pShaderSourceFactory
-                                  )
+void DefferedRenderer::Initialize(Diligent::TEXTURE_FORMAT ColorBufferFormat)
 {
-        m_pDevice = pDevice;
-        m_pImmediateContext = pImmediateContext;
-        // m_pSwapChain = pSwapChain;
-        m_pShaderSourceFactory = pShaderSourceFactory;
         CreateRenderPass(ColorBufferFormat);
-
         {
                 ShaderAttributeListDescription ConstantShaderAttributes;
                 ConstantShaderAttributes.AddMat4("g_CameraViewProj");
@@ -25,31 +16,45 @@ void DefferedRenderer::Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevic
                 MaterialShaderAttributes.AddFloat("Metallic");
                 MaterialShaderAttributes.AddFloat("Roughness");
 
+                ShaderAttributeListDescription ModelShaderAttributes;
+                ModelShaderAttributes.AddMat4("g_Transform");
+
                 BasicShaderPipeline.Initialize(
                         m_pRenderPass,
                         "Deffered/BasicMesh.vsh",
                         "Deffered/BasicMesh.psh",
                         "BasicPBR Pipeline",
                         ConstantShaderAttributes,
-                        MaterialShaderAttributes
+                        MaterialShaderAttributes,
+                        ModelShaderAttributes
                         );
         }
         {
                 ShaderAttributeListDescription ConstantShaderAttributes;
-                ConstantShaderAttributes.AddFloat("g_AmbientPower");
+                // ConstantShaderAttributes.AddFloat("g_AmbientPower");
+                ConstantShaderAttributes.AddMat4("g_InverseProjectionMatrix");
+                ConstantShaderAttributes.AddMat4("g_InverseViewMatrix");
+                ConstantShaderAttributes.AddTexture("g_IrradianceMap");
+                ConstantShaderAttributes.AddTexture("g_RadianceMap");
+                ConstantShaderAttributes.AddTexture("g_Skybox");
 
                 EnvironmentalLightingPipeline.Initialize(
                         m_pRenderPass,
                         "Deffered/WholeScreen.vsh",
+                        // "Deffered/Debug/ViewColor.psh",
                         // "Deffered/Debug/ViewNormal.psh",
-                        "Deffered/AmbientPBR.psh",
+                        // "Deffered/Debug/ViewDepth.psh",
+                        // "Deffered/Debug/ViewWorldPos.psh",
+                        // "Deffered/AmbientPBR.psh",
+                        "Deffered/PointLightPBR.psh",
                         "AmbientPBR Pipeline",
                         ConstantShaderAttributes,
                         static_cast<uint8_t>(G_BUFFER_FLAGS::COLOR) |
                         static_cast<uint8_t>(G_BUFFER_FLAGS::NORMAL) |
                         static_cast<uint8_t>(G_BUFFER_FLAGS::DEPTH)
                         );
-                EnvironmentalLightingPipeline.GetConstantData().SetFloat("g_AmbientPower", 0.1f);
+                ConstantShaderAttributes.SetDefaultAttribs(EnvironmentalLightingPipeline.GetConstantData());
+                // EnvironmentalLightingPipeline.GetConstantData().SetFloat("g_AmbientPower", 0.1f);
         }
 }
 
@@ -151,7 +156,7 @@ void DefferedRenderer::CreateRenderPass(Diligent::TEXTURE_FORMAT RTVFormat)
         RPDesc.DependencyCount = _countof(Dependencies);
         RPDesc.pDependencies = Dependencies;
 
-        m_pDevice->CreateRenderPass(RPDesc, &m_pRenderPass);
+        Renderer::GetDevice()->CreateRenderPass(RPDesc, &m_pRenderPass);
         VERIFY_EXPR(m_pRenderPass != nullptr);
 }
 
@@ -178,17 +183,17 @@ DefferedRenderer::FrameBufferData DefferedRenderer::CreateFramebuffer()
         TexDesc.ClearValue.Color[2] = 0.f;
         TexDesc.ClearValue.Color[3] = 1.f;
         RefCntAutoPtr<ITexture> pColorBuffer;
-        m_pDevice->CreateTexture(TexDesc, nullptr, &pColorBuffer);
+        Renderer::GetDevice()->CreateTexture(TexDesc, nullptr, &pColorBuffer);
 
         Diligent::ITextureView* pDstRenderTarget;
         // OpenGL does not allow combining swap chain render target with any
         // other render target, so we have to create an auxiliary texture.
         RefCntAutoPtr<ITexture> pOpenGLOffsreenRenderTarget;
-        if (m_pDevice->GetDeviceInfo().IsGLDevice() && m_pCurrentRenderTarget.is_swap_chain_buffer)
+        if (Renderer::GetDevice()->GetDeviceInfo().IsGLDevice() && m_pCurrentRenderTarget.is_swap_chain_buffer)
         {
                 TexDesc.Name = "OpenGL Color Offscreen Render Target";
                 TexDesc.Format = Renderer::GetDefaultRTVFormat();
-                m_pDevice->CreateTexture(TexDesc, nullptr, &pOpenGLOffsreenRenderTarget);
+                Renderer::GetDevice()->CreateTexture(TexDesc, nullptr, &pOpenGLOffsreenRenderTarget);
                 pDstRenderTarget = pOpenGLOffsreenRenderTarget->GetDefaultView(TEXTURE_VIEW_RENDER_TARGET);
         }
         else
@@ -211,7 +216,7 @@ DefferedRenderer::FrameBufferData DefferedRenderer::CreateFramebuffer()
         TexDesc.ClearValue.Color[2] = 0.f;
         TexDesc.ClearValue.Color[3] = 1.f;
         RefCntAutoPtr<ITexture> pNormalBuffer;
-        m_pDevice->CreateTexture(TexDesc, nullptr, &pNormalBuffer);
+        Renderer::GetDevice()->CreateTexture(TexDesc, nullptr, &pNormalBuffer);
 
         TexDesc.Name = "Depth Z G-buffer";
         TexDesc.Format = RPDesc.pAttachments[2].Format;
@@ -222,7 +227,7 @@ DefferedRenderer::FrameBufferData DefferedRenderer::CreateFramebuffer()
         TexDesc.ClearValue.Color[2] = 1.f;
         TexDesc.ClearValue.Color[3] = 1.f;
         RefCntAutoPtr<ITexture> pDepthZBuffer;
-        m_pDevice->CreateTexture(TexDesc, nullptr, &pDepthZBuffer);
+        Renderer::GetDevice()->CreateTexture(TexDesc, nullptr, &pDepthZBuffer);
 
 
         TexDesc.Name = "Depth buffer";
@@ -233,7 +238,7 @@ DefferedRenderer::FrameBufferData DefferedRenderer::CreateFramebuffer()
         TexDesc.ClearValue.DepthStencil.Depth = 1.f;
         TexDesc.ClearValue.DepthStencil.Stencil = 0;
         RefCntAutoPtr<ITexture> pDepthBuffer;
-        m_pDevice->CreateTexture(TexDesc, nullptr, &pDepthBuffer);
+        Renderer::GetDevice()->CreateTexture(TexDesc, nullptr, &pDepthBuffer);
 
 
         ITextureView* pAttachments[] = //
@@ -252,7 +257,7 @@ DefferedRenderer::FrameBufferData DefferedRenderer::CreateFramebuffer()
         FBDesc.ppAttachments = pAttachments;
 
         RefCntAutoPtr<IFramebuffer> pFrameBuffer;
-        m_pDevice->CreateFramebuffer(FBDesc, &pFrameBuffer);
+        Renderer::GetDevice()->CreateFramebuffer(FBDesc, &pFrameBuffer);
         VERIFY_EXPR(pFrameBuffer != nullptr);
 
 
@@ -325,12 +330,16 @@ void DefferedRenderer::PrepareDraw(RenderTarget& render_target)
         RPBeginInfo.pClearValues = ClearValues;
         RPBeginInfo.ClearValueCount = _countof(ClearValues);
         RPBeginInfo.StateTransitionMode = RESOURCE_STATE_TRANSITION_MODE_TRANSITION;
-        m_pImmediateContext->BeginRenderPass(RPBeginInfo);
+
+        EnvironmentalLightingPipeline.PreRender(m_DrawPeriodFrameBufferData->SRBIndex);
+
+        Renderer::GetContext()->BeginRenderPass(RPBeginInfo);
 }
 
 void DefferedRenderer::ApplyLighting()
 {
-        m_pImmediateContext->NextSubpass();
+        Renderer::GetContext()->NextSubpass();
+
 
         EnvironmentalLightingPipeline.PrepareDraw(m_DrawPeriodFrameBufferData->SRBIndex);
         EnvironmentalLightingPipeline.Draw();
@@ -350,9 +359,9 @@ void DefferedRenderer::ApplyLighting()
 
 void DefferedRenderer::FinalizeDraw()
 {
-        m_pImmediateContext->EndRenderPass();
+        Renderer::GetContext()->EndRenderPass();
 
-        if (m_pDevice->GetDeviceInfo().IsGLDevice() && m_pCurrentRenderTarget.is_swap_chain_buffer)
+        if (Renderer::GetDevice()->GetDeviceInfo().IsGLDevice() && m_pCurrentRenderTarget.is_swap_chain_buffer)
         {
                 // LD_LOG_TRACE("COPYING FROM OFFSCREEN TEXTURE");
                 // In OpenGL we now have to copy our off-screen buffer to the default framebuffer
@@ -361,7 +370,7 @@ void DefferedRenderer::FinalizeDraw()
 
                 CopyTextureAttribs CopyAttribs{pOffscreenRenderTarget, RESOURCE_STATE_TRANSITION_MODE_TRANSITION,
                                                pBackBuffer, RESOURCE_STATE_TRANSITION_MODE_TRANSITION};
-                m_pImmediateContext->CopyTexture(CopyAttribs);
+                Renderer::GetContext()->CopyTexture(CopyAttribs);
         }
 }
 

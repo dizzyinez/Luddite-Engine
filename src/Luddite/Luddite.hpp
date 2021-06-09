@@ -1,14 +1,18 @@
 #pragma once
 
+//Core
 #include "Luddite/Core/pch.hpp"
 #include "Luddite/Core/Core.hpp"
 #include "Luddite/Core/Application.hpp"
-#include "Luddite/Core/EntryPoint.hpp"
 #include "Luddite/Core/Logging.hpp"
 #include "Luddite/Core/LayerStack.hpp"
 #include "Luddite/Platform/Window/Window.hpp"
+
+//ECS
 #include "Luddite/ECS/World.hpp"
-#include "Luddite/ECS/Entity.hpp"
+#include "Luddite/ECS/Components/Components.hpp"
+#include "Luddite/ECS/Systems/Systems.hpp"
+
 
 //Graphics
 #include "Luddite/Graphics/Color.hpp"

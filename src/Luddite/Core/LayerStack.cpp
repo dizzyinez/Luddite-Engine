@@ -12,10 +12,15 @@ void LayerStack::UpdateLayers(double delta_time)
         for (auto layer : m_stack)
                 layer->Update(delta_time);
 }
-void LayerStack::RenderLayers(double alpha)
+void LayerStack::RenderLayers(double alpha, Luddite::RenderTarget window_render_target)
 {
         for (auto layer : m_stack)
-                layer->Render(alpha);
+                layer->Render(alpha, window_render_target);
+}
+void LayerStack::RenderLayersImGui(double alpha, Luddite::RenderTarget window_render_target)
+{
+        for (auto layer : m_stack)
+                layer->RenderImGui(alpha, window_render_target);
 }
 void LayerStack::PushLayer(std::shared_ptr<Layer> layer)
 {
@@ -38,7 +43,11 @@ void LayerStack::UpdateStack()
 void LayerStack::DefferedPushLayer(std::shared_ptr<Layer> layer)
 {
         m_stack.emplace_back(layer);
-        layer->Initialize();
+        if (!layer->initialized)
+        {
+                layer->Initialize();
+                layer->initialized = true;
+        }
 }
 void LayerStack::DefferedPopLayer(std::shared_ptr<Layer> layer)
 {

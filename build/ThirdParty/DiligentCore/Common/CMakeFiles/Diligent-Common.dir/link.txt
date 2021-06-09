@@ -1,0 +1,2 @@
+/bin/x86_64-linux-gnu-ar qc libDiligent-Common.a CMakeFiles/Diligent-Common.dir/src/BasicFileStream.cpp.o CMakeFiles/Diligent-Common.dir/src/DataBlobImpl.cpp.o CMakeFiles/Diligent-Common.dir/src/DefaultRawMemoryAllocator.cpp.o CMakeFiles/Diligent-Common.dir/src/FixedBlockMemoryAllocator.cpp.o CMakeFiles/Diligent-Common.dir/src/LockHelper.cpp.o CMakeFiles/Diligent-Common.dir/src/MemoryFileStream.cpp.o CMakeFiles/Diligent-Common.dir/src/Timer.cpp.o
+/bin/x86_64-linux-gnu-ranlib libDiligent-Common.a

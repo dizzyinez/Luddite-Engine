@@ -10,12 +10,17 @@ namespace Luddite
 // using Texture = Diligent::RefCntAutoPtr<ITexture>;
 class Texture
 {
-public:
-        // Texture
+        public:
+        Texture() = default;
+        Texture(const std::string& Path) {LoadTexture(Path);}
+        Texture(Diligent::RefCntAutoPtr<Diligent::ITexture> texture_ref) : m_pTexture(texture_ref) {}
+
+        void TransitionToShaderResource();
 
         Diligent::RefCntAutoPtr<Diligent::ITexture> GetTexture() const {return m_pTexture;}
-        void LoadTexture(Diligent::RefCntAutoPtr<Diligent::IRenderDevice> pDevice, const std::string& Path);
-private:
+        void LoadTexture(const std::string& Path);
+
+        private:
         Diligent::RefCntAutoPtr<Diligent::ITexture> m_pTexture;// {nullptr};
 };
 }

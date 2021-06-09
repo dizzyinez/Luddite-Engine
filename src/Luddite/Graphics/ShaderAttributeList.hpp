@@ -3,6 +3,7 @@
 #include "Luddite/Core/Core.hpp"
 
 #include "Luddite/Graphics/Color.hpp"
+#include "Luddite/Graphics/Texture.hpp"
 #include "Luddite/Graphics/DiligentInclude.hpp"
 // #include "Luddite/Core/pch.hpp"
 // #include "Luddite/Platform/DiligentPlatform.hpp"
@@ -18,7 +19,10 @@ namespace Luddite
 struct LUDDITE_API ShaderAttributeListData
 {
         std::string Name{};
-        // std::unordered_map<std::string, int> intmap;
+        std::unordered_map<std::string, Texture> texturemap;
+        Texture& GetTexture(const std::string& id) {return texturemap[id];}
+        void SetTexture(const std::string& id, const Texture& value) {texturemap[id] = value;}
+
         std::unordered_map<std::string, float> floatmap;
         float& GetFloat(const std::string& id) {return floatmap[id];}
         void SetFloat(const std::string& id, const float& value) {floatmap[id] = value;}
@@ -42,12 +46,6 @@ struct LUDDITE_API ShaderAttributeListData
         std::unordered_map<std::string, glm::mat4> mat4map;
         glm::mat4& GetMat4(const std::string& id) {return mat4map[id];}
         void SetMat4(const std::string& id, const glm::mat4& value) {mat4map[id] = value;}
-        // enum class AlphaMode : uint8_t
-        // {
-        //         OPAQUE = 0, //Opaque material
-        //         SEMITRANSPARENT, //Rendered in material pass with lighting calculations, transparency is created by "killing" pixels
-        //         TRANSLUCENT //Rendered in its own subpass without lighting calculations but with reflections.
-        // };
 };
 
 struct LUDDITE_API ShaderAttributeListDescription
@@ -67,8 +65,10 @@ struct LUDDITE_API ShaderAttributeListDescription
                 ValueType type;
                 std::size_t offset;
         };
+
         std::map<std::string, BufferValue> Attributes;
-        // std::vector<std::string> intlist;
+        std::vector<std::string> Textures;
+        inline void AddTexture(const std::string& name) {Textures.emplace_back(name);}
         inline void AddFloat(const std::string& name) {Attributes.insert({name, {ValueType::FLOAT, current_offest}}); current_offest += static_cast<std::size_t>(ValueType::FLOAT);}
         inline void AddVec2(const std::string& name) {Attributes.insert({name, {ValueType::VEC2, current_offest}}); current_offest += static_cast<std::size_t>(ValueType::VEC2);}
         inline void AddVec3(const std::string& name) {Attributes.insert({name, {ValueType::VEC3, current_offest}}); current_offest += static_cast<std::size_t>(ValueType::VEC3);}
@@ -80,8 +80,9 @@ struct LUDDITE_API ShaderAttributeListDescription
                 return current_offest;
         }
         void MapBuffer(ShaderAttributeListData& data, Diligent::RefCntAutoPtr<Diligent::IBuffer> buffer);
+        void MapTextures(ShaderAttributeListData& data, Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb);
         void SetDefaultAttribs(ShaderAttributeListData& data);
-private:
+        private:
         std::size_t current_offest = 0;
 };
 }

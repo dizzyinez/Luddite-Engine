@@ -1,0 +1,2 @@
+/bin/x86_64-linux-gnu-ar qc libDiligent-BasicPlatform.a CMakeFiles/Diligent-BasicPlatform.dir/src/BasicFileSystem.cpp.o CMakeFiles/Diligent-BasicPlatform.dir/src/BasicPlatformDebug.cpp.o CMakeFiles/Diligent-BasicPlatform.dir/src/StandardFile.cpp.o
+/bin/x86_64-linux-gnu-ranlib libDiligent-BasicPlatform.a

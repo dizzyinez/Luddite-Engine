@@ -6,10 +6,10 @@ namespace Luddite
 template <typename T>
 class EventList;
 class EventPool;
-using EventID = uint8_t;
+using EventIDType = uint8_t;
 struct LUDDITE_API BaseEvent
 {
-        static inline uint8_t m_EventIDCounter;
+        static inline EventIDType m_EventIDCounter;
 };
 
 template <typename T>
@@ -24,12 +24,13 @@ public:
 private:
         template <typename> friend class EventList;
         friend class EventPool;
-        bool handled = false;
-        static uint8_t EventID()
+        static EventIDType EventID()
         {
-                static uint8_t m_EventID = m_EventIDCounter++;
+                static EventIDType m_EventID = m_EventIDCounter++;
                 return m_EventID;
         }
+
+        bool handled = false;
 };
 
 

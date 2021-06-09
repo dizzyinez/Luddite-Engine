@@ -13,7 +13,7 @@ namespace Luddite
 {
 class DefferedLightingPipelineState
 {
-public:
+        public:
         void Initialize(
                 Diligent::RefCntAutoPtr<Diligent::IRenderPass> pRenderPass,
                 const std::string& VSFilePath,
@@ -23,6 +23,7 @@ public:
                 uint8_t Buffers
                 );
         void SetMaterial(MaterialHandle Material);
+        void PreRender(int SRBIndex);
         void PrepareDraw(int SRBIndex);
         void Draw();
 
@@ -32,7 +33,7 @@ public:
                       Diligent::ITextureView* NormalSRV,
                       Diligent::ITextureView* DepthZSRV);
         void ClearSRBs();
-private:
+        private:
         Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pPSO;
         std::vector<Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> > m_SRBs;
 

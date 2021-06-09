@@ -13,27 +13,33 @@ namespace Luddite
 {
 class DefferedPipelineState
 {
-public:
+        public:
         void Initialize(
                 Diligent::RefCntAutoPtr<Diligent::IRenderPass> pRenderPass,
                 const std::string& VSFilePath,
                 const std::string& PSFilePath,
                 const std::string& Name,
                 ShaderAttributeListDescription ConstantShaderAttributes,
-                ShaderAttributeListDescription MaterialShaderAttributes
+                ShaderAttributeListDescription MaterialShaderAttributes,
+                ShaderAttributeListDescription ModelShaderAttributes
                 );
         void PrepareDraw();
-        void DrawBasicMesh(const BasicMeshHandle Mesh);
+        void UploadModelData();
         void SetMaterial(MaterialHandle Material);
         inline ShaderAttributeListData& GetConstantData() {return m_ConstantShaderData;}
+        inline ShaderAttributeListData& GetModelData() {return m_ModelShaderData;}
         // void SetModelAttribs();
         MaterialHandle GetMaterial(const std::string& Name);
-private:
+        private:
         Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pPSO;
 
         ShaderAttributeListDescription m_ConstantShaderAttributes;
         ShaderAttributeListData m_ConstantShaderData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_pShaderConstantsBuffer;
+
+        ShaderAttributeListDescription m_ModelShaderAttributes;
+        ShaderAttributeListData m_ModelShaderData;
+        Diligent::RefCntAutoPtr<Diligent::IBuffer> m_pShaderModelBuffer;
 
         std::unique_ptr<MaterialLibrary> m_pMaterialLibrary;
         MaterialHandle m_pCurrentMaterial;

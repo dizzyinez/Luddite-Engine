@@ -4,7 +4,8 @@ namespace Luddite
 {
 void ShaderAttributeListDescription::MapBuffer(ShaderAttributeListData& data, Diligent::RefCntAutoPtr<Diligent::IBuffer> buffer)
 {
-        // char* Data = (char*)malloc(GetSize());
+        if (GetSize() == 0)
+                return;
         char* Data;
         Renderer::GetContext()->MapBuffer(buffer, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD, (Diligent::PVoid&)Data);
 
@@ -39,6 +40,17 @@ void ShaderAttributeListDescription::MapBuffer(ShaderAttributeListData& data, Di
         }
 
         Renderer::GetContext()->UnmapBuffer(buffer, Diligent::MAP_WRITE);
+}
+
+void ShaderAttributeListDescription::MapTextures(ShaderAttributeListData& data, Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb)
+{
+        for (auto& tex_name : Textures)
+        {
+                LD_LOG_TRACE("MAPPING TEXTURE {}", tex_name);
+                auto tex = data.GetTexture(tex_name).GetTexture();
+                auto var = srb->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, tex_name.c_str());
+                var->Set(tex->GetDefaultView(Diligent::TEXTURE_VIEW_SHADER_RESOURCE));
+        }
 }
 void ShaderAttributeListDescription::SetDefaultAttribs(ShaderAttributeListData& data)
 {

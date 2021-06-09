@@ -68,9 +68,26 @@ void DefferedLightingPipelineState::Initialize(
         bool UsingNormalBuffer = m_Buffers & static_cast<uint8_t>(DefferedRenderer::G_BUFFER_FLAGS::NORMAL);
         bool UsingDepthBuffer = m_Buffers & static_cast<uint8_t>(DefferedRenderer::G_BUFFER_FLAGS::DEPTH);
 
+
+        SamplerDesc SamLinearClampDesc
+        {
+                FILTER_TYPE_LINEAR, FILTER_TYPE_LINEAR, FILTER_TYPE_LINEAR,
+                TEXTURE_ADDRESS_CLAMP, TEXTURE_ADDRESS_CLAMP, TEXTURE_ADDRESS_CLAMP
+        };
+        std::vector<ImmutableSamplerDesc> ImtblSamplers;
         std::vector<ShaderResourceVariableDesc> Vars;
         if (m_ConstantShaderAttributes.GetSize() > 0)
                 Vars.push_back({SHADER_TYPE_PIXEL, "ShaderConstants", SHADER_RESOURCE_VARIABLE_TYPE_STATIC});
+        if (m_ConstantShaderAttributes.Textures.size() > 0)
+        {
+                for (auto& tex_name : m_ConstantShaderAttributes.Textures)
+                {
+                        Vars.push_back({SHADER_TYPE_PIXEL, tex_name.c_str(), SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE});
+                        ImtblSamplers.push_back({SHADER_TYPE_PIXEL, tex_name.c_str(), SamLinearClampDesc});
+                }
+                PSODesc.ResourceLayout.ImmutableSamplers = ImtblSamplers.data();
+                PSODesc.ResourceLayout.NumImmutableSamplers = ImtblSamplers.size();
+        }
 
 
         if (UsingColorBuffer)
@@ -104,13 +121,24 @@ void DefferedLightingPipelineState::Initialize(
                 m_pPSO->GetStaticVariableByName(SHADER_TYPE_PIXEL, "ShaderConstants")->Set(m_pShaderConstantsBuffer);
         }
 }
+void DefferedLightingPipelineState::PreRender(int SRBIndex)
+{
+        // Renderer::GetContext()->SetPipelineState(m_pPSO);
+        // m_ConstantShaderAttributes.MapBuffer(m_ConstantShaderData, m_pShaderConstantsBuffer);
+        m_ConstantShaderAttributes.MapTextures(m_ConstantShaderData, m_SRBs[SRBIndex]);
+        // // m_SRBs[SRBIndex]->GetVariableByName(SHADER_TYPE_PIXEL, )
+
+
+        // Renderer::GetContext()->CommitShaderResources(m_SRBs[SRBIndex], RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+}
 void DefferedLightingPipelineState::PrepareDraw(int SRBIndex)
 {
         Renderer::GetContext()->SetPipelineState(m_pPSO);
-        if (m_ConstantShaderAttributes.GetSize() > 0)
-        {
-                m_ConstantShaderAttributes.MapBuffer(m_ConstantShaderData, m_pShaderConstantsBuffer);
-        }
+        m_ConstantShaderAttributes.MapBuffer(m_ConstantShaderData, m_pShaderConstantsBuffer);
+        // m_ConstantShaderAttributes.MapTextures(m_ConstantShaderData, m_SRBs[SRBIndex]);
+        // m_SRBs[SRBIndex]->GetVariableByName(SHADER_TYPE_PIXEL, )
+
+
         Renderer::GetContext()->CommitShaderResources(m_SRBs[SRBIndex], RESOURCE_STATE_TRANSITION_MODE_VERIFY);
 }
 void DefferedLightingPipelineState::Draw()

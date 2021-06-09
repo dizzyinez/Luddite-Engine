@@ -8,25 +8,6 @@
     #define LUDDITE_API
 #endif
 
-//to make intellisense happy
-#ifndef LUDDITE_API
-    #define LUDDITE_API
-#endif
-#ifndef LD_PLATFORM_WINDOWS
-    #define LD_PLATFORM_WINDOWS
-#endif
-#ifndef LD_DEBUG
-    #define LD_DEBUG
-#endif
-
-
-
-
-
-
-
-
-
 #ifdef LD_PLATFORM_WINDOWS
     #ifdef LD_BUILD_LIB
         #define LUDDITE_API __declspec(dllexport)
