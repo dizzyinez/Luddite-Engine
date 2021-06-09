@@ -1,2 +1,0 @@
-/bin/x86_64-linux-gnu-ar qc libDiligent-HLSL2GLSLConverterLib.a CMakeFiles/Diligent-HLSL2GLSLConverterLib.dir/src/HLSL2GLSLConverterImpl.cpp.o CMakeFiles/Diligent-HLSL2GLSLConverterLib.dir/src/HLSL2GLSLConverterObject.cpp.o
-/bin/x86_64-linux-gnu-ranlib libDiligent-HLSL2GLSLConverterLib.a

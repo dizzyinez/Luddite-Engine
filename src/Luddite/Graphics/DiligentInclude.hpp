@@ -19,9 +19,12 @@
 
 // class ImGuiImplDiligent;
 //imgui
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "ThirdParty/imgui/imgui.h"
 #include "Imgui/interface/ImGuiImplDiligent.hpp"
 #include "Imgui/interface/ImGuiUtils.hpp"
+
+#include "ImGuizmo.h"
 
 //main
 #include "Graphics/GraphicsEngine/interface/RenderDevice.h"

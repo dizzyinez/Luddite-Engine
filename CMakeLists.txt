@@ -20,7 +20,6 @@ add_subdirectory(ThirdParty/DiligentCore)
 add_subdirectory(ThirdParty/DiligentFX)
 add_subdirectory(ThirdParty/DiligentTools)
 add_subdirectory(ThirdParty/spdlog)
-#add_subdirectory(ThirdParty/imgui)
 
 set (ENGINE_COMPILE_DEFINES LD_BUILD_LIB)
 if (LINUX)
@@ -57,7 +56,10 @@ endif()
 file(GLOB_RECURSE ENGINE_SOURCE "src/*.c" "src/*.cc" "src/*.cpp")
 file(GLOB_RECURSE ENGINE_HEADERS "src/*.h" "src/*.hpp")
 
-add_library(Luddite-Engine STATIC ${ENGINE_SOURCE} ${ENGINE_HEADERS})
+file(GLOB IMGUIZMO_SOURCE "ThirdParty/ImGuizmo/*.h" "ThirdParty/ImGuizmo/*.cpp")
+
+
+add_library(Luddite-Engine STATIC ${ENGINE_SOURCE} ${ENGINE_HEADERS} ${IMGUIZMO_SOURCE})
 target_compile_options(Luddite-Engine PRIVATE -DUNICODE -DENGINE_DLL=0 ${COMPILE_OPTIONS})
 if(LINK_OPTIONS)
 set_target_properties(Luddite-Engine PROPERTIES LINK_FLAGS ${LINK_OPTIONS})
@@ -74,6 +76,7 @@ target_include_directories(Luddite-Engine PUBLIC ${LUDDITE_INCLUDE}
 "ThirdParty/entt/single_include"
 "ThirdParty/glm"
 "ThirdParty/OBJ-Loader/Source"
+"ThirdParty/ImGuizmo/"
 #"ThirdParty/imgui"
 )
 

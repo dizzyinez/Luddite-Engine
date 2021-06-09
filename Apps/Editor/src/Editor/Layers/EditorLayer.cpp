@@ -1,9 +1,11 @@
 #include "Editor/Layers/EditorLayer.hpp"
+#include "Editor/ECS/Components/Components.hpp"
 
 Luddite::Entity cam;
 void EditorLayer::Initialize()
 {
-        m_World.RegisterSystem<S_Render>();
+        m_World.RegisterSystem<S_SceneSubmitter>();
+        m_World.RegisterSystem<S_RenderActiveCamera>();
         m_World.ConfigureSystems();
         m_pViewportPanel = std::make_unique<ViewportPanel>();
 
@@ -14,6 +16,7 @@ void EditorLayer::Initialize()
                 // transform.Translation.y = 1.f;
                 // transform.Translation.z = 1.f;
                 e.AddComponent<C_Model>(Luddite::ModelLoader::GetBasicModel("Assets/suzanne.obj"));
+                m_World.SetSingleton<C_SelectedEntity>(e.GetID());
         }
 
         {
@@ -43,9 +46,10 @@ void EditorLayer::Update(double delta_time)
 
 void EditorLayer::Render(double alpha, Luddite::RenderTarget window_render_target)
 {
-        // m_World.UpdateSystem<S_Render>(m_World, alpha, window_render_target);
+        m_World.UpdateSystem<S_SceneSubmitter>(m_World, alpha);
         m_pViewportPanel->CheckForResize();
-        m_World.UpdateSystem<S_Render>(m_World, alpha, m_pViewportPanel->GetRenderTarget());
+        Luddite::Renderer::Draw(m_pViewportPanel->GetRenderTarget(), m_pViewportPanel->m_Camera);
+        // m_World.UpdateSystem<S_RenderActiveCamera>(m_World, alpha, m_pViewportPanel->GetRenderTarget());
 }
 
 void EditorLayer::RenderImGui(double alpha, Luddite::RenderTarget window_render_target)
@@ -114,6 +118,6 @@ void EditorLayer::RenderImGui(double alpha, Luddite::RenderTarget window_render_
         }
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        m_pViewportPanel->Draw();
+        m_pViewportPanel->Draw(m_World);
         ImGui::PopStyleVar();
 }

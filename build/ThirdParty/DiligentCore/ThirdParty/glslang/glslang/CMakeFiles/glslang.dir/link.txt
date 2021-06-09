@@ -1,2 +1,0 @@
-/bin/x86_64-linux-gnu-ar qc libglslang.a CMakeFiles/glslang.dir/CInterface/glslang_c_interface.cpp.o
-/bin/x86_64-linux-gnu-ranlib libglslang.a

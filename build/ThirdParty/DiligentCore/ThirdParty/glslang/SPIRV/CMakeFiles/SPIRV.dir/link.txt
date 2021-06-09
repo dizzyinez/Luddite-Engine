@@ -1,2 +1,0 @@
-/bin/x86_64-linux-gnu-ar qc libSPIRV.a CMakeFiles/SPIRV.dir/GlslangToSpv.cpp.o CMakeFiles/SPIRV.dir/InReadableOrder.cpp.o CMakeFiles/SPIRV.dir/Logger.cpp.o CMakeFiles/SPIRV.dir/SpvBuilder.cpp.o CMakeFiles/SPIRV.dir/SpvPostProcess.cpp.o CMakeFiles/SPIRV.dir/doc.cpp.o CMakeFiles/SPIRV.dir/SpvTools.cpp.o CMakeFiles/SPIRV.dir/disassemble.cpp.o CMakeFiles/SPIRV.dir/CInterface/spirv_c_interface.cpp.o
-/bin/x86_64-linux-gnu-ranlib libSPIRV.a

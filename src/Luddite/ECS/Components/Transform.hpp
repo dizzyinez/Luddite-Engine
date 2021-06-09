@@ -9,9 +9,12 @@ struct C_Transform3D
         glm::mat4 GetTransformMatrix() const
         {
                 return glm::translate(glm::mat4(1.f), Translation)
-                       * glm::rotate(glm::mat4(1.f), Rotation.x, {1.f, 0.f, 0.f})
-                       * glm::rotate(glm::mat4(1.f), Rotation.y, {0.f, 1.f, 0.f})
-                       * glm::rotate(glm::mat4(1.f), Rotation.z, {0.f, 0.f, 1.f})
+                       * glm::toMat4(glm::quat(Rotation))
                        * glm::scale(glm::mat4(1.f), Scale);
+        }
+
+        glm::vec3 GetLookDirection() const
+        {
+                return glm::vec4(0.f, 0.f, 1.f, 0.f) * glm::toMat4(glm::quat(Rotation));
         }
 };

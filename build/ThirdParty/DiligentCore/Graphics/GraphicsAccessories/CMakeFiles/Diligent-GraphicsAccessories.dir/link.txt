@@ -1,2 +1,0 @@
-/bin/x86_64-linux-gnu-ar qc libDiligent-GraphicsAccessories.a CMakeFiles/Diligent-GraphicsAccessories.dir/src/ColorConversion.cpp.o CMakeFiles/Diligent-GraphicsAccessories.dir/src/DynamicAtlasManager.cpp.o CMakeFiles/Diligent-GraphicsAccessories.dir/src/SRBMemoryAllocator.cpp.o CMakeFiles/Diligent-GraphicsAccessories.dir/src/GraphicsAccessories.cpp.o
-/bin/x86_64-linux-gnu-ranlib libDiligent-GraphicsAccessories.a

@@ -1,2 +1,0 @@
-/bin/x86_64-linux-gnu-ar qc libDiligentFX.a CMakeFiles/DiligentFX.dir/Utilities/src/DiligentFXShaderSourceStreamFactory.cpp.o CMakeFiles/DiligentFX.dir/Components/src/ShadowMapManager.cpp.o CMakeFiles/DiligentFX.dir/PostProcess/EpipolarLightScattering/src/EpipolarLightScattering.cpp.o CMakeFiles/DiligentFX.dir/GLTF_PBR_Renderer/src/GLTF_PBR_Renderer.cpp.o
-/bin/x86_64-linux-gnu-ranlib libDiligentFX.a

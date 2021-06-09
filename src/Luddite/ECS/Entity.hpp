@@ -4,6 +4,7 @@
 namespace Luddite
 {
 using EntityID = entt::entity;
+constexpr EntityID NullEntityID = entt::null;
 class LUDDITE_API Entity
 {
         public:

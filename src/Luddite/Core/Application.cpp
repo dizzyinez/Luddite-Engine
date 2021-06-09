@@ -58,6 +58,7 @@ void Application::Run()
                 //imgui render
                 Renderer::BindRenderTarget(MainWindowRenderTarget);
                 m_MainWindow->ImGuiNewFrame();
+                ImGuizmo::BeginFrame();
                 m_MainWindow->GetLayerStack().RenderLayersImGui(1.0f, MainWindowRenderTarget);
                 m_MainWindow->GetImGuiImpl()->Render(Renderer::m_pImmediateContext);
                 m_MainWindow->SwapBuffers();

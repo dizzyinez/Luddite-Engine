@@ -1,2 +1,0 @@
-/bin/x86_64-linux-gnu-ar qc libDiligent-Primitives.a CMakeFiles/Diligent-Primitives.dir/src/DebugOutput.cpp.o CMakeFiles/Diligent-Primitives.dir/src/test.cpp.o
-/bin/x86_64-linux-gnu-ranlib libDiligent-Primitives.a

@@ -23,3 +23,6 @@
 [submodule "ThirdParty/DiligentTools"]
 	path = ThirdParty/DiligentTools
 	url = https://github.com/Aquaticholic/DiligentTools
+[submodule "ThirdParty/ImGuizmo"]
+	path = ThirdParty/ImGuizmo
+	url = https://github.com/Aquaticholic/ImGuizmo

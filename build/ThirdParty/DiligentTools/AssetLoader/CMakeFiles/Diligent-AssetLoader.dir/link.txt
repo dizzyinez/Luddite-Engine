@@ -1,2 +1,0 @@
-/bin/x86_64-linux-gnu-ar qc libDiligent-AssetLoader.a CMakeFiles/Diligent-AssetLoader.dir/src/GLTFLoader.cpp.o CMakeFiles/Diligent-AssetLoader.dir/src/DXSDKMeshLoader.cpp.o CMakeFiles/Diligent-AssetLoader.dir/src/GLTFResourceManager.cpp.o
-/bin/x86_64-linux-gnu-ranlib libDiligent-AssetLoader.a

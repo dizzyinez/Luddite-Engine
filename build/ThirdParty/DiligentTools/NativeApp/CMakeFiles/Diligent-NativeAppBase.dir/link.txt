@@ -1,2 +1,0 @@
-/bin/x86_64-linux-gnu-ar qc libDiligent-NativeAppBase.a CMakeFiles/Diligent-NativeAppBase.dir/src/Linux/LinuxMain.cpp.o
-/bin/x86_64-linux-gnu-ranlib libDiligent-NativeAppBase.a
