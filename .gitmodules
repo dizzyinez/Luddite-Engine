@@ -26,3 +26,6 @@
 [submodule "ThirdParty/ImGuizmo"]
 	path = ThirdParty/ImGuizmo
 	url = https://github.com/Aquaticholic/ImGuizmo
+[submodule "ThirdParty/RuntimeCompiledCPlusPlus"]
+	path = ThirdParty/RuntimeCompiledCPlusPlus
+	url = https://github.com/Aquaticholic/RuntimeCompiledCPlusPlus

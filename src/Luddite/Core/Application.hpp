@@ -18,16 +18,18 @@ enum class RenderingBackend : uint8_t
 
 class LUDDITE_API Application
 {
-public:
+        public:
         Application();
         virtual ~Application();
         void Run();
         void CreateMainWindow(const std::string& Name, int width = 1080, int height = 720, int min_width = 320, int min_height = 240);
         std::shared_ptr<Window> GetMainWindow() {return m_MainWindow;}
-protected:
-        // std::vector<std::shared_ptr<Window> > m_windows;
+
+        protected:
+        virtual void OnUpdate() = 0;
+        virtual void OnRender() = 0;
+        virtual void OnImGuiRender() = 0;
         std::shared_ptr<Window> m_MainWindow;
-        // Renderer m_Renderer;
         RenderingBackend m_RenderingBackend;
 };
 

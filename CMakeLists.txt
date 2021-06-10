@@ -9,13 +9,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # set(CMAKE_CXX_STANDARD_REQUIRED True)
 if(LINUX)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -DCOMPILE_PATH=\"\\\"${CMAKE_BINARY_DIR}\\\"\"")
 endif()
 
 # if(WIN32)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS")
 # endif()
 
+add_subdirectory(ThirdParty/RuntimeCompiledCPlusPlus/Aurora)
 add_subdirectory(ThirdParty/DiligentCore)
 add_subdirectory(ThirdParty/DiligentFX)
 add_subdirectory(ThirdParty/DiligentTools)
@@ -77,6 +78,8 @@ target_include_directories(Luddite-Engine PUBLIC ${LUDDITE_INCLUDE}
 "ThirdParty/glm"
 "ThirdParty/OBJ-Loader/Source"
 "ThirdParty/ImGuizmo/"
+"ThirdParty/RuntimeCompiledCPlusPlus/Aurora/RuntimeCompiler"
+"ThirdParty/RuntimeCompiledCPlusPlus/Aurora/RuntimeObjectSystem"
 #"ThirdParty/imgui"
 )
 
@@ -117,6 +120,6 @@ if (WIN32)
     Diligent-ShaderTools
     )
 endif()
-target_link_libraries(Luddite-Engine ${DILIGENT_LIBS} spdlog)
+target_link_libraries(Luddite-Engine ${DILIGENT_LIBS} spdlog RuntimeCompiler RuntimeObjectSystem)
 # copy_required_dlls(Luddite-Engine)
 add_subdirectory(Apps)
