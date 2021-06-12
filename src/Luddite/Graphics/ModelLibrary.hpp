@@ -9,14 +9,14 @@ namespace Luddite
 {
 class LUDDITE_API ModelLoader
 {
-public:
+        public:
         static std::shared_ptr<BasicModel> GetBasicModel(const std::string& filepath);
-private:
+        private:
         class BasicModelAllocator : public BasicAllocator<BasicModel>
         {
-public:
+                public:
                 std::shared_ptr<BasicModel> Allocate(const std::string& filepath) override;
-private:
+                private:
                 void CreateBuffers(std::shared_ptr<BasicModel> model);
                 void LoadOBJ(std::shared_ptr<BasicModel> model, std::string filepath);
         };

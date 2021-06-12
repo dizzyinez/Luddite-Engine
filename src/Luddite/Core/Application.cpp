@@ -2,10 +2,6 @@
 #include "Luddite/Graphics/RenderTarget.hpp"
 #include "Luddite/Platform/Window/NativeWindow.hpp"
 
-#include "Luddite/Core/RCCppLogger.hpp"
-#include "Luddite/Core/SystemTable.h"
-#include "Luddite/Core/GameInstance.hpp"
-
 namespace Luddite
 {
 Application::Application()
@@ -16,7 +12,7 @@ Application::~Application()
 {}
 void Application::Run()
 {
-        LD_VERIFY(m_MainWindow, "Main window was never created! Call the CreateMainWindow function in the app's constructor");
+        LD_VERIFY(m_pMainWindow, "Main window was never created! Call the CreateMainWindow function in the app's constructor");
 
         Renderer::Initialize();
 
@@ -46,9 +42,12 @@ void Application::Run()
 
         std::chrono::microseconds update_accululator(0);
         std::chrono::microseconds render_accululator(0);
-        m_MainWindow->m_Vsync = true;
+        m_pMainWindow->m_Vsync = true;
+
+        Initialize();
+
         double delta_time;
-        while (!m_MainWindow->ShouldQuit())
+        while (!m_pMainWindow->ShouldQuit())
         {
                 std::chrono::high_resolution_clock::time_point loop_start = std::chrono::high_resolution_clock::now();
 
@@ -66,27 +65,30 @@ void Application::Run()
                 // m_SystemTable.pGameInstanceI->Initialize();
 
 
-
+                //TEMP
+                float fixed_dt = std::chrono::duration_cast<std::chrono::duration<double> >(min_update_time).count();
 
                 //event handling
-                m_MainWindow->ClearEvents();
-                m_MainWindow->PollEvents();
-                m_MainWindow->HandleEvents();
+                m_pMainWindow->ClearEvents();
+                m_pMainWindow->PollEvents();
+                m_pMainWindow->HandleEvents();
                 while (update_accululator > min_update_time)
                 {
                         update_accululator -= min_update_time;
                         //update
-                        OnUpdate();
-                        // m_MainWindow->GetLayerStack().UpdateLayers(0.016667f);
+                        OnUpdate(fixed_dt);
+                        // m_pMainWindow->GetLayerStack().UpdateLayers(0.016667f);
                 }
 
+                //TEMP
+                float lerp_alpha = 1.0f;
 
                 //render
-                auto MainWindowRenderTarget = m_MainWindow->GetRenderTarget();
+                auto MainWindowRenderTarget = m_pMainWindow->GetRenderTarget();
                 Renderer::BindRenderTarget(MainWindowRenderTarget);
                 Renderer::ClearRenderTarget(MainWindowRenderTarget);
-                OnRender();
-                // m_MainWindow->GetLayerStack().RenderLayers(1.0f, MainWindowRenderTarget);
+                OnRender(lerp_alpha);
+                // m_pMainWindow->GetLayerStack().RenderLayers(1.0f, MainWindowRenderTarget);
 
 
                 // while (render_accululator > min_render_time)
@@ -94,12 +96,12 @@ void Application::Run()
                 // render_accululator -= min_render_time;
                 //imgui render
                 Renderer::BindRenderTarget(MainWindowRenderTarget);
-                m_MainWindow->ImGuiNewFrame();
+                m_pMainWindow->ImGuiNewFrame();
                 ImGuizmo::BeginFrame();
-                OnImGuiRender();
-                // m_MainWindow->GetLayerStack().RenderLayersImGui(1.0f, MainWindowRenderTarget);
-                m_MainWindow->GetImGuiImpl()->Render(Renderer::m_pImmediateContext);
-                m_MainWindow->SwapBuffers();
+                OnImGuiRender(lerp_alpha);
+                // m_pMainWindow->GetLayerStack().RenderLayersImGui(1.0f, MainWindowRenderTarget);
+                m_pMainWindow->GetImGuiImpl()->Render(Renderer::m_pImmediateContext);
+                m_pMainWindow->SwapBuffers();
                 // }
 
                 std::chrono::microseconds loop_time_span = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - loop_start);
@@ -118,10 +120,10 @@ void Application::CreateMainWindow(const std::string& Name, int width, int heigh
 {
         //TEMP
         NativeVulkanWindow::InitNativeEngineFactory();
-        m_MainWindow = std::make_shared<NativeVulkanWindow>(Name, width, height, min_width, min_height);
+        m_pMainWindow = std::make_shared<NativeVulkanWindow>(Name, width, height, min_width, min_height);
 
-        // m_MainWindow = std::make_shared<NativeOpenGLWindow>(Name, width, height, min_width, min_height);
+        // m_pMainWindow = std::make_shared<NativeOpenGLWindow>(Name, width, height, min_width, min_height);
 
-        // m_MainWindow = std::make_shared<NativeD3D12Window>(Name, width, height, min_width, min_height);
+        // m_pMainWindow = std::make_shared<NativeD3D12Window>(Name, width, height, min_width, min_height);
 }
 }

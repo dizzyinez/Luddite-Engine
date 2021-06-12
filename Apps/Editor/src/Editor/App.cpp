@@ -20,7 +20,7 @@ class Editor : public Luddite::Application
                 LD_LOG_INFO("Test Application starting");
                 CreateMainWindow("Luddite Test App");
                 auto layer = std::make_shared<EditorLayer>();
-                m_MainWindow->GetLayerStack().PushLayer(layer);
+                m_pMainWindow->GetLayerStack().PushLayer(layer);
                 LD_LOG_INFO("Window Created");
                 InitRCCpp();
         }

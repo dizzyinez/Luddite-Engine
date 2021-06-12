@@ -37,6 +37,11 @@ void Window::HandleEvents()
         }
 }
 
+ImGuiContext* Window::GetImGuiContext()
+{
+        return ImGui::GetCurrentContext();
+};
+
 glm::mat4x4 Window::GetAdjustedProjectionMatrix(float FOV, float NearPlane, float FarPlane) const
 {
         const auto& SCDesc = m_pSwapChain->GetDesc();

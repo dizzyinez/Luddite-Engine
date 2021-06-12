@@ -10,13 +10,15 @@ class S_SceneSubmitter : public Luddite::System<S_SceneSubmitter>
                 // world.GetGroup<C_Transform3D>(Luddite::Borrow<C_Model>);
         }
 
-        void Update(Luddite::World& world, float alpha)
+        void Update(Luddite::World& world, float lerp_alpha)
         {
                 Luddite::Renderer::BeginScene();
                 for (const auto &&[id, transform, model]: world.GetGroup<C_Transform3D>(Luddite::Borrow<C_Model>).each())
                 {
                         for (auto& mesh : model.ModelHandle->meshes)
+                        {
                                 Luddite::Renderer::SubmitMesh(mesh, transform.GetTransformMatrix());
+                        }
                 }
                 Luddite::Renderer::EndScene();
         }

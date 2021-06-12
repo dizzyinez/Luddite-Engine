@@ -51,6 +51,7 @@ class LUDDITE_API Window
         {
                 m_pImGuiImpl->NewFrame(m_WindowWidth, m_WindowHeight, m_pSwapChain->GetDesc().PreTransform);
         };
+        ImGuiContext* GetImGuiContext();
         #else
         inline void ImGuiNewFrame() {};
         #endif // LD_ENABLE_IMGUI

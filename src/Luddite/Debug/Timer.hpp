@@ -5,5 +5,5 @@ class Timer
 {
         public:
         private:
-        const char* mname
+        const char* mname;
 };

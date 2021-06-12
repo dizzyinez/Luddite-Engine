@@ -30,7 +30,7 @@ class LUDDITE_API World
         {
         #ifdef LD_DEBUG
                 T* pSingleton = TrySingleton<T>();
-                LD_VERIFY(pSingleton, "World doesn't have singleton component {}", GET_TYPENAME_STRING(T));
+                LD_VERIFY(pSingleton, "World doesn't have singleton component {}", typeid(T).name());
                 return *pSingleton;
         #else
                 return m_Registry.ctx<T>();
@@ -76,7 +76,7 @@ class LUDDITE_API World
         T& GetSystem()
         {
                 auto it = m_Systems.find(T::SystemID());
-                LD_VERIFY(it != m_Systems.end(), "World doesn't have system {}", GET_TYPENAME_STRING(T));
+                LD_VERIFY(it != m_Systems.end(), "World doesn't have system {}", typeid(T).name());
                 return *static_cast<T*>(it->second.get());
         }
 };

@@ -23,13 +23,14 @@ class LUDDITE_API Application
         virtual ~Application();
         void Run();
         void CreateMainWindow(const std::string& Name, int width = 1080, int height = 720, int min_width = 320, int min_height = 240);
-        std::shared_ptr<Window> GetMainWindow() {return m_MainWindow;}
+        std::shared_ptr<Window> GetMainWindow() {return m_pMainWindow;}
 
         protected:
-        virtual void OnUpdate() = 0;
-        virtual void OnRender() = 0;
-        virtual void OnImGuiRender() = 0;
-        std::shared_ptr<Window> m_MainWindow;
+        virtual void Initialize() {}
+        virtual void OnUpdate(float delta_time) = 0;
+        virtual void OnRender(float lerp_alpha) = 0;
+        virtual void OnImGuiRender(float lerp_alpha) = 0;
+        std::shared_ptr<Window> m_pMainWindow;
         RenderingBackend m_RenderingBackend;
 };
 
