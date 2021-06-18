@@ -29,3 +29,6 @@
 [submodule "ThirdParty/RuntimeCompiledCPlusPlus"]
 	path = ThirdParty/RuntimeCompiledCPlusPlus
 	url = https://github.com/Aquaticholic/RuntimeCompiledCPlusPlus
+[submodule "ThirdParty/libxkbcommon"]
+	path = ThirdParty/libxkbcommon
+	url = https://github.com/Aquaticholic/libxkbcommon

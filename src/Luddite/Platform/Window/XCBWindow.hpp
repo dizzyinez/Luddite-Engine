@@ -3,6 +3,7 @@
 #ifdef LD_PLATFORM_LINUX
 #include "Luddite/Platform/Window/Window.hpp"
 #include <xcb/xcb.h>
+#include "xkbcommon/xkbcommon-x11.h"
 
 #include "Luddite/Graphics/DiligentInclude.hpp"
 #include "Graphics/GraphicsEngineVulkan/interface/EngineFactoryVk.h"
@@ -16,21 +17,29 @@ struct XCBInfo
         xcb_intern_atom_reply_t* atom_wm_delete_window = nullptr;
 };
 
+struct XKBInfo
+{
+        xkb_context* ctx = nullptr;
+        xkb_keymap* keymap = nullptr;
+        xkb_state* state = nullptr;
+};
+
 namespace Luddite
 {
 class LUDDITE_API XCBWindow : public Window
 {
-public:
+        public:
         XCBWindow(const std::string& title = "Luddite Engine Application", int width = 1024, int height = 768, int min_width = 320, int min_height = 240);
         ~XCBWindow() override;
         void SetTitle(const std::string& title) override;
         void PollEvents() override;
 
         static bool InitNativeEngineFactory();
-private:
+        private:
         void InitXCBConnectionAndWindow(const std::string& title, int width, int height, int min_width, int min_height);
         bool InitVulkan();
         XCBInfo info;
+        XKBInfo kb_info;
 };
 }
 

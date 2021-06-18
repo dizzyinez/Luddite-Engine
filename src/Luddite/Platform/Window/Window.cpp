@@ -25,7 +25,7 @@ void Window::HandleEvents()
         }
         unsigned int new_width = 0;
         unsigned int new_height = 0;
-        for (auto& event : m_EventPool.GetList<WindowSizeEvent>())
+        for (auto& event : Events::GetList<WindowSizeEvent>())
         {
                 new_width = event.width;
                 new_height = event.height;

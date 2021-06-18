@@ -24,7 +24,6 @@ class LUDDITE_API Window
         inline uint32_t GetHeight() {return m_pSwapChain->GetDesc().Height;}
         LayerStack& GetLayerStack() {return m_LayerStack;}
 
-        inline void ClearEvents() {m_EventPool.Clear();}
         virtual void PollEvents() {};
         void HandleEvents();
 
@@ -68,6 +67,5 @@ class LUDDITE_API Window
         #endif // LD_ENABLE_IMGUI
 
         LayerStack m_LayerStack;
-        EventPool m_EventPool;
 };
 }

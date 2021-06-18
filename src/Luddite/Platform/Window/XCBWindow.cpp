@@ -39,6 +39,7 @@ XCBWindow::XCBWindow(const std::string& title, int width, int height, int min_wi
         InitXCBConnectionAndWindow(title, width, height, min_width, min_height);
         InitVulkan();
         xcb_flush(info.connection);
+
         OnWindowResize(width, height);
 }
 
@@ -81,11 +82,31 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title, int width, 
 {
         int scr = 0;
         info.connection = xcb_connect(nullptr, &scr);
-        if (info.connection == nullptr || xcb_connection_has_error(info.connection))
-        {
-                LD_LOG_CRITICAL("Unable to make an XCB connection");
-        }
+        LD_VERIFY(info.connection && !xcb_connection_has_error(info.connection), "Unable to make an XCB connection");
         LD_LOG_INFO("XCB connection established");
+
+        //Init XKB
+        static uint8_t xkb_base_event;
+        static uint8_t xkb_base_error;
+        xkb_x11_setup_xkb_extension(info.connection,
+                XKB_X11_MIN_MAJOR_XKB_VERSION,
+                XKB_X11_MIN_MINOR_XKB_VERSION,
+                XKB_X11_SETUP_XKB_EXTENSION_NO_FLAGS,
+                NULL,
+                NULL,
+                &xkb_base_event,
+                &xkb_base_error
+                );
+        kb_info.ctx = xkb_context_new(XKB_CONTEXT_NO_FLAGS);;
+        LD_VERIFY(kb_info.ctx, "Unable to create XKB context");
+        int32_t device_id;
+        device_id = xkb_x11_get_core_keyboard_device_id(info.connection);
+        LD_VERIFY(device_id > -1, "Couldn't get XKB keyboard device!");
+        kb_info.keymap = xkb_x11_keymap_new_from_device(kb_info.ctx, info.connection, device_id, XKB_KEYMAP_COMPILE_NO_FLAGS);
+        LD_VERIFY(kb_info.keymap, "Unable to create XKB keymap!");
+        kb_info.state = xkb_state_new(kb_info.keymap);
+        LD_VERIFY(kb_info.state, "Unable to create XKB state!");
+
 
         const xcb_setup_t*    setup = xcb_get_setup(info.connection);
         xcb_screen_iterator_t iter = xcb_setup_roots_iterator(setup);
@@ -103,7 +124,7 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title, int width, 
 
         value_mask = XCB_CW_BACK_PIXEL | XCB_CW_EVENT_MASK;
         value_list[0] = screen->black_pixel;
-        value_list[1] = XCB_EVENT_MASK_KEY_RELEASE |
+        value_list[1] = XCB_EVENT_MASK_KEY_PRESS |
                         XCB_EVENT_MASK_KEY_RELEASE |
                         XCB_EVENT_MASK_EXPOSURE |
                         XCB_EVENT_MASK_STRUCTURE_NOTIFY |
@@ -161,6 +182,7 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title, int width, 
 void XCBWindow::PollEvents()
 {
         xcb_generic_event_t* event = nullptr;
+        int16_t scrolls = 0;
         while ((event = xcb_poll_for_event(info.connection)) != nullptr)
         {
                 bool imgui_handled = static_cast<Diligent::ImGuiImplLinuxXCB*>(m_pImGuiImpl.get())->HandleXCBEvent(event);
@@ -189,15 +211,55 @@ void XCBWindow::PollEvents()
                                 info.height = cfgEvent->height;
                                 if ((info.width > 0) && (info.height > 0))
                                 {
-                                        m_EventPool.GetList<WindowSizeEvent>().DispatchEvent(info.width, info.height);
+                                        Events::GetList<WindowSizeEvent>().DispatchEvent(info.width, info.height);
                                 }
                         }
+                        break;
                 }
-                break;
+
+                case XCB_KEY_PRESS:
+                {
+                        const auto* key_press = reinterpret_cast<const xcb_key_press_event_t*>(event);
+                        xkb_keycode_t keycode = key_press->detail;
+                        xkb_keysym_t keysym = xkb_state_key_get_one_sym(kb_info.state, keycode);
+                        Events::GetList<KeyPressEvent>().DispatchEvent(keysym);
+                        break;
+                }
+
+                case XCB_KEY_RELEASE:
+                {
+                        const auto* key_release = reinterpret_cast<const xcb_key_release_event_t*>(event);
+                        xkb_keycode_t keycode = key_release->detail;
+                        xkb_keysym_t keysym = xkb_state_key_get_one_sym(kb_info.state, keycode);
+                        Events::GetList<KeyReleaseEvent>().DispatchEvent(keysym);
+                        break;
+                }
+
+                case XCB_BUTTON_PRESS:
+                {
+                        const auto* mouse_press = reinterpret_cast<const xcb_button_press_event_t*>(event);
+                        switch (mouse_press->detail)
+                        {
+                        case XCB_BUTTON_INDEX_4: scrolls += 1; break;
+
+                        case XCB_BUTTON_INDEX_5: scrolls -= 1; break;
+                        }
+                        Events::GetList<MouseButtonPressEvent>().DispatchEvent(mouse_press->detail);
+
+                        break;
+                }
+
+                case XCB_BUTTON_RELEASE:
+                {
+                        const auto* mouse_release = reinterpret_cast<const xcb_button_release_event_t*>(event);
+                        Events::GetList<MouseButtonReleaseEvent>().DispatchEvent(mouse_release->detail);
+                }
                 }
                 //Send input to application or whatever
                 free(event);
         }
+        if (scrolls != 0)
+                Events::GetList<MouseScrollEvent>().DispatchEvent(scrolls);
 }
 
 void XCBWindow::SetTitle(const std::string& title)

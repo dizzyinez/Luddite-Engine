@@ -1,11 +1,12 @@
 #pragma once
 #include "Luddite/Core/pch.hpp"
+#include "Luddite/Platform/IO/IO.hpp"
 
 namespace Luddite
 {
 template <typename T>
 class EventList;
-class EventPool;
+class Events;
 using EventIDType = uint8_t;
 struct LUDDITE_API BaseEvent
 {
@@ -15,15 +16,15 @@ struct LUDDITE_API BaseEvent
 template <typename T>
 struct LUDDITE_API Event : public BaseEvent
 {
-public:
+        public:
         virtual ~Event()
         {
         }
         inline void SetHandled() {handled = true;}
         inline void SetUnhandled() {handled = false;}
-private:
+        private:
         template <typename> friend class EventList;
-        friend class EventPool;
+        friend class Events;
         static EventIDType EventID()
         {
                 static EventIDType m_EventID = m_EventIDCounter++;
@@ -39,5 +40,37 @@ struct WindowSizeEvent : public Event<WindowSizeEvent>
         WindowSizeEvent (unsigned int _width, unsigned int _height) : width{_width}, height{_height} {}
         unsigned int width;
         unsigned int height;
+};
+
+struct KeyPressEvent : public Event<KeyPressEvent>
+{
+        KeyPressEvent(uint32_t key_code_) : key_code(static_cast<Luddite::Keys>(key_code_)) {}
+        KeyPressEvent(Luddite::Keys key_code_) : key_code{key_code_} {}
+        Luddite::Keys key_code;
+};
+
+struct KeyReleaseEvent : public Event<KeyReleaseEvent>
+{
+        KeyReleaseEvent(uint32_t key_code_) : key_code(static_cast<Luddite::Keys>(key_code_)) {}
+        KeyReleaseEvent(Luddite::Keys key_code_) : key_code{key_code_} {}
+        Luddite::Keys key_code;
+};
+
+struct MouseButtonPressEvent : public Event<MouseButtonPressEvent>
+{
+        MouseButtonPressEvent(uint8_t button_) : button{button_} {}
+        uint8_t button;
+};
+
+struct MouseButtonReleaseEvent : public Event<MouseButtonReleaseEvent>
+{
+        MouseButtonReleaseEvent(uint8_t button_) : button{button_} {}
+        uint8_t button;
+};
+
+struct MouseScrollEvent : public Event<MouseScrollEvent>
+{
+        MouseScrollEvent(int16_t scrolls_) : scrolls{scrolls_} {}
+        int16_t scrolls;
 };
 }

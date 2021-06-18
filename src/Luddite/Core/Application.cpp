@@ -69,7 +69,7 @@ void Application::Run()
                 float fixed_dt = std::chrono::duration_cast<std::chrono::duration<double> >(min_update_time).count();
 
                 //event handling
-                m_pMainWindow->ClearEvents();
+                Events::Clear();
                 m_pMainWindow->PollEvents();
                 m_pMainWindow->HandleEvents();
                 while (update_accululator > min_update_time)

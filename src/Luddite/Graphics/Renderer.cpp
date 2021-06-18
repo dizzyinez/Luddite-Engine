@@ -26,7 +26,7 @@ void Renderer::Initialize()
         awesome_material = m_DefferedRenderer.BasicShaderPipeline.GetMaterial("AWESOME");
         awesome_material->m_data.SetVec3("Diffuse", glm::vec3(0.7f, 0.7f, 0.75f));
         awesome_material->m_data.SetFloat("Metallic", 1.0f);
-        awesome_material->m_data.SetFloat("Roughness", 0.0f);
+        awesome_material->m_data.SetFloat("Roughness", 0.01f);
 
         {
                 Diligent::TextureLoadInfo loadInfo;

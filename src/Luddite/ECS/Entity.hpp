@@ -62,6 +62,32 @@ class LUDDITE_API Entity
         }
 
         /**
+         * @brief Returns true if the entity has all of the given components
+         *
+         * @tparam T
+         * @return true
+         * @return false
+         */
+        template <typename ... T>
+        inline bool HasAll() const
+        {
+                return m_pRegistry->all_of<T...>(m_EntityID);
+        }
+
+        /**
+         * @brief Returns true if the entity has any of the given components
+         *
+         * @tparam T
+         * @return true
+         * @return false
+         */
+        template <typename ... T>
+        inline bool HasAny() const
+        {
+                return m_pRegistry->any_of<T...>(m_EntityID);
+        }
+
+        /**
          * @brief Gets a reference to the given component. Use ReplaceComponent() if you want to change the component's data.
          *
          * @tparam T

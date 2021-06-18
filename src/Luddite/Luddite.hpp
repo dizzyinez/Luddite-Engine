@@ -7,6 +7,9 @@
 #include "Luddite/Core/Logging.hpp"
 #include "Luddite/Core/LayerStack.hpp"
 #include "Luddite/Platform/Window/Window.hpp"
+#include "Luddite/Platform/IO/IO.hpp"
+#include "Luddite/Core/EventPool.hpp"
+
 
 //ECS
 #include "Luddite/ECS/World.hpp"

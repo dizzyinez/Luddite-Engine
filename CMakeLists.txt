@@ -67,6 +67,7 @@ set(LUDDITE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src "${CMAKE_CURRENT_SOURCE_DIR}
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glm"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/OBJ-Loader/Source"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/ImGuizmo/"
+"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libxkbcommon/include/"
 )
 target_include_directories(Luddite-Engine PUBLIC ${LUDDITE_INCLUDE} 
 #"ThirdParty/imgui"
@@ -96,20 +97,24 @@ Set(DILIGENT_LIBS ${DILIGENT_LIBS} Diligent-GraphicsEngineVk-static)
 endif()
 
 if (LINUX)
-    Set(DILIGENT_LIBS
-    ${DILIGENT_LIBS}
+    Set(PLATFORM_LIBS
+    ${PLATFORM_LIBS}
     xcb
     GL
     GLU
+    xkbcommon-x11
     )
 endif()
 if (WIN32)
-    Set(DILIGENT_LIBS
-    ${DILIGENT_LIBS}
+    Set(PLATFORM_LIBS
+    ${PLATFORM_LIBS}
     Diligent-ShaderTools
     )
 endif()
-target_link_libraries(Luddite-Engine ${DILIGENT_LIBS} spdlog)
+target_link_libraries(Luddite-Engine ${DILIGENT_LIBS} ${PLATFORM_LIBS} spdlog)
+target_link_directories(Luddite-Engine PUBLIC
+"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libxkbcommon/bin/"
+)
 # copy_required_dlls(Luddite-Engine)
 # add_subdirectory(Apps)
 

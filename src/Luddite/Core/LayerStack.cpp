@@ -55,4 +55,21 @@ void LayerStack::DefferedPopLayer(std::shared_ptr<Layer> layer)
         if (it != m_stack.end())
                 m_stack.erase(it);
 }
+
+
+std::vector<std::string> LayerStack::GetLayerNames()
+{
+        std::vector<std::string> names(m_stack.size());
+        for (auto layer : m_stack)
+                names.push_back(layer->GetName());
+        return names;
+}
+
+std::shared_ptr<Layer> LayerStack::GetLayerByName(const std::string& name)
+{
+        for (auto layer : m_stack)
+                if (strcmp(layer->GetName(), name.c_str()) == 0)
+                        return layer;
+        return nullptr;
+}
 }
