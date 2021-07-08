@@ -5,10 +5,6 @@
 class S_RenderCamera : public Luddite::System<S_RenderCamera>
 {
         public:
-        void configure()
-        {
-                // world.GetGroup<C_Transform3D>(Luddite::Borrow<C_Model>);
-        }
 
         void Update(Luddite::World& world, Luddite::RenderTarget render_target, Luddite::EntityID cameraID)
         {

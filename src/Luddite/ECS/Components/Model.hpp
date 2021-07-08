@@ -1,11 +1,11 @@
 #pragma once
 #include "Luddite/Core/pch.hpp"
-#include "Luddite/Graphics/Model.hpp"
+#include "Luddite/Core/AssetTypes/Model.hpp"
 
 struct C_Model
 {
-        C_Model(Luddite::BasicModelHandle ModelHandle_)
+        C_Model(Luddite::BasicModel::Handle ModelHandle_)
                 : ModelHandle(ModelHandle_)
         {}
-        Luddite::BasicModelHandle ModelHandle;
+        Luddite::BasicModel::Handle ModelHandle;
 };

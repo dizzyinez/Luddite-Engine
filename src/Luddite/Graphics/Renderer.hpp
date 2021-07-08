@@ -7,8 +7,8 @@
 #include "Luddite/Graphics/QuadBatchRenderer.hpp"
 #include "Luddite/Graphics/PBRRenderer.hpp"
 #include "Luddite/Graphics/DefferedRenderer.hpp"
-#include "Luddite/Graphics/ModelLibrary.hpp"
 #include "Luddite/Graphics/RenderTarget.hpp"
+#include "Luddite/Core/AssetTypes/Model.hpp"
 // #include "Luddite/Graphics/"
 
 // #include "Common/interface/BasicMath.hpp"
@@ -23,7 +23,7 @@ class LUDDITE_API Renderer
         public:
         static void Initialize();
         static void BeginScene();
-        static void SubmitMesh(BasicMeshHandle mesh, const glm::mat4& transform);
+        static void SubmitMesh(BasicMesh* mesh, const glm::mat4& transform);
         static void EndScene();
         static void Draw(RenderTarget& render_target, const Camera& camera);
         static void Present();
@@ -44,6 +44,10 @@ class LUDDITE_API Renderer
         static void TransitionRenderTextureToShaderResource(RenderTexture& RenderTexture);
         static void ReleaseBufferResources();
 
+        // static inline struct Settings
+        // {
+        //         bool MSAA_Enabled = true;
+        // } m_Settings;
 
         private:
         friend class Application;
@@ -67,7 +71,7 @@ class LUDDITE_API Renderer
 
         static inline struct RenderScene
         {
-                std::unordered_map<BasicMeshHandle, std::vector<glm::mat4> > m_BasicMeshes;
+                std::unordered_map<BasicMesh*, std::vector<glm::mat4> > m_BasicMeshes;
         } m_RenderScene;
 
         // Window* m_pWindow;

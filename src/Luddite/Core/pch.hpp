@@ -10,6 +10,8 @@
 #include <future>
 #include <stdint.h>
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 
 #include <string>
 #include <locale>

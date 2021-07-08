@@ -9,6 +9,7 @@
 #include "Luddite/Platform/Window/Window.hpp"
 #include "Luddite/Platform/IO/IO.hpp"
 #include "Luddite/Core/EventPool.hpp"
+#include "Luddite/Core/Assets.hpp"
 
 
 //ECS

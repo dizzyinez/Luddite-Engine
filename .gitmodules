@@ -32,3 +32,9 @@
 [submodule "ThirdParty/libxkbcommon"]
 	path = ThirdParty/libxkbcommon
 	url = https://github.com/Aquaticholic/libxkbcommon
+[submodule "ThirdParty/bullet3"]
+	path = ThirdParty/bullet3
+	url = https://github.com/Aquaticholic/bullet3
+[submodule "ThirdParty/yaml-cpp"]
+	path = ThirdParty/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp

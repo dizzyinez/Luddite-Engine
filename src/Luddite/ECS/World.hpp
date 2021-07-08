@@ -6,11 +6,19 @@
 
 namespace Luddite
 {
+template<typename ... Type>
+inline constexpr entt::get_t<Type...> Borrow{};
+template<typename ... Type>
+inline constexpr entt::exclude_t<Type...> Exclude{};
 class LUDDITE_API World
 {
         public:
-        World();
-        ~World();
+        World() = default;
+        ~World()
+        {
+                for (auto& pair : m_Systems)
+                        pair.second->Cleanup(*this);
+        }
 
         inline Entity CreateEntity() {return {m_Registry.create(), &m_Registry};}
 
@@ -54,9 +62,7 @@ class LUDDITE_API World
         void ConfigureSystems()
         {
                 for (auto& pair : m_Systems)
-                {
-                        pair.second->Configure();
-                }
+                        pair.second->Configure(*this);
         }
 
         template <typename ... Component, typename ... Exclude>
@@ -78,7 +84,7 @@ class LUDDITE_API World
         }
 
         template <typename ... Components>
-        void ClearComponents()
+        void ClearComponent()
         {
                 m_Registry.clear<Components...>();
         }
@@ -93,7 +99,7 @@ class LUDDITE_API World
         void CloneTo(World& to) const
         {
                 //ensure the destination world is empty
-                to.ClearComponents<Components...>();
+                to.ClearComponent<Components...>();
                 const auto* to_data = to.GetRegistry().data();
                 const auto to_size = to.GetRegistry().size();
                 to.GetRegistry().destroy(to_data, to_data + to_size);
@@ -140,7 +146,7 @@ class LUDDITE_API World
         template <typename ... Singleton>
         void CloneSingletonsTo(World& to) const
         {
-                to.ClearComponents<Singleton...>();
+                to.ClearComponent<Singleton...>();
                 CloneSingletonsToEmpty<Singleton...>(to);
         }
 
@@ -165,7 +171,14 @@ class LUDDITE_API World
                 CloneSingleton<Singleton2, Rest...>(to);
         }
 
+        // template <typename Component>
+        // auto OnConstruct() {return m_Registry.on_construct<Component>();}
 
+        // template <typename Component>
+        // auto OnDestroy() {return m_Registry.on_destroy<Component>();}
+
+        // template <typename Component>
+        // auto OnUpdate() {return m_Registry.on_update<Component>();}
         // template <>
         // void CloneComponent<C_Model>(World & to) const
         // {

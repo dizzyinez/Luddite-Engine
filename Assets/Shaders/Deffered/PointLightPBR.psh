@@ -184,6 +184,7 @@ void main(in  PSInput  PSIn,
         float3 F = FresnelSchlickRoughness(dotNV, F0, g_buffer_data.Roughness);
         float3 kS = F;
         float3 kD = 1.0 - kS;
+        kD *= 1.0 - g_buffer_data.Metallic;
         float3 irradiance = g_IrradianceMap.Sample(g_IrradianceMap_sampler, g_buffer_data.Normal).rgb;
         float3 diffuse = irradiance * albedo;
 

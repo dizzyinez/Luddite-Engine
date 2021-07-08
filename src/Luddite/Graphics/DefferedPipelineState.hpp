@@ -5,7 +5,7 @@
 #include "Luddite/Graphics/Texture.hpp"
 #include "Luddite/Graphics/ShaderAttributeList.hpp"
 #include "Luddite/Graphics/MaterialLibrary.hpp"
-#include "Luddite/Graphics/Model.hpp"
+#include "Luddite/Core/AssetTypes/Model.hpp"
 
 #include "Luddite/Graphics/DiligentInclude.hpp"
 

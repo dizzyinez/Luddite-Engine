@@ -1,24 +1,25 @@
 #pragma once
 #include "Luddite/Core/pch.hpp"
-#include "Luddite/ECS/Group.hpp"
 
 namespace Luddite
 {
+class World;
 using SystemIDType = std::uint32_t;
 struct LUDDITE_API BaseSystem
 {
-        virtual void Configure() {}
+        virtual void Configure(World& world) {}
+        virtual void Cleanup(World& world) {}
         static inline SystemIDType m_SystemIDCounter;
 };
 
 template <typename T>
 class LUDDITE_API System : public BaseSystem
 {
-public:
+        public:
         virtual ~System()
         {
         }
-private:
+        private:
         friend class World;
         static SystemIDType SystemID()
         {

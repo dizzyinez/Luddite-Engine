@@ -20,6 +20,16 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentCore)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentFX)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentTools)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/yaml-cpp)
+
+set(BUILD_CPU_DEMOS OFF CACHE BOOL "" FORCE)
+set(BUILD_ENET OFF CACHE BOOL "" FORCE)
+set(BUILD_CLSOCKET OFF CACHE BOOL "" FORCE)
+set(BUILD_OPENGL3_DEMOS OFF CACHE BOOL "" FORCE)
+set(BUILD_BULLET2_DEMOS OFF CACHE BOOL "" FORCE)
+set(BUILD_EXTRAS OFF CACHE BOOL "" FORCE)
+set(BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/bullet3)
 
 set (ENGINE_COMPILE_DEFINES LD_BUILD_LIB)
 if (LINUX)
@@ -68,6 +78,7 @@ set(LUDDITE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src "${CMAKE_CURRENT_SOURCE_DIR}
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/OBJ-Loader/Source"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/ImGuizmo/"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libxkbcommon/include/"
+"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/bullet3/src"
 )
 target_include_directories(Luddite-Engine PUBLIC ${LUDDITE_INCLUDE} 
 #"ThirdParty/imgui"
@@ -111,7 +122,10 @@ if (WIN32)
     Diligent-ShaderTools
     )
 endif()
-target_link_libraries(Luddite-Engine ${DILIGENT_LIBS} ${PLATFORM_LIBS} spdlog)
+target_link_libraries(Luddite-Engine ${DILIGENT_LIBS} ${PLATFORM_LIBS} 
+spdlog 
+yaml-cpp
+Bullet3Dynamics Bullet3Collision Bullet3Geometry BulletInverseDynamics BulletSoftBody BulletCollision BulletDynamics LinearMath Bullet3Common)
 target_link_directories(Luddite-Engine PUBLIC
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libxkbcommon/bin/"
 )

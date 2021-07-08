@@ -6,7 +6,7 @@
 namespace Luddite
 {
 MaterialHandle awesome_material;
-BasicModelHandle awesome_model;
+BasicModel::Handle awesome_model;
 void Renderer::Initialize()
 {
         m_pEngineFactory->CreateDefaultShaderSourceStreamFactory("./Assets/Shaders/;", &m_pShaderSourceFactory);
@@ -24,9 +24,9 @@ void Renderer::Initialize()
 
         m_DefferedRenderer.Initialize(m_DefaultRTVFormat);
         awesome_material = m_DefferedRenderer.BasicShaderPipeline.GetMaterial("AWESOME");
-        awesome_material->m_data.SetVec3("Diffuse", glm::vec3(0.7f, 0.7f, 0.75f));
+        awesome_material->m_data.SetVec3("Diffuse", glm::vec3(0.2f, 0.2f, 0.2f));
         awesome_material->m_data.SetFloat("Metallic", 1.0f);
-        awesome_material->m_data.SetFloat("Roughness", 0.01f);
+        awesome_material->m_data.SetFloat("Roughness", 0.f);
 
         {
                 Diligent::TextureLoadInfo loadInfo;
@@ -78,7 +78,7 @@ void Renderer::BeginScene()
         // }
 }
 
-void Renderer::SubmitMesh(BasicMeshHandle mesh, const glm::mat4& transform)
+void Renderer::SubmitMesh(BasicMesh* mesh, const glm::mat4& transform)
 {
         m_RenderScene.m_BasicMeshes[mesh].push_back(transform);
 }

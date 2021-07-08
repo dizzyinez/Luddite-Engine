@@ -1,6 +1,7 @@
 #include "Luddite/Core/Application.hpp"
 #include "Luddite/Graphics/RenderTarget.hpp"
 #include "Luddite/Platform/Window/NativeWindow.hpp"
+#include "Luddite/Core/Assets.hpp"
 
 namespace Luddite
 {
@@ -15,6 +16,7 @@ void Application::Run()
         LD_VERIFY(m_pMainWindow, "Main window was never created! Call the CreateMainWindow function in the app's constructor");
 
         Renderer::Initialize();
+        Assets::Initialize();
 
         // m_SystemTable.pRuntimeObjectSystem = new RuntimeObjectSystem;
         // if (!m_SystemTable.pRuntimeObjectSystem->Initialise(&m_RCCppLogger, &m_SystemTable))
@@ -82,6 +84,9 @@ void Application::Run()
 
                 //TEMP
                 float lerp_alpha = 1.0f;
+
+                Assets::MergeLoadedAssets();
+                Assets::RefreshAssets();
 
                 //render
                 auto MainWindowRenderTarget = m_pMainWindow->GetRenderTarget();
