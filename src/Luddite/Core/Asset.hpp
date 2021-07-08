@@ -39,7 +39,8 @@ class LUDDITE_API Asset
                 }
                 ~Handle()
                 {
-                        m_pAsset->DecrementReferences();
+                        if (m_pAsset)
+                                m_pAsset->DecrementReferences();
                 }
 
                 void CreateFakeUser() {m_pAsset.stay_loaded = true;}

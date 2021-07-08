@@ -46,6 +46,7 @@ struct LUDDITE_API AssetLibrary
                                 asset.m_pAsset->ReplaceData(*p);
                                 delete p;
                                 loaded.push_back(pair.first);
+                                AfterLoadProcessing(asset.m_pAsset);
                         }
                 }
                 for (auto& id : loaded)
