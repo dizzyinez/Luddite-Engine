@@ -1,9 +1,8 @@
 #pragma once
 #include "Luddite/Core/pch.hpp"
 #include "Luddite/Core/Core.hpp"
-
+#include "Luddite/Core/AssetTypes/Texture.hpp"
 #include "Luddite/Graphics/Color.hpp"
-#include "Luddite/Graphics/Texture.hpp"
 #include "Luddite/Graphics/DiligentInclude.hpp"
 // #include "Luddite/Core/pch.hpp"
 // #include "Luddite/Platform/DiligentPlatform.hpp"
@@ -19,9 +18,9 @@ namespace Luddite
 struct LUDDITE_API ShaderAttributeListData
 {
         std::string Name{};
-        std::unordered_map<std::string, Texture> texturemap;
-        Texture& GetTexture(const std::string& id) {return texturemap[id];}
-        void SetTexture(const std::string& id, const Texture& value) {texturemap[id] = value;}
+        std::unordered_map<std::string, Texture::Handle> texturemap;
+        Texture::Handle GetTexture(const std::string& id) {return texturemap[id];}
+        void SetTexture(const std::string& id, const Texture::Handle handle) {texturemap[id] = handle;}
 
         std::unordered_map<std::string, float> floatmap;
         float& GetFloat(const std::string& id) {return floatmap[id];}

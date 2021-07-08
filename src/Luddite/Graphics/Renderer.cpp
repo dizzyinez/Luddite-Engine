@@ -29,42 +29,42 @@ void Renderer::Initialize()
         awesome_material->m_data.SetFloat("Roughness", 0.f);
 
         {
-                Diligent::TextureLoadInfo loadInfo;
-                loadInfo.IsSRGB = false;
-                loadInfo.GenerateMips = false;
-                loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
-                loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
-                Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
-                Diligent::CreateTextureFromFile("./Assets/irradiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
-                Texture awesome_texture(awesome_cubemap);
-                awesome_texture.TransitionToShaderResource();
-                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_IrradianceMap", awesome_texture);
+                // Diligent::TextureLoadInfo loadInfo;
+                // loadInfo.IsSRGB = false;
+                // loadInfo.GenerateMips = false;
+                // loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
+                // loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
+                // Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
+                // Diligent::CreateTextureFromFile("./Assets/irradiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
+                Texture::Handle ibl_texture = Assets::GetTextureLibrary().GetAsset(0);
+                ibl_texture.get()->TransitionToShaderResource();
+                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_IrradianceMap", ibl_texture);
         }
 
         {
-                Diligent::TextureLoadInfo loadInfo;
-                loadInfo.IsSRGB = false;
-                loadInfo.GenerateMips = false;
-                loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
-                loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
-                Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
-                Diligent::CreateTextureFromFile("./Assets/radiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
-                Texture awesome_texture(awesome_cubemap);
-                awesome_texture.TransitionToShaderResource();
-                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_RadianceMap", awesome_texture);
+                // Diligent::TextureLoadInfo loadInfo;
+                // loadInfo.IsSRGB = false;
+                // loadInfo.GenerateMips = false;
+                // loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
+                // loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
+                // Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
+                // Diligent::CreateTextureFromFile("./Assets/radiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
+                Texture::Handle ibl_texture = Assets::GetTextureLibrary().GetAsset(0);
+                ibl_texture.get()->TransitionToShaderResource();
+                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_RadianceMap", ibl_texture);
         }
 
         {
-                Diligent::TextureLoadInfo loadInfo;
-                loadInfo.IsSRGB = false;
-                loadInfo.GenerateMips = false;
-                loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
-                loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
-                Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
-                Diligent::CreateTextureFromFile("./Assets/environment.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
-                Texture awesome_texture(awesome_cubemap);
-                awesome_texture.TransitionToShaderResource();
-                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_Skybox", awesome_texture);
+                // Diligent::TextureLoadInfo loadInfo;
+                // loadInfo.IsSRGB = false;
+                // loadInfo.GenerateMips = false;
+                // loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
+                // loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
+                // Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
+                // Diligent::CreateTextureFromFile("./Assets/environment.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
+                Texture::Handle ibl_texture = Assets::GetTextureLibrary().GetAsset(0);
+                ibl_texture.get()->TransitionToShaderResource();
+                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_Skybox", ibl_texture);
         }
 }
 

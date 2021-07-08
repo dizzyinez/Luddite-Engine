@@ -1,15 +1,15 @@
 #pragma once
 #include "Luddite/Core/Core.hpp"
 #include "Luddite/Core/pch.hpp"
+#include "Luddite/Core/Assets.hpp"
 
-#include "Luddite/Graphics/Texture.hpp"
 #include "Luddite/Graphics/DiligentInclude.hpp"
 
 namespace Luddite
 {
 class LUDDITE_API QuadBatchRenderer
 {
-public:
+        public:
         void Initialize(Diligent::RefCntAutoPtr<Diligent::IRenderDevice> pDevice,
                         Diligent::RefCntAutoPtr<Diligent::IDeviceContext> pImmediateContext,
                         Diligent::TEXTURE_FORMAT RTVFormat,
@@ -22,7 +22,7 @@ public:
         void StartBatch();
         void UploadBatch();
         void DrawBatch();
-private:
+        private:
         void CreatePipelineState(
                 Diligent::TEXTURE_FORMAT RTVFormat,
                 Diligent::TEXTURE_FORMAT DSVFormat,

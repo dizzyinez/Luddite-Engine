@@ -3,6 +3,7 @@
 namespace Luddite
 {
 BasicModelLibrary Assets::m_BasicModelLibrary;
+TextureLibrary Assets::m_TextureLibrary;
 
 void Assets::Initialize()
 {

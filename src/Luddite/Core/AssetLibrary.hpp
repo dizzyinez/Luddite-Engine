@@ -14,7 +14,11 @@ struct LUDDITE_API AssetLibrary
         {
                 std::lock_guard<std::mutex> lock(m_Mutex);
                 auto it = m_AssetMap.find(id);
-                LD_VERIFY(it != m_AssetMap.end(), "Asset of ID: {} doesn't exist!", id);
+                if (it == m_AssetMap.end())
+                {
+                        LD_LOG_ERROR("Asset of ID: {} doesn't exist!", id);
+                        return typename T::Handle(&m_PlaceholderAsset);
+                }
 
                 if (!it->second.m_pAsset)
                 {
@@ -70,6 +74,7 @@ struct LUDDITE_API AssetLibrary
 
         void ReloadAsset(const AssetID& id)
         {
+                std::lock_guard<std::mutex> lock(m_Mutex);
                 auto it = m_AssetMap.find(id);
                 if (it != m_AssetMap.end())
                 {
@@ -84,6 +89,7 @@ struct LUDDITE_API AssetLibrary
 
         void ReleaseUnusedAssets()
         {
+                std::lock_guard<std::mutex> lock(m_Mutex);
                 for (auto& pair : m_AssetMap)
                 {
                         AssetDesc& asset = pair.second;
@@ -98,6 +104,7 @@ struct LUDDITE_API AssetLibrary
 
         void ReleaseUnusedAssetsForced()
         {
+                std::lock_guard<std::mutex> lock(m_Mutex);
                 for (auto& pair : m_AssetMap)
                 {
                         AssetDesc& asset = pair.second;
@@ -112,6 +119,7 @@ struct LUDDITE_API AssetLibrary
 
         void ReleaseAllAssets()
         {
+                std::lock_guard<std::mutex> lock(m_Mutex);
                 for (auto& pair : m_AssetMap)
                 {
                         AssetDesc& asset = pair.second;

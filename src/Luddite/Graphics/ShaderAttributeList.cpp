@@ -47,7 +47,7 @@ void ShaderAttributeListDescription::MapTextures(ShaderAttributeListData& data, 
         for (auto& tex_name : Textures)
         {
                 // LD_LOG_TRACE("MAPPING TEXTURE {}", tex_name);
-                auto tex = data.GetTexture(tex_name).GetTexture();
+                auto tex = data.GetTexture(tex_name).get()->GetTexture();
                 auto var = srb->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, tex_name.c_str());
                 var->Set(tex->GetDefaultView(Diligent::TEXTURE_VIEW_SHADER_RESOURCE));
         }

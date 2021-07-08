@@ -2,7 +2,6 @@
 #include "Luddite/Core/pch.hpp"
 #include "Luddite/Core/Core.hpp"
 
-#include "Luddite/Graphics/Texture.hpp"
 #include "Luddite/Graphics/ShaderAttributeList.hpp"
 #include "Luddite/Graphics/DefferedPipelineState.hpp"
 #include "Luddite/Graphics/DefferedScreenSpacePipelineState.hpp"

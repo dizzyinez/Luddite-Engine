@@ -1,3 +1,4 @@
+#pragma once
 #include "Luddite/Core/pch.hpp"
 
 namespace Luddite
@@ -50,6 +51,8 @@ class LUDDITE_API Asset
                 {
                         return m_pAsset;
                 }
+
+                T* get() const {return m_pAsset;}
         };
 
         void ReplaceData(const T& other)
