@@ -53,6 +53,19 @@ class LUDDITE_API Asset
                 }
 
                 T* get() const {return m_pAsset;}
+
+                Handle& operator=(const Handle& other)
+                {
+                        if (m_pAsset != other.m_pAsset)
+                        {
+                                if (m_pAsset)
+                                        m_pAsset->DecrementReferences();
+                                m_pAsset = other.m_pAsset;
+                                if (m_pAsset)
+                                        m_pAsset->IncrementReferences();
+                        }
+                        return *this;
+                }
         };
 
         void ReplaceData(const T& other)

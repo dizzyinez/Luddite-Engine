@@ -9,35 +9,7 @@ void ShaderAttributeListDescription::MapBuffer(ShaderAttributeListData& data, Di
         char* Data;
         Renderer::GetContext()->MapBuffer(buffer, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD, (Diligent::PVoid&)Data);
 
-        for (const auto& pair : Attributes)
-        {
-                switch (pair.second.type)
-                {
-                case ShaderAttributeListDescription::ValueType::FLOAT:
-                        memcpy(&Data[pair.second.offset], &data.GetFloat(pair.first), static_cast<std::size_t>(ShaderAttributeListDescription::ValueType::FLOAT));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::VEC2:
-                        memcpy(&Data[pair.second.offset], glm::value_ptr(data.GetVec2(pair.first)), static_cast<std::size_t>(ShaderAttributeListDescription::ValueType::VEC2));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::VEC3:
-                        memcpy(&Data[pair.second.offset], glm::value_ptr(data.GetVec3(pair.first)), static_cast<std::size_t>(ShaderAttributeListDescription::ValueType::VEC3));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::VEC4:
-                        memcpy(&Data[pair.second.offset], glm::value_ptr(data.GetVec4(pair.first)), static_cast<std::size_t>(ShaderAttributeListDescription::ValueType::VEC4));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::MAT3:
-                        memcpy(&Data[pair.second.offset], glm::value_ptr(data.GetMat3(pair.first)), static_cast<std::size_t>(ShaderAttributeListDescription::ValueType::MAT3));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::MAT4:
-                        memcpy(&Data[pair.second.offset], glm::value_ptr(data.GetMat4(pair.first)), static_cast<std::size_t>(ShaderAttributeListDescription::ValueType::MAT4));
-                        break;
-                }
-        }
+        memcpy(Data, data.Data, data.Size);
 
         Renderer::GetContext()->UnmapBuffer(buffer, Diligent::MAP_WRITE);
 }
@@ -52,6 +24,17 @@ void ShaderAttributeListDescription::MapTextures(ShaderAttributeListData& data, 
                 var->Set(tex->GetDefaultView(Diligent::TEXTURE_VIEW_SHADER_RESOURCE));
         }
 }
+
+ShaderAttributeListData ShaderAttributeListDescription::CreateData()
+{
+        ShaderAttributeListData new_data;
+        new_data.Size = m_Size;
+        new_data.Data = (char*)malloc(m_Size);
+        LD_LOG_TRACE("SIZE: {}", m_Size);
+        SetDefaultAttribs(new_data);
+        return new_data;
+}
+
 void ShaderAttributeListDescription::SetDefaultAttribs(ShaderAttributeListData& data)
 {
         for (const auto& pair : Attributes)
@@ -60,27 +43,59 @@ void ShaderAttributeListDescription::SetDefaultAttribs(ShaderAttributeListData& 
                 switch (pair.second.type)
                 {
                 case ShaderAttributeListDescription::ValueType::FLOAT:
-                        data.SetFloat(name, 0.f);
+                        SetFloat(data, name, 0.f);
+                        break;
+
+                case ShaderAttributeListDescription::ValueType::INT:
+                        SetInt(data, name, 0);
+                        break;
+
+                case ShaderAttributeListDescription::ValueType::UINT:
+                        SetUInt(data, name, 0);
                         break;
 
                 case ShaderAttributeListDescription::ValueType::VEC2:
-                        data.SetVec2(name, glm::vec2(0.f));
+                        SetVec2(data, name, glm::vec2(0.f));
+                        break;
+
+                case ShaderAttributeListDescription::ValueType::IVEC2:
+                        SetIVec2(data, name, glm::ivec2(0));
+                        break;
+
+                case ShaderAttributeListDescription::ValueType::UVEC2:
+                        SetUVec2(data, name, glm::uvec2(0));
                         break;
 
                 case ShaderAttributeListDescription::ValueType::VEC3:
-                        data.SetVec3(name, glm::vec3(0.f));
+                        SetVec3(data, name, glm::vec3(0.f));
+                        break;
+
+                case ShaderAttributeListDescription::ValueType::IVEC3:
+                        SetIVec3(data, name, glm::ivec3(0));
+                        break;
+
+                case ShaderAttributeListDescription::ValueType::UVEC3:
+                        SetUVec3(data, name, glm::uvec3(0));
                         break;
 
                 case ShaderAttributeListDescription::ValueType::VEC4:
-                        data.SetVec4(name, glm::vec4(0.f));
+                        SetVec4(data, name, glm::vec4(0.f));
+                        break;
+
+                case ShaderAttributeListDescription::ValueType::IVEC4:
+                        SetIVec4(data, name, glm::ivec4(0));
+                        break;
+
+                case ShaderAttributeListDescription::ValueType::UVEC4:
+                        SetUVec4(data, name, glm::uvec4(0));
                         break;
 
                 case ShaderAttributeListDescription::ValueType::MAT3:
-                        data.SetMat3(name, glm::mat3(0.f));
+                        SetMat3(data, name, glm::mat3(0.f));
                         break;
 
                 case ShaderAttributeListDescription::ValueType::MAT4:
-                        data.SetMat4(name, glm::mat4(0.f));
+                        SetMat4(data, name, glm::mat4(0.f));
                         break;
                 }
         }

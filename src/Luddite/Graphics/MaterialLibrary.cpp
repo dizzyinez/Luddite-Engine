@@ -5,7 +5,7 @@ namespace Luddite
 MaterialLibrary::MaterialLibrary(ShaderAttributeListDescription MaterialShaderAttributes)
 {
         m_MaterialShaderAttributes = MaterialShaderAttributes;
-        m_MaterialShaderAttributes.SetDefaultAttribs(DefaultMaterialData);
+        DefaultMaterialData = m_MaterialShaderAttributes.CreateData();
 }
 MaterialHandle MaterialLibrary::Allocate(const std::string& id)
 {

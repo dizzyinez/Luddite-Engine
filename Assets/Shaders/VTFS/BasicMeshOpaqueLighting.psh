@@ -1,0 +1,60 @@
+#include "VTFS/Common.hlsl"
+#include "VTFS/PBR.hlsl"
+
+struct PSInput 
+{ 
+    float4 Pos : SV_POSITION;
+    float4 PosVS : VIEWSPACEPOS;
+    float4 PosWS : WORLDSPACEPOS;
+    float3 Normal : NORMAL;
+    float2 UV  : TEX_COORD; 
+};
+
+struct PSOutput
+{
+    float4 Color : SV_TARGET0;
+};
+
+void main(in  PSInput  PSIn,
+          out PSOutput PSOut)
+{
+    uint i;
+    uint start_offset, light_count;
+    uint light_index;
+
+    SurfaceProps props;
+    props.PosWS = PSIn.PosWS;
+    props.Roughness = 0.9;
+    props.Diffuse = float3(1.0);
+    props.Metallic = 0.01;
+    float3 cam_pos = ClipToView(float4(0,0,0,1));
+    props.ViewDir = normalize(cam_pos - PSIn.PosWS);
+    props.dotNV = saturate(dot(PSIn.Normal, props.ViewDir));
+    props.Normal = PSIn.Normal;
+    props.F0 = lerp(float3(0.04), props.Diffuse, float3(props.Metallic));
+
+    uint3 cluster_index_3D = ComputeClusterIndex3D(PSIn.Pos.xy, PSIn.PosVS.z);
+    uint cluster_index_1D = ComputeClusterIndex1D(cluster_index_3D);
+    start_offset = PointLightGrid[cluster_index_1D].x;
+    light_count = PointLightGrid[cluster_index_1D].y;
+
+    float depth = float(cluster_index_3D.z) / float(ClusterCB.grid_dim.z);
+    // float depth = DepthToNormalizedDeviceZ(PSIn.PosVS.z);
+    depth = 1.0 - depth;
+
+    float3 Lo = float3(0.1);
+    // float3 Lo = float3(depth);
+
+    for (i = 0; i < light_count; ++i)
+    {
+        light_index = PointLightIndexList[start_offset+i];
+        // if (!PointLights[light_index].Enabled) continue;
+
+        Lo += DoPointLight(props, PointLights[light_index]);
+    }
+    // Lo += DoPointLight(props, )
+
+    PSOut.Color = float4(Lo, 1.0);
+    // PSOut.Color = float4(col,col,index,1);
+    // PSOut.Color = float
+}

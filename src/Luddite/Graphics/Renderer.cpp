@@ -5,7 +5,7 @@
 
 namespace Luddite
 {
-MaterialHandle awesome_material;
+// MaterialHandle awesome_material;
 BasicModel::Handle awesome_model;
 void Renderer::Initialize()
 {
@@ -19,53 +19,59 @@ void Renderer::Initialize()
         //         "quad_inst.vsh",
         //         "quad_inst.psh"
         //         );
-        SetMatricies();
 
 
-        m_DefferedRenderer.Initialize(m_DefaultRTVFormat);
-        awesome_material = m_DefferedRenderer.BasicShaderPipeline.GetMaterial("AWESOME");
-        awesome_material->m_data.SetVec3("Diffuse", glm::vec3(0.2f, 0.2f, 0.2f));
-        awesome_material->m_data.SetFloat("Metallic", 1.0f);
-        awesome_material->m_data.SetFloat("Roughness", 0.f);
+        m_VTFSRenderer.Initialize(m_DefaultRTVFormat);
+        // m_DefferedRenderer.Initialize(m_DefaultRTVFormat);
+        // awesome_material = m_DefferedRenderer.BasicShaderPipeline.GetMaterial("AWESOME");
+        // awesome_material->m_data.SetVec3("Diffuse", glm::vec3(0.2f, 0.2f, 0.2f));
+        // awesome_material->m_data.SetFloat("Metallic", 1.0f);
+        // awesome_material->m_data.SetFloat("Roughness", 0.f);
 
-        {
-                // Diligent::TextureLoadInfo loadInfo;
-                // loadInfo.IsSRGB = false;
-                // loadInfo.GenerateMips = false;
-                // loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
-                // loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
-                // Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
-                // Diligent::CreateTextureFromFile("./Assets/irradiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
-                Texture::Handle ibl_texture = Assets::GetTextureLibrary().GetAsset(0);
-                ibl_texture.get()->TransitionToShaderResource();
-                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_IrradianceMap", ibl_texture);
-        }
+        // {
+        //         // Diligent::TextureLoadInfo loadInfo;
+        //         // loadInfo.IsSRGB = false;
+        //         // loadInfo.GenerateMips = false;
+        //         // loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
+        //         // loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
+        //         // Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
+        //         // Diligent::CreateTextureFromFile("./Assets/irradiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
+        //         Texture::Handle ibl_texture = Assets::GetTextureLibrary().GetAsset(0);
+        //         ibl_texture.get()->TransitionToShaderResource();
+        //         m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_IrradianceMap", ibl_texture);
+        // }
 
-        {
-                // Diligent::TextureLoadInfo loadInfo;
-                // loadInfo.IsSRGB = false;
-                // loadInfo.GenerateMips = false;
-                // loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
-                // loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
-                // Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
-                // Diligent::CreateTextureFromFile("./Assets/radiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
-                Texture::Handle ibl_texture = Assets::GetTextureLibrary().GetAsset(0);
-                ibl_texture.get()->TransitionToShaderResource();
-                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_RadianceMap", ibl_texture);
-        }
+        // {
+        //         // Diligent::TextureLoadInfo loadInfo;
+        //         // loadInfo.IsSRGB = false;
+        //         // loadInfo.GenerateMips = false;
+        //         // loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
+        //         // loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
+        //         // Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
+        //         // Diligent::CreateTextureFromFile("./Assets/radiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
+        //         Texture::Handle ibl_texture = Assets::GetTextureLibrary().GetAsset(0);
+        //         ibl_texture.get()->TransitionToShaderResource();
+        //         m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_RadianceMap", ibl_texture);
+        // }
 
-        {
-                // Diligent::TextureLoadInfo loadInfo;
-                // loadInfo.IsSRGB = false;
-                // loadInfo.GenerateMips = false;
-                // loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
-                // loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
-                // Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
-                // Diligent::CreateTextureFromFile("./Assets/environment.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
-                Texture::Handle ibl_texture = Assets::GetTextureLibrary().GetAsset(0);
-                ibl_texture.get()->TransitionToShaderResource();
-                m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_Skybox", ibl_texture);
-        }
+        // {
+        //         // Diligent::TextureLoadInfo loadInfo;
+        //         // loadInfo.IsSRGB = false;
+        //         // loadInfo.GenerateMips = false;
+        //         // loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
+        //         // loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
+        //         // Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
+        //         // Diligent::CreateTextureFromFile("./Assets/environment.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
+        //         Texture::Handle ibl_texture = Assets::GetTextureLibrary().GetAsset(0);
+        //         ibl_texture.get()->TransitionToShaderResource();
+        //         m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_Skybox", ibl_texture);
+        // }
+        // m_RenderScene.m_PointLights.push_back({glm::vec4(0.f, 0.f, 0.f, 1.f), glm::vec3(1.f, 0.f, 0.f), 1.f, 1.f});
+        m_RenderScene.m_PointLights.push_back({glm::vec4(1.f, 0.f, 0.f, 1.f), glm::vec3(1.f, 1.f, 0.f), 100.f, 1.f});
+        m_RenderScene.m_PointLights.push_back({glm::vec4(0.f, 1.f, 0.f, 1.f), glm::vec3(1.f, 0.f, 1.f), 100.f, 1.f});
+        m_RenderScene.m_PointLights.push_back({glm::vec4(0.f, 0.f, 1.f, 1.f), glm::vec3(0.f, 1.f, 1.f), 100.f, 1.f});
+        m_RenderScene.m_PointLights.push_back({glm::vec4(1.f, 1.f, 1.f, 1.f), glm::vec3(1.f, 0.f, 0.f), 100.f, 1.f});
+        m_RenderScene.m_PointLights.push_back({glm::vec4(10.f, 0.f, 0.f, 1.f), glm::vec3(1.f, 1.f, 1.f), 10.f, 1.f});
 }
 
 void Renderer::BeginScene()
@@ -85,32 +91,6 @@ void Renderer::SubmitMesh(BasicMesh* mesh, const glm::mat4& transform)
 
 void Renderer::EndScene()
 {
-}
-
-void Renderer::SetMatricies()
-{
-        glm::mat4 view = glm::lookAt(glm::vec3(0, 0, 1.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-
-
-        // glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(m_pWindow->GetWidth()), static_cast<float>(m_pWindow->GetHeight()), 0.0f); //reminder: this function only likes floats and seems to fail with integers
-        // glm::mat4 vp = projection * view;
-
-        auto SrfPreTransform = glm::mat4();// GetSurfacePretransformMatrix(glm::vec3{0.f, 0.f, 1.f});
-
-        // Get projection matrix adjusted to the current screen orientation
-        auto Proj = glm::perspective(glm::radians(90.f), 1.f, 0.1f, 1000.f);
-        // GetAdjustedProjectionMatrix(glm::pi<float>() / 4.0f, 0.1f, 100.f);
-
-        auto vp = Proj * SrfPreTransform * view;
-        // m_CameraViewProjInvMatrix = m_CameraViewProjMatrix.Inverse();
-
-
-        // glm::mat4 proj_test = glm::perspective(45.0f, 800.0f / 600.0f, 1.0f, 10.0f);
-
-        // glm::mat4 vp_test = proj_test * view_test;
-
-        m_basic_quad_renderer.SetViewProjMatrix(vp);
-        m_PBRRenderer.SetViewProjMatrix(vp);
 }
 
 void Renderer::BindRenderTarget(RenderTarget& render_target)
@@ -149,19 +129,25 @@ RenderTexture Renderer::CreateRenderTexture(uint32_t width, uint32_t height,
 {
         RenderTexture rt;
         Diligent::TextureDesc TexDesc;
-        TexDesc.Name = "Unnamed Render Texure";
+        TexDesc.Name = "Unnamed Render Texture";
         TexDesc.Type = Diligent::RESOURCE_DIM_TEX_2D;
         TexDesc.Width = width;
         TexDesc.Height = height;
 
         // TexDesc.CPUAccessFlags = Diligent::CPU_ACCESS_NONE;
-        TexDesc.Format = color_format;
         TexDesc.BindFlags = Diligent::BIND_SHADER_RESOURCE | Diligent::BIND_RENDER_TARGET | Diligent::BIND_UNORDERED_ACCESS;
+        TexDesc.Format = color_format;
 
         // m_pTexture
         m_pDevice->CreateTexture(TexDesc, nullptr, &rt.m_pTexture);
         rt.m_pRTV = rt.m_pTexture->GetDefaultView(Diligent::TEXTURE_VIEW_RENDER_TARGET);
         rt.m_pSRV = rt.m_pTexture->GetDefaultView(Diligent::TEXTURE_VIEW_SHADER_RESOURCE);
+
+        TexDesc.BindFlags = Diligent::BIND_DEPTH_STENCIL;
+        TexDesc.Format = depth_format;
+        m_pDevice->CreateTexture(TexDesc, nullptr, &rt.m_pDepthStencil);
+        rt.m_pDSV = rt.m_pDepthStencil->GetDefaultView(Diligent::TEXTURE_VIEW_DEPTH_STENCIL);
+
 
         rt.m_RenderTarget.RTV = rt.m_pRTV;
         rt.m_RenderTarget.DSV = rt.m_pDSV;
@@ -173,9 +159,9 @@ RenderTexture Renderer::CreateRenderTexture(uint32_t width, uint32_t height,
 void Renderer::Draw(RenderTarget& render_target, const Camera& camera)
 {
         // SetMatricies();
-        BindRenderTarget(render_target);
+        // BindRenderTarget(render_target);
 
-        m_DefferedRenderer.PrepareDraw(render_target);
+        // m_DefferedRenderer.PrepareDraw(render_target);
 
         //TEMP
         // glm::mat4 view = glm::lookAt(glm::vec3(0, 0, -5.f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
@@ -188,42 +174,46 @@ void Renderer::Draw(RenderTarget& render_target, const Camera& camera)
         auto inverse_projection = glm::inverse(projection);
         auto inverse_view = glm::inverse(view);
 
-        m_DefferedRenderer.BasicShaderPipeline.GetConstantData().SetMat4("g_CameraViewProj", view_projection);
+        m_VTFSRenderer.Render(render_target, camera, m_RenderScene);
+
+        // m_VTFSRenderer.ComputeGridFrustums(render_target, inverse_view);
+
+        // m_DefferedRenderer.BasicShaderPipeline.GetConstantDataDesc().SetMat4(m_DefferedRenderer.BasicShaderPipeline.GetConstantData(), "g_CameraViewProj", view_projection);
 
 
 
-        m_DefferedRenderer.BasicShaderPipeline.PrepareDraw();
-        m_DefferedRenderer.BasicShaderPipeline.SetMaterial(awesome_material);
-        for (auto pair : m_RenderScene.m_BasicMeshes)
-        {
-                auto& mesh = pair.first;
-                Diligent::Uint32 offset = 0;
-                Diligent::IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
-                Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_VERIFY, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
-                Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-                for (auto& transform : pair.second)
-                {
-                        m_DefferedRenderer.BasicShaderPipeline.GetModelData().SetMat4("g_Transform", transform);
-                        m_DefferedRenderer.BasicShaderPipeline.UploadModelData();
+        // m_DefferedRenderer.BasicShaderPipeline.PrepareDraw();
+        // // m_DefferedRenderer.BasicShaderPipeline.SetMaterial(awesome_material);
+        // for (auto pair : m_RenderScene.m_BasicMeshes)
+        // {
+        //         auto& mesh = pair.first;
+        //         Diligent::Uint32 offset = 0;
+        //         Diligent::IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
+        //         Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, Diligent::RESOURCE_STATE_TRANSITION_MODE_VERIFY, Diligent::SET_VERTEX_BUFFERS_FLAG_RESET);
+        //         Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, Diligent::RESOURCE_STATE_TRANSITION_MODE_VERIFY);
+        //         for (auto& transform : pair.second)
+        //         {
+        //                 m_DefferedRenderer.BasicShaderPipeline.GetModelDataDesc().SetMat4(m_DefferedRenderer.BasicShaderPipeline.GetModelData(), "g_Transform", transform);
+        //                 m_DefferedRenderer.BasicShaderPipeline.UploadModelData();
 
 
-                        //For textures
-                        // Renderer::GetContext()->CommitShaderResources(m_pCurrentMaterial->m_pMaterialConstantsBuffer->)
+        //                 //For textures
+        //                 // Renderer::GetContext()->CommitShaderResources(m_pCurrentMaterial->m_pMaterialConstantsBuffer->)
 
-                        Diligent::DrawIndexedAttribs DrawAttrs;
-                        DrawAttrs.NumIndices = mesh->indicies.size();
-                        DrawAttrs.IndexType = Diligent::VT_UINT32;
-                        DrawAttrs.Flags = Diligent::DRAW_FLAG_VERIFY_ALL;
-                        Renderer::GetContext()->DrawIndexed(DrawAttrs);
-                }
-        }
+        //                 Diligent::DrawIndexedAttribs DrawAttrs;
+        //                 DrawAttrs.NumIndices = mesh->indicies.size();
+        //                 DrawAttrs.IndexType = Diligent::VT_UINT32;
+        //                 DrawAttrs.Flags = Diligent::DRAW_FLAG_VERIFY_ALL;
+        //                 Renderer::GetContext()->DrawIndexed(DrawAttrs);
+        //         }
+        // }
 
-        m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetMat4("g_InverseProjectionMatrix", inverse_projection);
-        m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetMat4("g_InverseViewMatrix", inverse_view);
+        // m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantDataDesc().SetMat4(m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData(), "g_InverseProjectionMatrix", inverse_projection);
+        // m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantDataDesc().SetMat4(m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData(), "g_InverseViewMatrix", inverse_view);
 
-        m_DefferedRenderer.ApplyLighting();
+        // m_DefferedRenderer.ApplyLighting();
 
-        m_DefferedRenderer.FinalizeDraw();
+        // m_DefferedRenderer.FinalizeDraw();
 
         //set render targets
         // m_DefferedRenderer.BasicShaderPipeline.SetMaterial(awesome_material);
@@ -297,6 +287,7 @@ void Renderer::OnWindowResize(int width, int height)
 }
 void Renderer::ReleaseBufferResources()
 {
+        m_VTFSRenderer.ReleaseAllRenderTargetResources();
         m_DefferedRenderer.ReleaseWindowResources();
 }
 }

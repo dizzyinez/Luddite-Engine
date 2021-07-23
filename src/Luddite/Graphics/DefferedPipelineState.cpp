@@ -104,8 +104,8 @@ void DefferedPipelineState::Initialize(
         Renderer::GetDevice()->CreateGraphicsPipelineState(PSOCreateInfo, &m_pPSO);
         VERIFY_EXPR(m_pPSO != nullptr);
 
-        m_ConstantShaderAttributes.SetDefaultAttribs(m_ConstantShaderData);
-        m_ModelShaderAttributes.SetDefaultAttribs(m_ModelShaderData);
+        m_ConstantShaderData = m_ConstantShaderAttributes.CreateData();
+        m_ModelShaderData = m_ModelShaderAttributes.CreateData();
 
         CreateUniformBuffer(Renderer::GetDevice(), m_ConstantShaderAttributes.GetSize(), "ShaderConstants", &m_pShaderConstantsBuffer);
         CreateUniformBuffer(Renderer::GetDevice(), m_ModelShaderAttributes.GetSize(), "ModelConstants", &m_pShaderModelBuffer);

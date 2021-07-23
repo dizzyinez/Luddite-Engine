@@ -27,6 +27,7 @@ class DefferedScreenSpacePipelineState
         void PrepareDraw(int SRBIndex);
         void Draw();
 
+        inline ShaderAttributeListDescription& GetConstantDataDesc() {return m_ConstantShaderAttributes;}
         inline ShaderAttributeListData& GetConstantData() {return m_ConstantShaderData;}
 
         int CreateSRB(Diligent::ITextureView* ColorSRV,

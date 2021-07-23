@@ -26,7 +26,9 @@ class DefferedPipelineState
         void PrepareDraw();
         void UploadModelData();
         void SetMaterial(MaterialHandle Material);
+        inline ShaderAttributeListDescription& GetConstantDataDesc() {return m_ConstantShaderAttributes;}
         inline ShaderAttributeListData& GetConstantData() {return m_ConstantShaderData;}
+        inline ShaderAttributeListDescription& GetModelDataDesc() {return m_ModelShaderAttributes;}
         inline ShaderAttributeListData& GetModelData() {return m_ModelShaderData;}
         // void SetModelAttribs();
         MaterialHandle GetMaterial(const std::string& Name);

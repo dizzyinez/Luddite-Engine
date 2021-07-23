@@ -112,12 +112,13 @@ void Application::Run()
                 std::chrono::microseconds loop_time_span = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - loop_start);
                 update_accululator += loop_time_span;
                 render_accululator += loop_time_span;
-                // render_accululator
+                // render_accumulator
                 delta_time = std::chrono::duration_cast<std::chrono::duration<double> >(loop_time_span).count();
-                // LD_LOG_INFO("fps: {}", fps);
+                float fps = 1 / delta_time;
+                LD_LOG_INFO("fps: {}", fps);
+                std::chrono::microseconds sec(1);
                 // LD_LOG_INFO("elapsed: {}", update_accululator.count());
                 // std::chrono::microseconds µs;
-                std::chrono::microseconds sec(1);
                 // LD_LOG_INFO("DT: {}", update_delta_time.count());
         }
 }

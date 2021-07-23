@@ -7,8 +7,10 @@
 #include "Luddite/Graphics/QuadBatchRenderer.hpp"
 #include "Luddite/Graphics/PBRRenderer.hpp"
 #include "Luddite/Graphics/DefferedRenderer.hpp"
+#include "Luddite/Graphics/VTFSRenderer.hpp"
 #include "Luddite/Graphics/RenderTarget.hpp"
 #include "Luddite/Core/AssetTypes/Model.hpp"
+#include "Luddite/Graphics/Lights.hpp"
 // #include "Luddite/Graphics/"
 
 // #include "Common/interface/BasicMath.hpp"
@@ -17,6 +19,14 @@ constexpr float DefaultClearColor[4] = {0.f, 0.f, 0.f, 0.f};
 
 namespace Luddite
 {
+struct RenderScene
+{
+        std::unordered_map<BasicMesh*, std::vector<glm::mat4> > m_BasicMeshes;
+        std::vector<PointLightCPU> m_PointLights;
+        std::vector<SpotLightCPU> m_SpotLights;
+        std::vector<DirectionalLightCPU> m_DirectionalLights;
+};
+
 // class LUDDITE_API Application;
 class LUDDITE_API Renderer
 {
@@ -39,7 +49,7 @@ class LUDDITE_API Renderer
         static void ClearRenderTarget(RenderTarget& render_target, const float clear_color[4] = DefaultClearColor);
         static RenderTexture CreateRenderTexture(uint32_t width, uint32_t height,
                                                  Diligent::TEXTURE_FORMAT color_format = m_DefaultRTVFormat,
-                                                 Diligent::TEXTURE_FORMAT depth_format = Diligent::TEX_FORMAT_D32_FLOAT);
+                                                 Diligent::TEXTURE_FORMAT depth_format = Diligent::TEX_FORMAT_D32_FLOAT_S8X24_UINT);
         static void TransitionRenderTextureToRenderTarget(RenderTexture& RenderTexture);
         static void TransitionRenderTextureToShaderResource(RenderTexture& RenderTexture);
         static void ReleaseBufferResources();
@@ -52,7 +62,6 @@ class LUDDITE_API Renderer
         private:
         friend class Application;
         friend class Window;
-        static void SetMatricies();
         static void PrepareDraw();
         static void OnWindowResize(int width, int height);
         static inline Diligent::RefCntAutoPtr<Diligent::IRenderDevice>  m_pDevice;
@@ -65,14 +74,12 @@ class LUDDITE_API Renderer
 
         // static inline DefferedPipelineState m_PipelineState;
         static inline DefferedRenderer m_DefferedRenderer;
+        static inline VTFSRenderer m_VTFSRenderer;
         static inline QuadBatchRenderer m_basic_quad_renderer;
         static inline PBRRenderer m_PBRRenderer;
         // static inline ModelLoader m_ModelLoader;
 
-        static inline struct RenderScene
-        {
-                std::unordered_map<BasicMesh*, std::vector<glm::mat4> > m_BasicMeshes;
-        } m_RenderScene;
+        static inline RenderScene m_RenderScene;
 
         // Window* m_pWindow;
         // Texture t;
