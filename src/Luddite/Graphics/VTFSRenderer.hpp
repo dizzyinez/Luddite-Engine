@@ -106,7 +106,7 @@ class LUDDITE_API VTFSRenderer
                        Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> pMergeSortSRB,
                        Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> pMergeSortSwappedSRB,
                        uint32_t total_values, uint32_t chunk_size);
-        PerRenderTargetData* GetRenderTargetData(const RenderTarget& render_target, const Camera& camera);
+        PerRenderTargetData* GetRenderTargetData(const RenderTarget& render_target, const Camera& camera, const glm::mat4& projection);
         std::unordered_map<Diligent::ITextureView*, PerRenderTargetData> m_PerRenderTargetCache;
 
         bool m_FreezeClusters = false;

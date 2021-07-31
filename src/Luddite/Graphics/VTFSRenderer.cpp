@@ -97,18 +97,11 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
         m_CameraCBAttributes.SetMat4(m_CameraCBData, "InverseProjection", inverse_projection);
         m_CameraCBAttributes.SetVec2(m_CameraCBData, "ViewDimensions", glm::vec2(render_target.width, render_target.height));
         m_CameraCBAttributes.MapBuffer(m_CameraCBData, m_CameraCB);
-        PerRenderTargetData* data = GetRenderTargetData(render_target, camera);
+        PerRenderTargetData* data = GetRenderTargetData(render_target, camera, projection);
 
         //Map Camera View Projection Matrix
         glm::mat4 view = render_target.GetViewMatrix(camera);
         glm::mat4 view_projection = projection * view;
-
-        //Recalculate the cluster grid if needed
-        if (projection != data->prev_projection_matrix)
-        {
-                data->prev_projection_matrix = projection;
-                ComputeClusterGrid(*data, render_target, camera);
-        }
 
         auto colorRTV = render_target.RTV;
         auto depthZRTV = data->pDepthZTexture->GetDefaultView(TEXTURE_VIEW_RENDER_TARGET);
@@ -763,25 +756,27 @@ VTFSRenderer::PerRenderTargetData VTFSRenderer::CreateRenderTargetData(const Ren
         m_pDebugDepthPSO->CreateShaderResourceBinding(&data.DebugDepthSRB, true);
         data.DebugDepthSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_SubpassInputDepthZ")->Set(data.pDepthZTexture->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
 
-
-        data.prev_projection_matrix = render_target.GetProjectionMatrix(camera);
         ComputeClusterGrid(data, render_target, camera);
         return data;
 }
 
-VTFSRenderer::PerRenderTargetData* VTFSRenderer::GetRenderTargetData(const RenderTarget& render_target, const Camera& camera)
+VTFSRenderer::PerRenderTargetData* VTFSRenderer::GetRenderTargetData(const RenderTarget& render_target, const Camera& camera, const glm::mat4& projection)
 {
         auto it = m_PerRenderTargetCache.find(render_target.RTV);
         if (it != m_PerRenderTargetCache.end())
         {
+                //Recalculate the cluster grid if needed
+                if (projection != it->second.prev_projection_matrix)
+                {
+                        m_PerRenderTargetCache.erase(it);
+                        return GetRenderTargetData(render_target, camera, projection);
+                }
                 return &it->second;
         }
-        else
-        {
-                auto pair = m_PerRenderTargetCache.emplace(render_target.RTV, CreateRenderTargetData(render_target, camera));
-                LD_VERIFY(pair.second, "Failed to Create Render Target Data for VTFS");
-                return &pair.first->second;
-        }
+        auto pair = m_PerRenderTargetCache.emplace(render_target.RTV, CreateRenderTargetData(render_target, camera));
+        LD_VERIFY(pair.second, "Failed to Create Render Target Data for VTFS");
+        pair.first->second.prev_projection_matrix = projection;
+        return &pair.first->second;
 }
 
 void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, const RenderTarget& render_target, const Camera& camera)

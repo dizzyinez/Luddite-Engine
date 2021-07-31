@@ -5,6 +5,7 @@ namespace Luddite
 {
 using EntityID = entt::entity;
 constexpr EntityID NullEntityID = entt::null;
+class LUDDITE_API World;
 class LUDDITE_API Entity
 {
         public:
@@ -143,6 +144,7 @@ class LUDDITE_API Entity
          */
         inline EntityID GetID() const {return m_EntityID;}
         private:
+        friend class World;
         EntityID m_EntityID = entt::null;
         entt::registry* m_pRegistry = nullptr;
 };
