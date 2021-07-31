@@ -24,6 +24,9 @@ class LUDDITE_API VTFSRenderer
         void ReleaseAllRenderTargetResources();
         void Render(const RenderTarget& render_target, const Camera& camera, const RenderScene& render_scene);
 
+        inline void DebugFreezeClusters() {m_FreezeClusters = true;}
+        inline void DebugUnfreezeClusters() {m_FreezeClusters = false;}
+
         private:
         struct PerRenderTargetData
         {
@@ -105,6 +108,8 @@ class LUDDITE_API VTFSRenderer
                        uint32_t total_values, uint32_t chunk_size);
         PerRenderTargetData* GetRenderTargetData(const RenderTarget& render_target, const Camera& camera);
         std::unordered_map<Diligent::ITextureView*, PerRenderTargetData> m_PerRenderTargetCache;
+
+        bool m_FreezeClusters = false;
 
 
         void CreateLightBuffers();

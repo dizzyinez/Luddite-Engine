@@ -88,7 +88,25 @@ class LUDDITE_API Entity
         }
 
         /**
-         * @brief Gets a reference to the given component. Use ReplaceComponent() if you want to change the component's data.
+         * @brief Gets a reference to the given component
+         *
+         * @tparam T
+         * @return T&
+         */
+        template <typename T>
+        inline T& GetComponent()
+        {
+        #ifdef LD_DEBUG
+                T* pComponent = TryComponent<T>();
+                LD_VERIFY(pComponent, "Entity (id: {}) doesn't have component {}", m_EntityID, GET_TYPENAME_STRING(T));
+                return *pComponent;
+        #else
+                return m_pRegistry->get<T>(m_EntityID);
+        #endif //LD_DEBUG
+        }
+
+        /**
+         * @brief Gets a const reference to the given component
          *
          * @tparam T
          * @return T&

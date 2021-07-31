@@ -1,8 +1,8 @@
 struct ComputeShaderInput
 {
-    uint2 groupID           : SV_GroupID;           // 3D index of the thread group in the dispatch.
-    uint2 groupThreadID     : SV_GroupThreadID;     // 3D index of local thread ID in a thread group.
-    uint2 dispatchThreadID  : SV_DispatchThreadID;  // 3D index of global thread ID in the dispatch.
+    uint3 groupID           : SV_GroupID;           // 3D index of the thread group in the dispatch.
+    uint3 groupThreadID     : SV_GroupThreadID;     // 3D index of local thread ID in a thread group.
+    uint3 dispatchThreadID  : SV_DispatchThreadID;  // 3D index of global thread ID in the dispatch.
     uint  groupIndex        : SV_GroupIndex;        // Flattened local index of the thread within a thread group.
 };
 
@@ -13,7 +13,7 @@ struct CameraData
     float2 ViewDimensions;
 };
 
-cbuffer _CameraCB
+cbuffer _CameraCB : register(b0)
 {
     CameraData CameraCB;
 };
@@ -25,7 +25,7 @@ struct BasicModelCameraData
     float4x4 Model;
 };
 
-cbuffer _BasicModelCameraCB
+cbuffer _BasicModelCameraCB : register(b1)
 {
     BasicModelCameraData BasicModelCameraCB;
 };
@@ -39,7 +39,7 @@ struct ClusterData
     float log_grid_dim_y;
 };
 
-cbuffer _ClusterCB
+cbuffer _ClusterCB : register(b2)
 {
     ClusterData ClusterCB;
 };
@@ -51,7 +51,7 @@ struct LightCountsData
     uint NumDirectionalLights;
 };
 
-cbuffer _LightCountsCB
+cbuffer _LightCountsCB : register(b3)
 {
     LightCountsData LightCountsCB;
 };
@@ -62,7 +62,7 @@ struct DispatchParamsData
     uint3 NumThreads;
 };
 
-cbuffer _DispatchParamsCB
+cbuffer _DispatchParamsCB : register(b4)
 {
     DispatchParamsData DispatchParamsCB;
 };
@@ -72,7 +72,7 @@ struct ReductionParamsData
     uint NumElements;
 };
 
-cbuffer _ReductionParamsCB
+cbuffer _ReductionParamsCB : register(b5)
 {
     ReductionParamsData ReductionParamsCB;
 };
@@ -83,7 +83,7 @@ struct SortParamsData
     uint ChunkSize;
 };
 
-cbuffer _SortParamsCB
+cbuffer _SortParamsCB : register(b6)
 {
     SortParamsData SortParamsCB;
 };
@@ -95,65 +95,65 @@ struct BVHParamsData
     uint ChildLevel;
 };
 
-cbuffer _BVHParamsCB
+cbuffer _BVHParamsCB : register(b7)
 {
     BVHParamsData BVHParamsCB;
 };
+StructuredBuffer<PointLight> PointLights : register(t0);
+StructuredBuffer<SpotLight> SpotLights : register(t1);
+StructuredBuffer<DirectionalLight> DirectionalLights : register(t2);
 
-RWStructuredBuffer<AABB> RWClusterAABBs;
-StructuredBuffer<AABB> ClusterAABBs;
+StructuredBuffer<uint> PointLightIndexList : register(t3);
+StructuredBuffer<uint> SpotLightIndexList : register(t4);
+StructuredBuffer<uint2> PointLightGrid : register(t5);
+StructuredBuffer<uint2> SpotLightGrid : register(t6);
 
-RWStructuredBuffer<bool> RWClusterFlags;
-StructuredBuffer<bool> ClusterFlags;
+StructuredBuffer<uint> UniqueClusters : register(t7);
+StructuredBuffer<AABB> ClusterAABBs : register(t8);
 
-RWStructuredBuffer<uint> RWUniqueClusters;
-StructuredBuffer<uint> UniqueClusters;
+StructuredBuffer<AABB> LightsAABB : register(t9);
 
-RWStructuredBuffer<PointLight> RWPointLights;
-StructuredBuffer<PointLight> PointLights;
+StructuredBuffer<uint> InputKeys : register(t10);
+StructuredBuffer<uint> InputValues : register(t11);
+StructuredBuffer<uint> MergePathPartitions : register(t12);
 
-RWStructuredBuffer<SpotLight> RWSpotLights;
-StructuredBuffer<SpotLight> SpotLights;
+StructuredBuffer<uint> PointLightIndicies : register(t13);
+StructuredBuffer<uint> SpotLightIndicies : register(t14);
 
-RWStructuredBuffer<DirectionalLight> RWDirectionalLights;
-StructuredBuffer<DirectionalLight> DirectionalLights;
+StructuredBuffer<AABB> PointLightBVH : register(t15);
+StructuredBuffer<AABB> SpotLightBVH : register(t16);
 
-RWStructuredBuffer<AABB> RWLightsAABB;
-StructuredBuffer<AABB> LightsAABB;
+StructuredBuffer<bool> ClusterFlags : register(t17);
 
-RWStructuredBuffer<uint> RWPointLightMortonCodes;
-RWStructuredBuffer<uint> RWSpotLightMortonCodes;
-RWStructuredBuffer<uint> RWPointLightIndicies;
-StructuredBuffer<uint> PointLightIndicies;
-RWStructuredBuffer<uint> RWSpotLightIndicies;
-StructuredBuffer<uint> SpotLightIndicies;
 
-StructuredBuffer<uint> InputKeys;
-StructuredBuffer<uint> InputValues;
-RWStructuredBuffer<uint> OutputKeys;
-RWStructuredBuffer<uint> OutputValues;
+// RWStructuredBuffer<uint> RWUniqueClusters;
+RWStructuredBuffer<PointLight> RWPointLights : register(u0);
+RWStructuredBuffer<SpotLight> RWSpotLights : register(u1);
+RWStructuredBuffer<DirectionalLight> RWDirectionalLights : register(u2);
 
-RWStructuredBuffer<uint> RWMergePathPartitions;
-StructuredBuffer<uint> MergePathPartitions;
+RWStructuredBuffer<uint> RWPointLightIndexList : register(u3);
+RWStructuredBuffer<uint> RWSpotLightIndexList : register(u4);
+RWStructuredBuffer<uint2> RWPointLightGrid : register(u5);
+RWStructuredBuffer<uint2> RWSpotLightGrid : register(u6);
 
-RWStructuredBuffer<AABB> RWPointLightBVH;
-StructuredBuffer<AABB> PointLightBVH;
+AppendStructuredBuffer<uint> RWUniqueClusters : register(u7);
+RWStructuredBuffer<AABB> RWClusterAABBs : register(u8);
 
-RWStructuredBuffer<AABB> RWSpotLightBVH;
-StructuredBuffer<AABB> SpotLightBVH;
+RWStructuredBuffer<AABB> RWLightsAABB : register(u9);
 
-RWStructuredBuffer<uint> RWPointLightIndexCounter;
+RWStructuredBuffer<uint> OutputKeys : register(u10);
+RWStructuredBuffer<uint> OutputValues : register(u11);
+RWStructuredBuffer<uint> RWMergePathPartitions : register(u12);
 
-RWStructuredBuffer<uint> RWPointLightIndexList;
-StructuredBuffer<uint> PointLightIndexList;
+RWStructuredBuffer<uint> RWPointLightMortonCodes : register(u13);
+RWStructuredBuffer<uint> RWSpotLightMortonCodes : register(u14);
+RWStructuredBuffer<uint> RWPointLightIndicies : register(u15);
+RWStructuredBuffer<uint> RWSpotLightIndicies : register(u16);
 
-RWStructuredBuffer<uint2> RWPointLightGrid;
-StructuredBuffer<uint2> PointLightGrid;
+RWStructuredBuffer<AABB> RWPointLightBVH : register(u17);
+RWStructuredBuffer<AABB> RWSpotLightBVH : register(u18);
 
-RWStructuredBuffer<uint> RWSpotLightIndexCounter;
+RWStructuredBuffer<uint> RWPointLightIndexCounter : register(u19);
+RWStructuredBuffer<uint> RWSpotLightIndexCounter : register(u20);
 
-RWStructuredBuffer<uint> RWSpotLightIndexList;
-StructuredBuffer<uint> SpotLightIndexList;
-
-RWStructuredBuffer<uint2> RWSpotLightGrid;
-StructuredBuffer<uint2> SpotLightGrid;
+RWStructuredBuffer<bool> RWClusterFlags : register(u21);

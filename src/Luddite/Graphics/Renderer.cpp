@@ -67,16 +67,19 @@ void Renderer::Initialize()
         //         m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_Skybox", ibl_texture);
         // }
         // m_RenderScene.m_PointLights.push_back({glm::vec4(0.f, 0.f, 0.f, 1.f), glm::vec3(1.f, 0.f, 0.f), 1.f, 1.f});
-        m_RenderScene.m_PointLights.push_back({glm::vec4(1.f, 0.f, 0.f, 1.f), glm::vec3(1.f, 1.f, 0.f), 100.f, 1.f});
-        m_RenderScene.m_PointLights.push_back({glm::vec4(0.f, 1.f, 0.f, 1.f), glm::vec3(1.f, 0.f, 1.f), 100.f, 1.f});
-        m_RenderScene.m_PointLights.push_back({glm::vec4(0.f, 0.f, 1.f, 1.f), glm::vec3(0.f, 1.f, 1.f), 100.f, 1.f});
-        m_RenderScene.m_PointLights.push_back({glm::vec4(1.f, 1.f, 1.f, 1.f), glm::vec3(1.f, 0.f, 0.f), 100.f, 1.f});
+        m_RenderScene.m_PointLights.push_back({glm::vec4(1.f, 0.f, 0.f, 1.f), glm::vec3(1.f, 1.f, 0.f), 8.f, 1.f});
+        m_RenderScene.m_PointLights.push_back({glm::vec4(0.f, 1.f, 0.f, 1.f), glm::vec3(1.f, 0.f, 1.f), 8.f, 1.f});
+        m_RenderScene.m_PointLights.push_back({glm::vec4(0.f, 0.f, 1.f, 1.f), glm::vec3(0.f, 1.f, 1.f), 8.f, 1.f});
+        m_RenderScene.m_PointLights.push_back({glm::vec4(1.f, 1.f, 1.f, 1.f), glm::vec3(1.f, 0.f, 0.f), 8.f, 1.f});
         m_RenderScene.m_PointLights.push_back({glm::vec4(10.f, 0.f, 0.f, 1.f), glm::vec3(1.f, 1.f, 1.f), 10.f, 1.f});
 }
 
 void Renderer::BeginScene()
 {
         m_RenderScene.m_BasicMeshes.clear();
+        m_RenderScene.m_PointLights.clear();
+        m_RenderScene.m_SpotLights.clear();
+        m_RenderScene.m_DirectionalLights.clear();
         // for (auto pair : m_RenderScene.m_BasicMeshes)
         // {
         //         LD_LOG_INFO("CLEAR");
@@ -87,6 +90,11 @@ void Renderer::BeginScene()
 void Renderer::SubmitMesh(BasicMesh* mesh, const glm::mat4& transform)
 {
         m_RenderScene.m_BasicMeshes[mesh].push_back(transform);
+}
+
+void Renderer::SubmitPointLight(const PointLightCPU& point_light)
+{
+        m_RenderScene.m_PointLights.push_back(point_light);
 }
 
 void Renderer::EndScene()

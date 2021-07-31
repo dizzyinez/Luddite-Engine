@@ -6,7 +6,7 @@ namespace Luddite
 {
 class LUDDITE_API Color
 {
-public:
+        public:
         Color()
         {
                 SetColorRGBA(0xFFFFFFFF);
@@ -44,12 +44,14 @@ public:
 
         inline glm::vec4 GetVec4() const {return rgba;}
         inline glm::vec3 GetVec3() const {return rgba;}
-private:
+        private:
         glm::vec4 rgba;
 };
+typedef Color ColorRGBA;
+
 class LUDDITE_API ColorRGB
 {
-public:
+        public:
         ColorRGB()
         {
                 SetColorRGB(0xFFFFFF);
@@ -76,7 +78,7 @@ public:
         }
 
         inline glm::vec3 GetVec3() const {return rgb;}
-private:
+        private:
         glm::vec3 rgb;
 };
 }

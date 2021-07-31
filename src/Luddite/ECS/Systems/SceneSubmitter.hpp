@@ -16,6 +16,14 @@ class S_SceneSubmitter : public Luddite::System<S_SceneSubmitter>
                                 Luddite::Renderer::SubmitMesh(&mesh, transform.GetTransformMatrix());
                         }
                 }
+                for (const auto &&[id, point_light, transform] : world.GetGroup<C_PointLight>(Luddite::Borrow<C_Transform3D>).each())
+                {
+                        Luddite::PointLightCPU light;
+                        light.Position = glm::vec4(transform.Translation, 1.f);
+                        light.Range = point_light.Range;
+                        light.Intensity = point_light.Intensity;
+                        Luddite::Renderer::SubmitPointLight(light);
+                }
                 Luddite::Renderer::EndScene();
         }
 };

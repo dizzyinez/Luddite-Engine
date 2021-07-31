@@ -18,5 +18,4 @@ void main(in  VSInput VSIn,
 {    
     PSIn.Pos = mul(BasicModelCameraCB.ModelViewProjection, float4(VSIn.Pos, 1.0));
     PSIn.PosVS = mul(BasicModelCameraCB.ModelView, float4(VSIn.Pos, 1.0));
-    // PSIn.PosVS.z = 1000.0;
 }

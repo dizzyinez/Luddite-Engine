@@ -5,9 +5,14 @@
 void main(in ComputeShaderInput CSIn)
 {
     uint clusterID = CSIn.dispatchThreadID.x;
-    if (ClusterFlags[clusterID])
+    if (ClusterFlags[clusterID] == 1)
     {
-        uint i = RWUniqueClusters.IncrementCounter();
-        RWUniqueClusters[i] = clusterID;
+        // RWUniqueClusters[clusterID] = clusterID;
+        RWUniqueClusters.Append(clusterID);
+        // uint i = RWUniqueClusters.IncrementCounter();
+        // RWUniqueClusters[i] = clusterID;
+        // RWUniqueClusters[RWUniqueClusters.IncrementCounter()] = clusterID;
     }
+        // RWUniqueClusters[clusterID] = clusterID;
+        // RWUniqueClusters.IncrementCounter();
 }

@@ -74,7 +74,6 @@ struct LUDDITE_API AssetLibrary
 
         void ReloadAsset(const AssetID& id)
         {
-                std::lock_guard<std::mutex> lock(m_Mutex);
                 auto it = m_AssetMap.find(id);
                 if (it != m_AssetMap.end())
                 {

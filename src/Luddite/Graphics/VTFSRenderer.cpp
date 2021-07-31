@@ -69,6 +69,15 @@ void ClearBufferUInt(IBuffer* buffer)
         Renderer::GetContext()->UpdateBuffer(buffer, 0, size, bytes, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 }
 
+void ClearBufferUInt(IBuffer* buffer, uint32_t value)
+{
+        uint32_t size = buffer->GetDesc().uiSizeInBytes;
+        uint32_t size_in_uint32s = size / sizeof(uint32_t);
+        uint32_t bytes[size_in_uint32s];
+        std::fill(bytes, bytes + size_in_uint32s, value);
+        Renderer::GetContext()->UpdateBuffer(buffer, 0, size, bytes, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+}
+
 void ClearBufferFloat(IBuffer* buffer)
 {
         uint32_t size = buffer->GetDesc().uiSizeInBytes;
@@ -118,14 +127,25 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
         ClearBufferFloat(m_pPointLightBVHBuffer);
         ClearBufferFloat(m_pSpotLightBVHBuffer);
 
+        // Renderer::GetContext()->buffer
 
-        //Transition Resources
-        StateTransitionDesc Barriers[] =
+
+        // Transition Resources
         {
-                {data->ClusterFlagsBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true}
-        };
-        Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
-        data->ClusterFlagsBuffer->GetDesc();
+                StateTransitionDesc Barriers[] =
+                {
+                        {data->ClusterFlagsBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
+                        {data->UniqueClustersBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
+                        {data->UniqueClustersCounterBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
+                        {data->PointLightIndexCounterBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
+                        {data->SpotLightIndexCounterBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
+                        {data->PointLightGridBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
+                        {m_pMergePathPartitionsBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
+                        {m_pPointLightBVHBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
+                        {m_pSpotLightBVHBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true}
+                };
+                Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
+        }
 
         m_ClusterCBAttributes.MapBuffer(m_ClusterCBData, m_ClusterCB);
         m_BasicModelCameraCBAttributes.MapBuffer(m_BasicModelCameraCBData, m_BasicModelCameraCB);
@@ -199,6 +219,15 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                 }
         }
 
+        //Resource Transition Barriers
+        {
+                StateTransitionDesc Barriers[] =
+                {
+                        {data->ClusterFlagsBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true}
+                };
+                Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
+        }
+
         uint32_t max_clusters = data->cluster_dimensions.x * data->cluster_dimensions.y * data->cluster_dimensions.z;
         //Find Unique Samples
         {
@@ -266,8 +295,8 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
         {
                 m_UpdateLightsCBAttributes.SetMat4(m_UpdateLightsCBData, "view_matrix", view);
                 m_UpdateLightsCBAttributes.MapBuffer(m_UpdateLightsCBData, m_UpdateLightsCB);
-                uint32_t num_groups = glm::max(num_point_lights, glm::max(num_spot_lights, num_directional_lights));
-                num_groups = glm::ceil((float)num_groups / 1024.f);
+                uint32_t num_groups = static_cast<uint32_t>(glm::max(num_point_lights, glm::max(num_spot_lights, num_directional_lights)));
+                num_groups = static_cast<uint32_t>(glm::ceil((float)num_groups / 1024.f));
                 DispatchComputeAttribs DispatchAttribs;
                 Renderer::GetContext()->SetPipelineState(m_pUpdateLightsPSO);
                 Renderer::GetContext()->CommitShaderResources(data->UpdateLightsSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
@@ -277,37 +306,43 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
         {
                 //  First Pass
                 uint32_t numThreadGroups = glm::min<uint32_t>(static_cast<uint32_t>(glm::ceil((float)glm::max(num_point_lights, num_spot_lights) / 512.f)), 512);
+                if (numThreadGroups > 0)
                 {
-                        m_DispatchParamsCBAttributes.SetUVec3(m_DispatchParamsCBData, "NumThreadGroups", glm::uvec3(numThreadGroups, 1, 1));
-                        m_DispatchParamsCBAttributes.SetUVec3(m_DispatchParamsCBData, "NumThreads", glm::uvec3(numThreadGroups * 512, 1, 1));
-                        m_DispatchParamsCBAttributes.MapBuffer(m_DispatchParamsCBData, m_DispatchParamsCB);
-                        DispatchComputeAttribs DispatchAttribs;
-                        DispatchAttribs.ThreadGroupCountX = numThreadGroups;
-                        Renderer::GetContext()->SetPipelineState(m_pReduceLightsAABB1PSO);
-                        Renderer::GetContext()->CommitShaderResources(data->ReduceLightsAABB1SRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                        Renderer::GetContext()->DispatchCompute(DispatchAttribs);
-                }
-                //  Second Pass
-                {
-                        m_DispatchParamsCBAttributes.SetUVec3(m_DispatchParamsCBData, "NumThreadGroups", glm::uvec3(1, 1, 1));
-                        m_DispatchParamsCBAttributes.SetUVec3(m_DispatchParamsCBData, "NumThreads", glm::uvec3(512, 1, 1));
-                        m_DispatchParamsCBAttributes.MapBuffer(m_DispatchParamsCBData, m_DispatchParamsCB);
-                        m_ReductionParamsCBAttributes.SetUInt(m_ReductionParamsCBData, "NumElements", numThreadGroups);
-                        m_ReductionParamsCBAttributes.MapBuffer(m_ReductionParamsCBData, m_ReductionParamsCB);
-                        DispatchComputeAttribs DispatchAttribs;
-                        Renderer::GetContext()->SetPipelineState(m_pReduceLightsAABB2PSO);
-                        Renderer::GetContext()->CommitShaderResources(data->ReduceLightsAABB2SRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                        Renderer::GetContext()->DispatchCompute(DispatchAttribs);
+                        {
+                                m_DispatchParamsCBAttributes.SetUVec3(m_DispatchParamsCBData, "NumThreadGroups", glm::uvec3(numThreadGroups, 1, 1));
+                                m_DispatchParamsCBAttributes.SetUVec3(m_DispatchParamsCBData, "NumThreads", glm::uvec3(numThreadGroups * 512, 1, 1));
+                                m_DispatchParamsCBAttributes.MapBuffer(m_DispatchParamsCBData, m_DispatchParamsCB);
+                                DispatchComputeAttribs DispatchAttribs;
+                                DispatchAttribs.ThreadGroupCountX = numThreadGroups;
+                                Renderer::GetContext()->SetPipelineState(m_pReduceLightsAABB1PSO);
+                                Renderer::GetContext()->CommitShaderResources(data->ReduceLightsAABB1SRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                Renderer::GetContext()->DispatchCompute(DispatchAttribs);
+                        }
+                        //  Second Pass
+                        {
+                                m_DispatchParamsCBAttributes.SetUVec3(m_DispatchParamsCBData, "NumThreadGroups", glm::uvec3(1, 1, 1));
+                                m_DispatchParamsCBAttributes.SetUVec3(m_DispatchParamsCBData, "NumThreads", glm::uvec3(512, 1, 1));
+                                m_DispatchParamsCBAttributes.MapBuffer(m_DispatchParamsCBData, m_DispatchParamsCB);
+                                m_ReductionParamsCBAttributes.SetUInt(m_ReductionParamsCBData, "NumElements", numThreadGroups);
+                                m_ReductionParamsCBAttributes.MapBuffer(m_ReductionParamsCBData, m_ReductionParamsCB);
+                                DispatchComputeAttribs DispatchAttribs;
+                                Renderer::GetContext()->SetPipelineState(m_pReduceLightsAABB2PSO);
+                                Renderer::GetContext()->CommitShaderResources(data->ReduceLightsAABB2SRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                Renderer::GetContext()->DispatchCompute(DispatchAttribs);
+                        }
                 }
         }
         //Compute Light Morton Codes
         {
                 uint32_t numThreadGroups = static_cast<uint32_t>(glm::ceil((float)glm::max(num_point_lights, num_spot_lights) / 1024.f));
-                DispatchComputeAttribs DispatchAttribs;
-                DispatchAttribs.ThreadGroupCountX = numThreadGroups;
-                Renderer::GetContext()->SetPipelineState(m_pComputeLightMortonCodesPSO);
-                Renderer::GetContext()->CommitShaderResources(data->ComputeLightMortonCodesSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                Renderer::GetContext()->DispatchCompute(DispatchAttribs);
+                if (numThreadGroups > 0)
+                {
+                        DispatchComputeAttribs DispatchAttribs;
+                        DispatchAttribs.ThreadGroupCountX = numThreadGroups;
+                        Renderer::GetContext()->SetPipelineState(m_pComputeLightMortonCodesPSO);
+                        Renderer::GetContext()->CommitShaderResources(data->ComputeLightMortonCodesSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                        Renderer::GetContext()->DispatchCompute(DispatchAttribs);
+                }
         }
         //Sort Morton Codes
         {
@@ -384,34 +419,53 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
 
                 uint32_t max_leaves = glm::max(num_point_lights, num_spot_lights);
                 uint32_t num_thread_groups = static_cast<uint32_t>(glm::ceil((float)max_leaves / (float)BVH_NUM_THREADS));
-                uint32_t max_levels = static_cast<uint32_t>(glm::max(num_point_light_levels, num_spot_light_levels));
+                if (num_thread_groups)
+                {
+                        uint32_t max_levels = static_cast<uint32_t>(glm::max(num_point_light_levels, num_spot_light_levels));
 
-                //Build Bottom BVH
-                {
-                        DispatchComputeAttribs DispatchAttribs;
-                        DispatchAttribs.ThreadGroupCountX = num_thread_groups;
-                        Renderer::GetContext()->SetPipelineState(m_pBuildBVHBottomPSO);
-                        Renderer::GetContext()->CommitShaderResources(data->BuildBVHBottomSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                        Renderer::GetContext()->DispatchCompute(DispatchAttribs);
-                }
-                //Build N BVH levels
-                if (max_levels > 0)
-                {
-                        for (uint32_t level = max_levels - 1; level > 0; --level)
+                        //Build Bottom BVH
                         {
-                                m_BVHParamsCBAttributes.SetUInt(m_BVHParamsCBData, "ChildLevel", level);
-                                m_BVHParamsCBAttributes.MapBuffer(m_BVHParamsCBData, m_BVHParamsCB);
-
-                                uint32_t num_child_nodes = gs_NumLevelNodes[level];
-                                num_thread_groups = static_cast<uint32_t>(glm::ceil((float)num_child_nodes / (float)BVH_NUM_THREADS));
-
                                 DispatchComputeAttribs DispatchAttribs;
                                 DispatchAttribs.ThreadGroupCountX = num_thread_groups;
-                                Renderer::GetContext()->SetPipelineState(m_pBuildBVHTopPSO);
-                                Renderer::GetContext()->CommitShaderResources(data->BuildBVHTopSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                Renderer::GetContext()->SetPipelineState(m_pBuildBVHBottomPSO);
+                                Renderer::GetContext()->CommitShaderResources(data->BuildBVHBottomSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                                 Renderer::GetContext()->DispatchCompute(DispatchAttribs);
                         }
+                        //Build N BVH levels
+                        if (max_levels > 0)
+                        {
+                                for (uint32_t level = max_levels - 1; level > 0; --level)
+                                {
+                                        m_BVHParamsCBAttributes.SetUInt(m_BVHParamsCBData, "ChildLevel", level);
+                                        m_BVHParamsCBAttributes.MapBuffer(m_BVHParamsCBData, m_BVHParamsCB);
+
+                                        uint32_t num_child_nodes = gs_NumLevelNodes[level];
+                                        num_thread_groups = static_cast<uint32_t>(glm::ceil((float)num_child_nodes / (float)BVH_NUM_THREADS));
+
+                                        DispatchComputeAttribs DispatchAttribs;
+                                        DispatchAttribs.ThreadGroupCountX = num_thread_groups;
+                                        Renderer::GetContext()->SetPipelineState(m_pBuildBVHTopPSO);
+                                        Renderer::GetContext()->CommitShaderResources(data->BuildBVHTopSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                        Renderer::GetContext()->DispatchCompute(DispatchAttribs);
+                                }
+                        }
                 }
+        }
+        // Transition Resources
+        {
+                StateTransitionDesc Barriers[] =
+                {
+                        // {data->ClusterFlagsBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
+                        {data->UniqueClustersBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
+                        {data->UniqueClustersCounterBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
+                        // {data->PointLightIndexCounterBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
+                        // {data->SpotLightIndexCounterBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
+                        // {data->PointLightGridBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
+                        // {m_pMergePathPartitionsBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
+                        // {m_pPointLightBVHBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
+                        // {m_pSpotLightBVHBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true}
+                };
+                Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
         }
         //Update Indirect Argument Buffers
         {
@@ -421,17 +475,25 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                 Renderer::GetContext()->DispatchCompute(DispatchAttribs);
                 // Renderer::GetContext()
         }
+        // Transition Resources
+        {
+                StateTransitionDesc Barriers[] =
+                {
+                        {data->AssignLightsToClustersArgumentBufferBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_INDIRECT_ARGUMENT, true},
+                };
+                Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
+        }
         //Assign Lights To Clusters
         {
+                m_LightCountsCBAttributes.MapBuffer(m_LightCountsCBData, m_LightCountsCB);
                 DispatchComputeIndirectAttribs DispatchIndirectAttribs;
                 //Optimized Method:
-                // Renderer::GetContext()->SetPipelineState(m_pAssignLightsToClustersPSO);
-                // Renderer::GetContext()->CommitShaderResources(data->AssignLightsToClustersSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                Renderer::GetContext()->SetPipelineState(m_pAssignLightsToClustersPSO);
+                Renderer::GetContext()->CommitShaderResources(data->AssignLightsToClustersSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
                 //Brute Force Method:
-                m_LightCountsCBAttributes.MapBuffer(m_LightCountsCBData, m_LightCountsCB);
-                Renderer::GetContext()->SetPipelineState(m_pAssignLightsToClustersBruteForcePSO);
-                Renderer::GetContext()->CommitShaderResources(data->AssignLightsToClustersBruteForceSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                // Renderer::GetContext()->SetPipelineState(m_pAssignLightsToClustersBruteForcePSO);
+                // Renderer::GetContext()->CommitShaderResources(data->AssignLightsToClustersBruteForceSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
                 Renderer::GetContext()->DispatchComputeIndirect(DispatchIndirectAttribs, data->AssignLightsToClustersArgumentBufferBuffer);
         }
@@ -444,10 +506,10 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                 Renderer::GetContext()->SetRenderTargets(_countof(Targets), Targets, depthDSV, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                 float ClearColor[4] = {0.f, 0.f, 0.f, 1.f};
                 Renderer::GetContext()->ClearRenderTarget(colorRTV, ClearColor, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                Renderer::GetContext()->ClearDepthStencil(depthDSV, CLEAR_DEPTH_FLAG | CLEAR_STENCIL_FLAG, 1.0f, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                // Renderer::GetContext()->ClearDepthStencil(depthDSV, CLEAR_DEPTH_FLAG | CLEAR_STENCIL_FLAG, 1.0f, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
         }
 
-        //Heatmap Debug
+        //Opaque Lighting
         {
                 Renderer::GetContext()->SetPipelineState(m_pBasicMeshOpaqueLightingPSO);
                 Renderer::GetContext()->CommitShaderResources(data->BasicMeshOpaqueLightingSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
@@ -724,6 +786,7 @@ VTFSRenderer::PerRenderTargetData* VTFSRenderer::GetRenderTargetData(const Rende
 
 void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, const RenderTarget& render_target, const Camera& camera)
 {
+        LD_LOG_INFO("COMPUTING");
         float fov_y = camera.FOV * 0.5f;
         float z_near = camera.ClipNear;
         float z_far = camera.ClipFar;
@@ -732,7 +795,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         float sD = 2.0f * glm::tan(fov_y) / (float)cluster_dimensions.y;
         float log_dim_y = 1.0f / glm::log(1.0f + sD);
         float log_depth = glm::log(z_far / z_near);
-        cluster_dimensions.z = glm::floor(log_depth * log_dim_y);
+        cluster_dimensions.z = static_cast<uint32_t>(glm::floor(log_depth * log_dim_y));
 
         data.cluster_dimensions = cluster_dimensions;
 
@@ -813,10 +876,6 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
 
         BuffDesc.ElementByteStride = sizeof(uint32_t);
         BuffDesc.uiSizeInBytes = sizeof(uint32_t);
-        BuffDesc.Name = "Unique Clusters Counter";
-        Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.UniqueClustersCounterBuffer);
-        data.FindUniqueClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWUniqueClusters@count")->Set(data.UniqueClustersCounterBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
-        data.UpdateIndirectArgumentBuffersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "ClusterCounter")->Set(data.UniqueClustersCounterBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
         BuffDesc.Name = "Point Light Index Counter Buffer";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.PointLightIndexCounterBuffer);
@@ -828,17 +887,30 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWSpotLightIndexCounter")->Set(data.SpotLightIndexCounterBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWSpotLightIndexCounter")->Set(data.SpotLightIndexCounterBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
 
+        BuffDesc.Mode = BUFFER_MODE_RAW;
+        BuffDesc.Name = "Unique Clusters Counter";
+        Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.UniqueClustersCounterBuffer);
+        data.FindUniqueClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWUniqueClusters@count")->Set(data.UniqueClustersCounterBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
+        data.UpdateIndirectArgumentBuffersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "ClusterCounter")->Set(data.UniqueClustersCounterBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
+
         // BuffDesc.CPUAccessFlags = CPU_ACCESS_READ;
-        BuffDesc.ElementByteStride = sizeof(DispatchComputeIndirectAttribs);
+        BuffDesc.ElementByteStride = sizeof(uint32_t);
         BuffDesc.BindFlags = BIND_UNORDERED_ACCESS | BIND_INDIRECT_DRAW_ARGS;
-        BuffDesc.uiSizeInBytes = sizeof(DispatchComputeIndirectAttribs);
+        BuffDesc.Mode = BUFFER_MODE_RAW;
+        BuffDesc.Usage = USAGE_DEFAULT;
+        BuffDesc.uiSizeInBytes = sizeof(uint32_t) * 3;
         BuffDesc.Name = "Assign Lights to Clusters Argument Buffer";
-        Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.AssignLightsToClustersArgumentBufferBuffer);
+
+        BufferData BuffData;
+        glm::uvec3 buffer_data = glm::uvec3(1);
+        BuffData.DataSize = sizeof(glm::uvec3);
+        BuffData.pData = glm::value_ptr(buffer_data);
+        Renderer::GetDevice()->CreateBuffer(BuffDesc, &BuffData, &data.AssignLightsToClustersArgumentBufferBuffer);
         // BuffDesc.CPUAccessFlags = CPU_ACCESS_NONE;
         data.UpdateIndirectArgumentBuffersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "AssignLightsToClustersIndirectArgumentBuffer")->Set(data.AssignLightsToClustersArgumentBufferBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
 
         DispatchComputeAttribs DispatchAttribs;
-        DispatchAttribs.ThreadGroupCountX = glm::ceil((float)(cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z) / 1024.f);
+        DispatchAttribs.ThreadGroupCountX = static_cast<uint32_t>(glm::ceil((float)(cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z) / 1024.f));
         Renderer::GetContext()->SetPipelineState(m_pComputeClusterGridPSO);
         Renderer::GetContext()->CommitShaderResources(data.ComputeClusterGridSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
         Renderer::GetContext()->DispatchCompute(DispatchAttribs);
@@ -1472,7 +1544,7 @@ void VTFSRenderer::CreateComputePSOs()
                         {SHADER_TYPE_COMPUTE, "UniqueClusters", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
                         {SHADER_TYPE_COMPUTE, "ClusterAABBs", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
                         {SHADER_TYPE_COMPUTE, "PointLights", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
-                        {SHADER_TYPE_COMPUTE, "SpotLights", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE}
+                        {SHADER_TYPE_COMPUTE, "SpotLights", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
                 };
                 PSODesc.ResourceLayout.Variables = Vars;
                 PSODesc.ResourceLayout.NumVariables = _countof(Vars);
@@ -1597,7 +1669,9 @@ void VTFSRenderer::CreateDrawPSOs()
                 PSOCreateInfo.pPS = pBasicMeshClusterSamplesPS;
                 PSOCreateInfo.GraphicsPipeline.NumRenderTargets = 0;
                 PSOCreateInfo.GraphicsPipeline.RTVFormats[0] = TEX_FORMAT_UNKNOWN;
-                // PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = False;
+                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = False;
+                // PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = False;
+                // PSOCreateInfo.GraphicsPipeline.DepthStencilDesc. = False;
                 ShaderResourceVariableDesc Vars[] =
                 {
                         {SHADER_TYPE_VERTEX, "_BasicModelCameraCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
@@ -1613,6 +1687,7 @@ void VTFSRenderer::CreateDrawPSOs()
                 PSOCreateInfo.GraphicsPipeline.NumRenderTargets = 1;
                 m_pClusterSamplesPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "_BasicModelCameraCB")->Set(m_BasicModelCameraCB);
                 m_pClusterSamplesPSO->GetStaticVariableByName(SHADER_TYPE_PIXEL, "_ClusterCB")->Set(m_ClusterCB);
+                // PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = True;
         }
         {
                 PSODesc.Name = "Basic Mesh Opaque Lighting PSO";
@@ -1628,7 +1703,7 @@ void VTFSRenderer::CreateDrawPSOs()
                         {SHADER_TYPE_PIXEL, "_CameraCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
                         {SHADER_TYPE_PIXEL, "PointLightGrid", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
                         {SHADER_TYPE_PIXEL, "PointLightIndexList", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
-                        {SHADER_TYPE_PIXEL, "PointLights", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE}
+                        {SHADER_TYPE_PIXEL, "PointLights", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
                 };
                 PSODesc.ResourceLayout.Variables = Vars;
                 PSODesc.ResourceLayout.NumVariables = _countof(Vars);

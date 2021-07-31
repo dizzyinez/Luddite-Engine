@@ -186,8 +186,8 @@ void XCBWindow::PollEvents()
         while ((event = xcb_poll_for_event(info.connection)) != nullptr)
         {
                 bool imgui_handled = static_cast<Diligent::ImGuiImplLinuxXCB*>(m_pImGuiImpl.get())->HandleXCBEvent(event);
-                if (imgui_handled)
-                        continue;
+                // if (imgui_handled)
+                //         continue;
                 switch (event->response_type & 0x7f)
                 {
                 case XCB_CLIENT_MESSAGE:
@@ -244,8 +244,6 @@ void XCBWindow::PollEvents()
 
                         case XCB_BUTTON_INDEX_5: scrolls -= 1; break;
                         }
-                        Events::GetList<MouseButtonPressEvent>().DispatchEvent(mouse_press->detail);
-
                         break;
                 }
 

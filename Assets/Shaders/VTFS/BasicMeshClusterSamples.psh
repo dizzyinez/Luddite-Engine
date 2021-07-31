@@ -6,17 +6,10 @@ struct PSInput
     float4 PosVS : VIEWSPACEPOS;
 };
 
-// struct PSOutput
-// {
-    // float DepthZ : SV_TARGET0;
-// };
-
 void main(in  PSInput  PSIn)
-        //   out PSOutput PSOut)
 {
     uint3 cluster_index_3D = ComputeClusterIndex3D(PSIn.Pos.xy, PSIn.PosVS.z);
     uint cluster_index_1D = ComputeClusterIndex1D(cluster_index_3D);
 
-    RWClusterFlags[cluster_index_1D] = true;
-    // PSOut.DepthZ = DepthToNormalizedDeviceZ(PSIn.3Pos.z);
+    RWClusterFlags[cluster_index_1D] = 1;
 }

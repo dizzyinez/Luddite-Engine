@@ -115,7 +115,7 @@ void Application::Run()
                 // render_accumulator
                 delta_time = std::chrono::duration_cast<std::chrono::duration<double> >(loop_time_span).count();
                 float fps = 1 / delta_time;
-                LD_LOG_INFO("fps: {}", fps);
+                // LD_LOG_INFO("fps: {}", fps);
                 std::chrono::microseconds sec(1);
                 // LD_LOG_INFO("elapsed: {}", update_accululator.count());
                 // std::chrono::microseconds µs;
