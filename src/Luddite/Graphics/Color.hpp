@@ -43,7 +43,8 @@ class LUDDITE_API Color
         }
 
         inline glm::vec4 GetVec4() const {return rgba;}
-        inline glm::vec3 GetVec3() const {return rgba;}
+        inline glm::vec4& GetVec4() {return rgba;}
+        // inline glm::vec3& GetVec3() const {return rgba;}
         private:
         glm::vec4 rgba;
 };
@@ -78,6 +79,7 @@ class LUDDITE_API ColorRGB
         }
 
         inline glm::vec3 GetVec3() const {return rgb;}
+        inline glm::vec3& GetVec3() {return rgb;}
         private:
         glm::vec3 rgb;
 };

@@ -20,6 +20,7 @@ class S_SceneSubmitter : public Luddite::System<S_SceneSubmitter>
                 {
                         Luddite::PointLightCPU light;
                         light.Position = glm::vec4(transform.Translation, 1.f);
+                        light.Color = point_light.Color.GetVec3();
                         light.Range = point_light.Range;
                         light.Intensity = point_light.Intensity;
                         Luddite::Renderer::SubmitPointLight(light);

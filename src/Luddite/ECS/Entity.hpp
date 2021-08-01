@@ -35,7 +35,7 @@ class LUDDITE_API Entity
         template <typename T>
         inline void RemoveComponent()
         {
-                m_pRegistry->remove<T>();
+                m_pRegistry->remove<T>(m_EntityID);
         }
 
         /**

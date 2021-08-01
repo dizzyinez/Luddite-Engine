@@ -58,7 +58,7 @@ float3 DoPointLight(SurfaceProps props, PointLight point_light)
     //attenuation
     float distance = distance(point_light.PositionWS, props.PosWS);
     float attenuation = 1.0 / (distance * distance);
-    float3 radiance = point_light.Color * attenuation;
+    float3 radiance = point_light.Color * attenuation * point_light.Intensity;
 
     //calculate vectors & dot products
     float3 H = normalize(props.ViewDir + light_dir);
