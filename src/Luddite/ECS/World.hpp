@@ -21,8 +21,10 @@ class LUDDITE_API World
         }
 
         inline Entity CreateEntity() {return {m_Registry.create(), &m_Registry};}
+        inline Entity CreateEntity(Luddite::EntityID hint) {return {m_Registry.create(hint), &m_Registry};}
+        inline Entity NullEntity() {return {Luddite::NullEntityID, &m_Registry};}
 
-        inline void Destroy(Entity entity) {m_Registry.destroy(entity.GetID()); entity.m_EntityID = NullEntityID;}
+        inline void DestroyEntityFromID(Luddite::EntityID id) {m_Registry.destroy(id);}
 
         template <typename T, typename ... Args>
         inline T& SetSingleton(Args && ... args)
