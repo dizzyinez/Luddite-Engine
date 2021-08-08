@@ -30,7 +30,7 @@ ShaderAttributeListData ShaderAttributeListDescription::CreateData()
         ShaderAttributeListData new_data;
         new_data.Size = m_Size;
         new_data.Data = (char*)malloc(m_Size);
-        LD_LOG_TRACE("SIZE: {}", m_Size);
+        // LD_LOG_TRACE("SIZE: {}", m_Size);
         SetDefaultAttribs(new_data);
         return new_data;
 }

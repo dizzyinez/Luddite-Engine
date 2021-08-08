@@ -2,7 +2,7 @@
 #include "Luddite/Graphics/Renderer.hpp"
 
 #ifdef LD_DEBUG
-    #define OBJL_CONSOLE_OUTPUT
+//     #define OBJL_CONSOLE_OUTPUT
 #endif // LD_DEBUG
 
 #define TINYOBJLOADER_IMPLEMENTATION
