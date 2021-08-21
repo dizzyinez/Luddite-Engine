@@ -781,7 +781,6 @@ VTFSRenderer::PerRenderTargetData* VTFSRenderer::GetRenderTargetData(const Rende
 
 void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, const RenderTarget& render_target, const Camera& camera)
 {
-        LD_LOG_INFO("COMPUTING");
         float fov_y = camera.FOV * 0.5f;
         float z_near = camera.ClipNear;
         float z_far = camera.ClipFar;
