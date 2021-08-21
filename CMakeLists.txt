@@ -56,7 +56,7 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 file(GLOB_RECURSE ENGINE_SOURCE "src/*.c" "src/*.cc" "src/*.cpp")
-file(GLOB_RECURSE ENGINE_HEADERS "src/*.h" "src/*.hpp")
+file(GLOB_RECURSE ENGINE_HEADERS PARENT_SCOPE "src/*.h" "src/*.hpp")
 
 file(GLOB IMGUIZMO_SOURCE "ThirdParty/ImGuizmo/*.h" "ThirdParty/ImGuizmo/*.cpp")
 
@@ -77,8 +77,9 @@ set(LUDDITE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src "${CMAKE_CURRENT_SOURCE_DIR}
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glm"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/OBJ-Loader/Source"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/ImGuizmo/"
-"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libxkbcommon/include/"
+"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libxkbcommon/include"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/bullet3/src"
+"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/yaml-cpp/include"
 )
 target_include_directories(Luddite-Engine PUBLIC ${LUDDITE_INCLUDE} 
 #"ThirdParty/imgui"

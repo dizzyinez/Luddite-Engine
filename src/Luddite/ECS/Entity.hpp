@@ -99,7 +99,7 @@ class LUDDITE_API Entity
         {
         #ifdef LD_DEBUG
                 T* pComponent = TryComponent<T>();
-                LD_VERIFY(pComponent, "Entity (id: {}) doesn't have component {}", m_EntityID, GET_TYPENAME_STRING(T));
+                LD_VERIFY(pComponent, "Entity (id: {}) doesn't have component {}", m_EntityID, typeid(T).name());
                 return *pComponent;
         #else
                 return m_pRegistry->get<T>(m_EntityID);
@@ -117,7 +117,7 @@ class LUDDITE_API Entity
         {
         #ifdef LD_DEBUG
                 T* pComponent = TryComponent<T>();
-                LD_VERIFY(pComponent, "Entity (id: {}) doesn't have component {}", m_EntityID, GET_TYPENAME_STRING(T));
+                LD_VERIFY(pComponent, "Entity (id: {}) doesn't have component {}", m_EntityID, typeid(T).name());
                 return *pComponent;
         #else
                 return m_pRegistry->get<T>(m_EntityID);

@@ -128,15 +128,22 @@ class LUDDITE_API World
                 const auto view = m_Registry.view<const Component>();
                 const auto* data = view.data();
                 const auto size = view.size();
+                if (size == 0)
+                        return;
 
+
+
+                LD_LOG_INFO("Cloning: {}, value: {}, size: {}", typeid(Component).name(), entt::type_seq<Component>::value(), size);
                 if constexpr (std::is_empty<Component>::value)
                 {
+                        LD_LOG_INFO("Component is empty: {}", typeid(Component).name());
                         to.m_Registry.insert<Component>(data, data + size);
                 }
                 else
                 {
-                        const auto* raw = view.raw();
-                        to.m_Registry.insert<Component>(data, data + size, raw, raw + size);
+                        // const auto* raw = view.raw();
+                        auto* raw = view.raw();
+                        to.m_Registry.insert<Component>(data, data + size, *raw);
                 }
         }
 
@@ -191,7 +198,7 @@ class LUDDITE_API World
         entt::registry& GetRegistry() {return m_Registry;}
 
         private:
-        entt::registry m_Registry;
+        entt::registry m_Registry{};
         std::unordered_map<SystemIDType, std::unique_ptr<BaseSystem> > m_Systems;
 
         template <typename T>

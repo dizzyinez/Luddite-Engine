@@ -28,6 +28,7 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
 int main(int argc, char** argv)
 {
         Luddite::Logger::Init();
+        RegisterECSTypeIds();
         LD_LOG_INFO("Logger Initialized!");
         auto app = Luddite::CreateApplication();
         app->Run();
