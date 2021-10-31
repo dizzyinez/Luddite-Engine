@@ -6,7 +6,7 @@
 
 namespace Luddite
 {
-struct LUDDITE_API Texture : public Asset<Texture>
+struct LUDDITE_API Texture
 {
         Diligent::RefCntAutoPtr<Diligent::ITexture> m_pTexture;// {nullptr};
         void TransitionToShaderResource();

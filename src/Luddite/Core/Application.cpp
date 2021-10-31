@@ -2,6 +2,7 @@
 #include "Luddite/Graphics/RenderTarget.hpp"
 #include "Luddite/Platform/Window/NativeWindow.hpp"
 #include "Luddite/Core/Assets.hpp"
+#include "Luddite/Core/Profiler.hpp"
 
 namespace Luddite
 {
@@ -40,17 +41,24 @@ void Application::Run()
 
         std::chrono::microseconds min_update_time(1000000 / 60);
         std::chrono::duration<double> update_delta_time(min_update_time);
-        std::chrono::microseconds min_render_time(1000000 / 300); //300 is max fps
+        // std::chrono::microseconds min_render_time(1000000 / 300); //300 max fps
+        std::chrono::microseconds min_render_time(0); //unlimited fps
 
         std::chrono::microseconds update_accululator(0);
         std::chrono::microseconds render_accululator(0);
-        m_pMainWindow->m_Vsync = true;
+        // m_pMainWindow->m_Vsync = true;
 
         Initialize();
 
-        double delta_time;
+        double fixed_dt = std::chrono::duration_cast<std::chrono::duration<double> >(min_update_time).count();
+        double delta_time = fixed_dt; //First frame will use fixed dt
+        uint32_t frame_count = 0;
         while (!m_pMainWindow->ShouldQuit())
         {
+                std::stringstream ss;
+                ss << "Frame " << frame_count;
+                LD_PROFILE_SCOPE(ss.str());
+                frame_count++;
                 std::chrono::high_resolution_clock::time_point loop_start = std::chrono::high_resolution_clock::now();
 
                 // if (m_SystemTable.pRuntimeObjectSystem->GetIsCompiledComplete())
@@ -68,17 +76,17 @@ void Application::Run()
 
 
                 //TEMP
-                float fixed_dt = std::chrono::duration_cast<std::chrono::duration<double> >(min_update_time).count();
 
                 //event handling
                 Events::Clear();
                 m_pMainWindow->PollEvents();
                 m_pMainWindow->HandleEvents();
+                OnUpdate(delta_time);
                 while (update_accululator > min_update_time)
                 {
                         update_accululator -= min_update_time;
+			OnFixedUpdate(fixed_dt);
                         //update
-                        OnUpdate(fixed_dt);
                         // m_pMainWindow->GetLayerStack().UpdateLayers(0.016667f);
                 }
 
@@ -106,7 +114,10 @@ void Application::Run()
                 OnImGuiRender(lerp_alpha);
                 // m_pMainWindow->GetLayerStack().RenderLayersImGui(1.0f, MainWindowRenderTarget);
                 m_pMainWindow->GetImGuiImpl()->Render(Renderer::m_pImmediateContext);
-                m_pMainWindow->SwapBuffers();
+                {
+                        LD_PROFILE_SCOPE("Swapping Window Buffers");
+                        m_pMainWindow->SwapBuffers();
+                }
                 // }
 
                 std::chrono::microseconds loop_time_span = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - loop_start);

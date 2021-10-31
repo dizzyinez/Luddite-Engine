@@ -3,6 +3,7 @@
 
 struct C_Name
 {
+        C_Name() : Name("Unnamed") {}
         C_Name(const std::string& Name_) : Name(Name_) {}
         std::string Name;
 };

@@ -15,12 +15,16 @@ endif()
 # if(WIN32)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS")
 # endif()
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/assimp)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentCore)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentFX)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentTools)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/yaml-cpp)
+
 
 set(BUILD_CPU_DEMOS OFF CACHE BOOL "" FORCE)
 set(BUILD_ENET OFF CACHE BOOL "" FORCE)
@@ -87,7 +91,8 @@ target_include_directories(Luddite-Engine PUBLIC ${LUDDITE_INCLUDE}
 
 target_precompile_headers(Luddite-Engine PRIVATE src/Luddite/Core/pch.hpp src/Luddite/Graphics/DiligentInclude.hpp)
 
-set(DILIGENT_INSTALL_TOOLS true)
+#set(DILIGENT_INSTALL_TOOLS true)
+set(DILIGENT_NO_FORMAT_VALIDATION ON CACHE BOOL "" FORCE)
 
 Set(DILIGENT_LIBS
     Diligent-GraphicsTools
@@ -126,7 +131,9 @@ endif()
 target_link_libraries(Luddite-Engine ${DILIGENT_LIBS} ${PLATFORM_LIBS} 
 spdlog 
 yaml-cpp
-Bullet3Dynamics Bullet3Collision Bullet3Geometry BulletInverseDynamics BulletSoftBody BulletCollision BulletDynamics LinearMath Bullet3Common)
+Bullet3Dynamics Bullet3Collision Bullet3Geometry BulletInverseDynamics BulletSoftBody BulletCollision BulletDynamics LinearMath Bullet3Common
+assimp
+)
 target_link_directories(Luddite-Engine PUBLIC
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libxkbcommon/bin/"
 )

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 #include <functional>
+#include <atomic>
 #include <future>
 #include <stdint.h>
 #include <chrono>

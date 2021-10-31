@@ -1,6 +1,9 @@
 #include "Luddite/Core/AssetTypes/Shader.hpp"
 #include "Luddite/Graphics/Renderer.hpp"
+#include "ShaderResourceVariable.h"
 #include "yaml-cpp/yaml.h"
+#include "Luddite/Core/Profiler.hpp"
+#include "Luddite/Core/AssetTypes/Model.hpp"
 
 using namespace Diligent;
 
@@ -9,11 +12,15 @@ namespace Luddite
 void ShaderLibrary::Initialize()
 {
         m_AssetBaseDir = "./Assets/Shaders/";
-        m_Extensions.push_back(L".shader");
+        m_Extensions.push_back(L".ldshader");
+	//TODO: set default shader :)
 }
 
 Shader* ShaderLibrary::LoadFromFile(const std::filesystem::path& path)
 {
+        std::stringstream ss;
+        ss << "Loading Shader: " << path;
+        LD_PROFILE_SCOPE(ss.str());
         Shader* pShader = new Shader();
         YAML::Node yaml = YAML::LoadFile(path.string());
         ShaderCreateInfo ShaderCI;
@@ -21,6 +28,7 @@ Shader* ShaderLibrary::LoadFromFile(const std::filesystem::path& path)
         ShaderCI.UseCombinedTextureSamplers = true;
         ShaderCI.pShaderSourceStreamFactory = Renderer::GetShaderSourceFactory();
         std::string name = yaml["Name"].as<std::string>();
+        pShader->m_Name = name;
         std::string src = yaml["Shader"].as<std::string>();
         ShaderCI.Source = src.c_str();
 
@@ -57,77 +65,159 @@ Shader* ShaderLibrary::LoadFromFile(const std::filesystem::path& path)
                 return nullptr;
         }
 
-
         //Create PSO
+
+        GraphicsPipelineStateCreateInfo PSOCreateInfo;
+        PipelineStateDesc& PSODesc = PSOCreateInfo.PSODesc;
+        PSODesc.Name = name.c_str();
+        PSODesc.PipelineType = Diligent::PIPELINE_TYPE_GRAPHICS;
+        PSOCreateInfo.GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+        PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_NONE;
+        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = True;
+        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_LESS_EQUAL;
+        PSOCreateInfo.pVS = pShader->m_pVertexShader;
+        PSOCreateInfo.pPS = pShader->m_pPixelShader;
+
+        PSOCreateInfo.GraphicsPipeline.NumRenderTargets = 1;
+        PSOCreateInfo.GraphicsPipeline.RTVFormats[0] = Renderer::GetDefaultRTVFormat();
+        PSOCreateInfo.GraphicsPipeline.DSVFormat = TEX_FORMAT_D32_FLOAT_S8X24_UINT;
+        PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE_STATIC;
+
+        PSOCreateInfo.GraphicsPipeline.InputLayout.LayoutElements = VertexLayoutElements;
+        PSOCreateInfo.GraphicsPipeline.InputLayout.NumElements = _countof(VertexLayoutElements);
+
+        if (yaml["Cull Mode"])
         {
-                GraphicsPipelineStateCreateInfo PSOCreateInfo;
-                PipelineStateDesc& PSODesc = PSOCreateInfo.PSODesc;
-                PSODesc.Name = name.c_str();
-                PSODesc.PipelineType = Diligent::PIPELINE_TYPE_GRAPHICS;
-                PSOCreateInfo.GraphicsPipeline.PrimitiveTopology = PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-                PSOCreateInfo.pVS = pShader->m_pVertexShader;
-                PSOCreateInfo.pPS = pShader->m_pPixelShader;
-
-                PSOCreateInfo.GraphicsPipeline.NumRenderTargets = 1;
-                PSOCreateInfo.GraphicsPipeline.RTVFormats[0] = Renderer::GetDefaultRTVFormat();
-                PSOCreateInfo.GraphicsPipeline.DSVFormat = TEX_FORMAT_D32_FLOAT_S8X24_UINT;
-                PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE_STATIC;
-
-                if (yaml["Cull Mode"])
-                {
-                        auto cull_mode_string = yaml["Cull Mode"].as<std::string>();
-                        if (cull_mode_string == "Back")
-                                PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_BACK;
-                        else if (cull_mode_string == "Front")
-                                PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_FRONT;
-                        else if (cull_mode_string == "None")
-                                PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_NONE;
-                }
-
-                if (yaml["Depth Enable"])
-                        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = yaml["Depth Enable"].as<bool>();
-                if (yaml["Depth Write Enable"])
-                        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = yaml["Depth Write Enable"].as<bool>();
-                if (yaml["Depth Func"])
-                {
-                        auto depth_func_string = yaml["Depth Func"].as<std::string>();
-                        if (depth_func_string == "Less")
-                                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_LESS;
-                        else if (depth_func_string == "Equal")
-                                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_EQUAL;
-                        else if (depth_func_string == "Greater")
-                                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_GREATER;
-                        else if (depth_func_string == "Less Equal")
-                                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_LESS_EQUAL;
-                        else if (depth_func_string == "Greater Equal")
-                                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_GREATER_EQUAL;
-                        else if (depth_func_string == "Not Equal")
-                                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_NOT_EQUAL;
-                        else if (depth_func_string == "Never")
-                                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_NEVER;
-                        else if (depth_func_string == "Always")
-                                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_ALWAYS;
-                }
-                Renderer::GetDevice()->CreateGraphicsPipelineState(PSOCreateInfo, &pShader->m_pPSO);
+                auto cull_mode_string = yaml["Cull Mode"].as<std::string>();
+                if (cull_mode_string == "Back")
+                        PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_BACK;
+                else if (cull_mode_string == "Front")
+                        PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_FRONT;
+                else if (cull_mode_string == "None")
+                        PSOCreateInfo.GraphicsPipeline.RasterizerDesc.CullMode = CULL_MODE_NONE;
         }
+
+        if (yaml["Depth Enable"])
+                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = yaml["Depth Enable"].as<bool>();
+        if (yaml["Depth Write Enable"])
+                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = yaml["Depth Write Enable"].as<bool>();
+        if (yaml["Depth Func"])
+        {
+                auto depth_func_string = yaml["Depth Func"].as<std::string>();
+                if (depth_func_string == "Less")
+                        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_LESS;
+                else if (depth_func_string == "Equal")
+                        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_EQUAL;
+                else if (depth_func_string == "Greater")
+                        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_GREATER;
+                else if (depth_func_string == "Less Equal")
+                        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_LESS_EQUAL;
+                else if (depth_func_string == "Greater Equal")
+                        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_GREATER_EQUAL;
+                else if (depth_func_string == "Not Equal")
+                        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_NOT_EQUAL;
+                else if (depth_func_string == "Never")
+                        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_NEVER;
+                else if (depth_func_string == "Always")
+                        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_ALWAYS;
+        }
+
+
+        std::vector<Diligent::ShaderResourceVariableDesc> vars;
+        if (pShader->m_pVertexShader)
+        {
+                uint32_t rcount = pShader->m_pVertexShader->GetResourceCount();
+                LD_LOG_TRACE("Vertex Shader for {} has {} resources", name, rcount);
+                Diligent::ShaderResourceDesc desc;
+                for (uint32_t i = 0; i < rcount; i++)
+                {
+                        pShader->m_pVertexShader->GetResourceDesc(i, desc);
+                        LD_LOG_TRACE("Name: {}, Type:{}, Size: {} ", desc.Name, desc.Type, desc.ArraySize);
+                        if (static_buffers.find(desc.Name) != static_buffers.end())
+                                vars.push_back({SHADER_TYPE_VERTEX, desc.Name, SHADER_RESOURCE_VARIABLE_TYPE_STATIC});
+			else if (mutable_buffers.find(desc.Name) != mutable_buffers.end())
+			{
+				vars.push_back({SHADER_TYPE_VERTEX, desc.Name, SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE});
+				pShader->m_MutableBuffersVertex.emplace_back(desc.Name);
+			}
+                        else if (strcmp(desc.Name, "Properties") == 0)
+                                pShader->vertex_shader_uses_properties = true;
+			else
+			{
+                		LD_LOG_ERROR("Unable to find variable: {} for shader {}", desc.Name, name);
+		                delete pShader;
+		                return nullptr;
+			}
+                }
+        }
+
+        if (pShader->m_pPixelShader)
+        {
+                uint32_t rcount = pShader->m_pPixelShader->GetResourceCount();
+                LD_LOG_TRACE("Pixel Shader for {} has {} resources", name, rcount);
+                Diligent::ShaderResourceDesc desc;
+                for (uint32_t i = 0; i < rcount; i++)
+                {
+                        pShader->m_pPixelShader->GetResourceDesc(i, desc);
+                        LD_LOG_TRACE("Name: {}, Type:{}, Size: {} ", desc.Name, desc.Type, desc.ArraySize);
+                        if (static_buffers.find(desc.Name) != static_buffers.end())
+			{
+                                vars.push_back({SHADER_TYPE_PIXEL, desc.Name, SHADER_RESOURCE_VARIABLE_TYPE_STATIC});
+			}
+			else if (mutable_buffers.find(desc.Name) != mutable_buffers.end())
+			{
+				vars.push_back({SHADER_TYPE_PIXEL, desc.Name, SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE});
+				pShader->m_MutableBuffersPixel.emplace_back(desc.Name);
+			}
+                        else if (strcmp(desc.Name, "Properties") == 0)
+                                pShader->pixel_shader_uses_properties = true;
+			else
+			{
+                		LD_LOG_ERROR("Unable to find variable: {} for shader {}", desc.Name, name);
+		                delete pShader;
+		                return nullptr;
+			}
+                }
+        }
+        PSODesc.ResourceLayout.Variables = vars.data();
+        PSODesc.ResourceLayout.NumVariables = vars.size();
+        Renderer::GetDevice()->CreateGraphicsPipelineState(PSOCreateInfo, &pShader->m_pPSO);
         if (!pShader->m_pPSO)
         {
                 LD_LOG_ERROR("Failed to create PSO for shader: {} ", name);
                 delete pShader;
                 return nullptr;
         }
-
-
-        if (pShader->m_pPixelShader)
+        for (auto& var : vars)
         {
-                uint32_t rcount = pShader->m_pPixelShader->GetResourceCount();
-                Diligent::ShaderResourceDesc desc;
-                for (uint32_t i = 0; i < rcount; i++)
-                {
-                        pShader->m_pPixelShader->GetResourceDesc(i, desc);
-                        LD_LOG_TRACE("Name : {}, Type:{}, Size: {} ", desc.Name, desc.Type, desc.ArraySize);
-                }
+                if (var.Type == SHADER_RESOURCE_VARIABLE_TYPE_STATIC)
+                        pShader->m_pPSO->GetStaticVariableByName(var.ShaderStages, var.Name)->Set(static_buffers[var.Name]);
         }
+
+
+        //Create ShaderBufferDescription
+        if (yaml["Properties"])
+        {
+                for (auto prop : yaml["Properties"])
+                        if (prop.second["type"])
+                        {
+                                auto type_str = prop.second["type"].as<std::string>();
+                                auto type = pShader->m_PropertiesBufferDescription.GetTypenameFromString(type_str);
+                                if (type != ShaderBufferDescription::ValueType::NONE)
+                                        pShader->m_PropertiesBufferDescription.Add(prop.first.as<std::string>(), type);
+                        }
+                CreateUniformBuffer(Renderer::GetDevice(), pShader->m_PropertiesBufferDescription.GetSize(), "Properties", &pShader->m_PropertiesBuffer);
+                StateTransitionDesc Barriers[] =
+                {
+                        {pShader->m_PropertiesBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
+                };
+                Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
+                if (pShader->vertex_shader_uses_properties)
+                        pShader->m_pPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "Properties")->Set(pShader->m_PropertiesBuffer);
+                if (pShader->pixel_shader_uses_properties)
+                        pShader->m_pPSO->GetStaticVariableByName(SHADER_TYPE_PIXEL, "Properties")->Set(pShader->m_PropertiesBuffer);
+        }
+
         return pShader;
 }
 }

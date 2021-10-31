@@ -28,6 +28,7 @@ class LUDDITE_API Application
         protected:
         virtual void Initialize() {}
         virtual void OnUpdate(float delta_time) = 0;
+	virtual void OnFixedUpdate(float delta_time) = 0;
         virtual void OnRender(float lerp_alpha) = 0;
         virtual void OnImGuiRender(float lerp_alpha) = 0;
         std::shared_ptr<Window> m_pMainWindow;

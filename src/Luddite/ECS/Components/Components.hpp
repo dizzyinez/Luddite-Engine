@@ -7,7 +7,8 @@
 #include "Luddite/ECS/Components/RigidBody.hpp"
 #include "Luddite/ECS/Components/CollisionShape.hpp"
 #include "Luddite/ECS/Components/Collider.hpp"
-#define LD_COMPONENTS C_Transform3D, C_Model, C_Camera, C_PointLight, C_SpotLight, C_DirectionalLight, C_Name, C_RigidBody, C_CollisionShape, C_Collider
+#include "Luddite/ECS/Components/NativeScript.hpp"
+#define LD_COMPONENTS C_Transform3D, C_Model, C_Camera, C_PointLight, C_SpotLight, C_DirectionalLight, C_Name, C_RigidBody, C_CollisionShape, C_Collider, C_NativeScript
 
 //Singletons
 #include "Luddite/ECS/Components/ActiveCamera.hpp"

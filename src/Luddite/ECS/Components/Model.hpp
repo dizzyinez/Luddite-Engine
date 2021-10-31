@@ -4,8 +4,8 @@
 
 struct C_Model
 {
-        C_Model(Luddite::BasicModel::Handle ModelHandle_)
+        C_Model(Luddite::Handle<Luddite::Model> ModelHandle_)
                 : ModelHandle(ModelHandle_)
         {}
-        Luddite::BasicModel::Handle ModelHandle;
+        Luddite::Handle<Luddite::Model> ModelHandle;
 };

@@ -12,6 +12,26 @@ float4 ScreenToView(float4 screen)
     return ClipToView(clip);
 }
 
+float4 LocalToClipPos(float4 object)
+{
+    return mul(BasicModelCameraCB.ModelViewProjection, object);
+}
+
+float4 LocalToClipPos(float3 object)
+{
+    return mul(BasicModelCameraCB.ModelViewProjection, float4(object, 1.0f));
+}
+
+float4 LocalToViewPos(float4 object)
+{
+    return mul(BasicModelCameraCB.ModelView, object);
+}
+
+float4 LocalToViewPos(float3 object)
+{
+    return mul(BasicModelCameraCB.ModelView, float4(object, 1.0f));
+}
+
 //computes a plane from 3 noncollinear counter-clockwise points
 Plane ComputePlane(float3 p0, float3 p1, float3 p2)
 {

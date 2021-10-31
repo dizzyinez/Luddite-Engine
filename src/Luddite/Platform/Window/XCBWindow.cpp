@@ -1,4 +1,5 @@
 #include "Luddite/Core/pch.hpp"
+#include <xcb/xcb.h>
 #ifdef LD_PLATFORM_LINUX
 #include "Luddite/Platform/Window/XCBWindow.hpp"
 #include "Luddite/Core/Logging.hpp"
@@ -63,6 +64,7 @@ bool XCBWindow::InitVulkan()
                 SCDesc.Width,
                 SCDesc.Height
                 ));
+        ImGuiSetup();
         m_pImGuiImpl->CreateDeviceObjects();
         return true;
 }
@@ -82,7 +84,7 @@ void XCBWindow::InitXCBConnectionAndWindow(const std::string& title, int width, 
 {
         int scr = 0;
         info.connection = xcb_connect(nullptr, &scr);
-        LD_VERIFY(info.connection && !xcb_connection_has_error(info.connection), "Unable to make an XCB connection");
+        LD_VERIFY(info.connection && xcb_connection_has_error(info.connection) == 0, "Unable to make an XCB connection, error code: {}", xcb_connection_has_error(info.connection));
         LD_LOG_INFO("XCB connection established");
 
         //Init XKB

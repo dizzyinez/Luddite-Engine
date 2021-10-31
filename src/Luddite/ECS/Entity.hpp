@@ -63,6 +63,18 @@ class LUDDITE_API Entity
         }
 
         /**
+         * @brief Returns true if the entity has the given component
+         *
+         * @tparam T
+         * @return bool
+         */
+        template <typename T>
+        bool  HasComponent() const
+        {
+                return m_pRegistry->try_get<T>(m_EntityID) != nullptr;
+        }
+
+        /**
          * @brief Returns true if the entity has all of the given components
          *
          * @tparam T
@@ -143,6 +155,7 @@ class LUDDITE_API Entity
          * @return EntityID
          */
         inline EntityID GetID() const {return m_EntityID;}
+        inline bool Valid() const {return m_pRegistry->valid(m_EntityID);}
         private:
         friend class World;
         EntityID m_EntityID = entt::null;

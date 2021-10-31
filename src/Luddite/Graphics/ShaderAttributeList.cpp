@@ -2,10 +2,14 @@
 #include "Luddite/Graphics/Renderer.hpp"
 namespace Luddite
 {
-void ShaderAttributeListDescription::MapBuffer(ShaderAttributeListData& data, Diligent::RefCntAutoPtr<Diligent::IBuffer> buffer)
+void ShaderBufferDescription::MapBuffer(ShaderBufferData& data, Diligent::RefCntAutoPtr<Diligent::IBuffer> buffer) const
 {
         if (GetSize() == 0)
+        {
+                LD_LOG_WARN("Tried to map buffer: \"{}\", but size was 0!", data.Name);
                 return;
+        }
+	LD_VERIFY(GetSize() == data.Size, "Tried to map buffer \"{}\", but its size ({}) didn't match the size of the description ({})", data.Name, data.Size, GetSize());
         char* Data;
         Renderer::GetContext()->MapBuffer(buffer, Diligent::MAP_WRITE, Diligent::MAP_FLAG_DISCARD, (Diligent::PVoid&)Data);
 
@@ -14,20 +18,27 @@ void ShaderAttributeListDescription::MapBuffer(ShaderAttributeListData& data, Di
         Renderer::GetContext()->UnmapBuffer(buffer, Diligent::MAP_WRITE);
 }
 
-void ShaderAttributeListDescription::MapTextures(ShaderAttributeListData& data, Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb)
+// void ShaderBufferDescription::MapTextures(ShaderBufferData& data, Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb)
+// {
+//         for (auto& tex_name : Textures)
+//         {
+//                 // LD_LOG_TRACE("MAPPING TEXTURE {}", tex_name);
+//                 auto tex = data.GetTexture(tex_name).get()->GetTexture();
+//                 auto var = srb->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, tex_name.c_str());
+//                 var->Set(tex->GetDefaultView(Diligent::TEXTURE_VIEW_SHADER_RESOURCE));
+//         }
+// }
+const char* ShaderBufferDescription::ValueTypeNames[] =
 {
-        for (auto& tex_name : Textures)
-        {
-                // LD_LOG_TRACE("MAPPING TEXTURE {}", tex_name);
-                auto tex = data.GetTexture(tex_name).get()->GetTexture();
-                auto var = srb->GetVariableByName(Diligent::SHADER_TYPE_PIXEL, tex_name.c_str());
-                var->Set(tex->GetDefaultView(Diligent::TEXTURE_VIEW_SHADER_RESOURCE));
-        }
-}
+                #define VALUE_TYPE_DECLARATION(Name, Type, Default) #Name,
+        VALUE_TYPES_DECLARE
+                #undef VALUE_TYPE_DECLARATION
+};
 
-ShaderAttributeListData ShaderAttributeListDescription::CreateData()
+ShaderBufferData ShaderBufferDescription::CreateData(const std::string& name) const
 {
-        ShaderAttributeListData new_data;
+        ShaderBufferData new_data;
+	new_data.Name = name;
         new_data.Size = m_Size;
         new_data.Data = (char*)malloc(m_Size);
         // LD_LOG_TRACE("SIZE: {}", m_Size);
@@ -35,68 +46,31 @@ ShaderAttributeListData ShaderAttributeListDescription::CreateData()
         return new_data;
 }
 
-void ShaderAttributeListDescription::SetDefaultAttribs(ShaderAttributeListData& data)
+ShaderBufferDescription::ValueType ShaderBufferDescription::GetTypenameFromString(const std::string& type) const
+{
+        for (uint32_t i = 0; i < static_cast<uint32_t>(ValueType::SIZE); i++)
+        {
+                if (type == ValueTypeNames[i])
+                {
+                        return static_cast<ValueType>(i);
+                }
+        }
+        return ShaderBufferDescription::ValueType::NONE;
+}
+
+void ShaderBufferDescription::SetDefaultAttribs(ShaderBufferData& data) const
 {
         for (const auto& pair : Attributes)
         {
                 const auto& name = pair.first;
                 switch (pair.second.type)
                 {
-                case ShaderAttributeListDescription::ValueType::FLOAT:
-                        SetFloat(data, name, 0.f);
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::INT:
-                        SetInt(data, name, 0);
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::UINT:
-                        SetUInt(data, name, 0);
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::VEC2:
-                        SetVec2(data, name, glm::vec2(0.f));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::IVEC2:
-                        SetIVec2(data, name, glm::ivec2(0));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::UVEC2:
-                        SetUVec2(data, name, glm::uvec2(0));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::VEC3:
-                        SetVec3(data, name, glm::vec3(0.f));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::IVEC3:
-                        SetIVec3(data, name, glm::ivec3(0));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::UVEC3:
-                        SetUVec3(data, name, glm::uvec3(0));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::VEC4:
-                        SetVec4(data, name, glm::vec4(0.f));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::IVEC4:
-                        SetIVec4(data, name, glm::ivec4(0));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::UVEC4:
-                        SetUVec4(data, name, glm::uvec4(0));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::MAT3:
-                        SetMat3(data, name, glm::mat3(0.f));
-                        break;
-
-                case ShaderAttributeListDescription::ValueType::MAT4:
-                        SetMat4(data, name, glm::mat4(0.f));
-                        break;
+                #define VALUE_TYPE_DECLARATION(Name, Type, Default) \
+case ShaderBufferDescription::ValueType::Name: \
+        Set ## Name(data, name, Default); \
+        break;
+                        VALUE_TYPES_DECLARE
+                #undef VALUE_TYPE_DECLARATION
                 }
         }
 }

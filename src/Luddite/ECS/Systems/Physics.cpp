@@ -2,6 +2,7 @@
 #include "Luddite/ECS/World.hpp"
 #include "Luddite/ECS/Components/Components.hpp"
 #include "btBulletDynamicsCommon.h"
+#include "Luddite/Core/Profiler.hpp"
 
 ATTRIBUTE_ALIGNED16(struct)
 MotionState : public btMotionState
@@ -165,6 +166,7 @@ void on_destroy_rigid_body(entt::registry& reg, entt::entity entity)
 
 void S_Physics::Configure(Luddite::World& world)
 {
+        LD_PROFILE_FUNCTION();
         world.GetRegistry().on_construct<C_CollisionShape>().connect<&on_construct_collision_shape>();
         world.GetRegistry().on_destroy<C_CollisionShape>().connect<&on_destroy_collision_shape>();
 
@@ -186,6 +188,7 @@ void S_Physics::Configure(Luddite::World& world)
 
 void S_Physics::Cleanup(Luddite::World& world)
 {
+        LD_PROFILE_FUNCTION();
         world.ClearComponent<C_RigidBody>();
         auto& phys_world = world.GetSingleton<C_PhysicsWorld>();
 
@@ -215,5 +218,6 @@ void S_Physics::Cleanup(Luddite::World& world)
 
 void S_Physics::Update(Luddite::World& world, float delta_time)
 {
+        LD_PROFILE_FUNCTION();
         world.GetSingleton<C_PhysicsWorld>().dynamics_world->stepSimulation(delta_time);
 }

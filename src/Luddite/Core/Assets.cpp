@@ -1,29 +1,38 @@
 #include "Luddite/Core/Assets.hpp"
-
+#include "Luddite/Core/Profiler.hpp"
 namespace Luddite
 {
-BasicModelLibrary Assets::m_BasicModelLibrary;
+ModelLibrary Assets::m_ModelLibrary;
 TextureLibrary Assets::m_TextureLibrary;
 ShaderLibrary Assets::m_ShaderLibrary;
+MaterialLibrary Assets::m_MaterialLibrary;
 
 void Assets::Initialize()
 {
-        m_BasicModelLibrary.Initialize();
-        m_BasicModelLibrary.InitializeFiles();
+        LD_PROFILE_FUNCTION();
+        m_ModelLibrary.Initialize();
+        m_ModelLibrary.InitializeFiles();
 
         m_ShaderLibrary.Initialize();
         m_ShaderLibrary.InitializeFiles();
+
+        m_MaterialLibrary.Initialize();
+        m_MaterialLibrary.InitializeFiles();
 }
 
 void Assets::RefreshAssets()
 {
-        m_BasicModelLibrary.RefreshAssetsFromFilesystem();
+        LD_PROFILE_FUNCTION();
+        m_ModelLibrary.RefreshAssetsFromFilesystem();
         m_ShaderLibrary.RefreshAssetsFromFilesystem();
+        m_MaterialLibrary.RefreshAssetsFromFilesystem();
 }
 
 void Assets::MergeLoadedAssets()
 {
-        m_BasicModelLibrary.MergeLoadedAssets();
+        LD_PROFILE_FUNCTION();
+        m_ModelLibrary.MergeLoadedAssets();
         m_ShaderLibrary.MergeLoadedAssets();
+        m_MaterialLibrary.MergeLoadedAssets();
 }
 }

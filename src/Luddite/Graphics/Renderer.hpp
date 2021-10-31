@@ -10,6 +10,7 @@
 #include "Luddite/Graphics/VTFSRenderer.hpp"
 #include "Luddite/Graphics/RenderTarget.hpp"
 #include "Luddite/Core/AssetTypes/Model.hpp"
+#include "Luddite/Core/AssetTypes/Shader.hpp"
 #include "Luddite/Graphics/Lights.hpp"
 // #include "Luddite/Graphics/"
 
@@ -21,7 +22,7 @@ namespace Luddite
 {
 struct RenderScene
 {
-        std::unordered_map<BasicMesh*, std::vector<glm::mat4> > m_BasicMeshes;
+        std::unordered_map<Handle<Material>, std::vector<std::pair<Mesh*, glm::mat4> > > m_Meshes;
         std::vector<PointLightCPU> m_PointLights;
         std::vector<SpotLightCPU> m_SpotLights;
         std::vector<DirectionalLightCPU> m_DirectionalLights;
@@ -33,8 +34,9 @@ class LUDDITE_API Renderer
         public:
         static void Initialize();
         static void BeginScene();
-        static void SubmitMesh(BasicMesh* mesh, const glm::mat4& transform);
+        static void SubmitMesh(Mesh* mesh, const glm::mat4& transform, Handle<Material> material);
         static void SubmitPointLight(const PointLightCPU& point_light);
+        static void SubmitSpotLight(const SpotLightCPU& spot_light);
         static void EndScene();
         static void Draw(RenderTarget& render_target, const Camera& camera);
         static void Present();
@@ -73,8 +75,6 @@ class LUDDITE_API Renderer
         // Diligent::float4x4 m_WorldViewProjMatrix;
         // float accum = 0.0f;
 
-        // static inline DefferedPipelineState m_PipelineState;
-        static inline DefferedRenderer m_DefferedRenderer;
         static inline VTFSRenderer m_VTFSRenderer;
         static inline QuadBatchRenderer m_basic_quad_renderer;
         static inline PBRRenderer m_PBRRenderer;

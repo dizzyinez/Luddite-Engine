@@ -21,6 +21,5 @@ struct C_SpotLight
 struct C_DirectionalLight
 {
         Luddite::ColorRGB Color;
-        glm::vec3 Direction;
         float Intensity = 1.f;
 };

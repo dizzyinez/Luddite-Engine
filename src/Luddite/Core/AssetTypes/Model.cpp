@@ -1,64 +1,170 @@
 #include "Luddite/Core/AssetTypes/Model.hpp"
 #include "Luddite/Graphics/Renderer.hpp"
+#include "Luddite/Core/Profiler.hpp"
+
+#include "Luddite/Core/Assets.hpp"
 
 #ifdef LD_DEBUG
-//     #define OBJL_CONSOLE_OUTPUT
+    #define OBJL_CONSOLE_OUTPUT
 #endif // LD_DEBUG
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "OBJ_Loader.h"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 namespace Luddite
 {
-void BasicModelLibrary::Initialize()
+void ModelLibrary::Initialize()
 {
         m_AssetBaseDir = "./Assets/Models/";
         m_Extensions.push_back(L".obj");
+        m_Extensions.push_back(L".blend");
+        m_Extensions.push_back(L".fbx");
 }
 
-
-BasicModel* BasicModelLibrary::LoadFromFile(const std::filesystem::path& path)
+void ProcessNode(aiNode* node, const aiScene* scene)
 {
-        auto extension = path.extension().string();
-        if (extension == ".obj")
-        {
-                BasicModel* model = LoadOBJ(path);
-                AllocateBuffers(model);
-                return model;
-        }
 }
 
-void BasicModelLibrary::AllocateBuffers(BasicModel* model)
+void ProcessMesh()
 {
-        for (auto& mesh : model->meshes)
+}
+
+void AddNode(aiNode* node, int parent_node_id, int& node_id_counter, Model* model) {
+        model->m_Nodes.push_back({
+                        glm::transpose(*reinterpret_cast<glm::mat4*>(&node->mTransformation)),
+                        parent_node_id
+                });
+        int this_node_id = node_id_counter;
+        for (int i = 0; i < node->mNumMeshes; i++)
+                model->m_MeshNodePairs.push_back({node->mMeshes[i], this_node_id});
+        node_id_counter++;
+        for (int i = 0; i < node->mNumChildren; i++)
+                AddNode(node->mChildren[i], this_node_id, node_id_counter, model);
+};
+
+Model* ModelLibrary::LoadFromFile(const std::filesystem::path& path)
+{
+        std::stringstream ss;
+        ss << "Loading Model: " << path;
+        LD_PROFILE_SCOPE(ss.str());
+
+        Assimp::Importer importer;
+        const aiScene* scene =
+                importer.ReadFile(path.string(),
+                        aiProcess_GenNormals |
+                        aiProcess_GenBoundingBoxes |
+                        aiProcess_GenUVCoords |
+                        aiProcess_Triangulate |
+                        aiProcess_JoinIdenticalVertices |
+                        aiProcess_SortByPType |
+                        aiProcess_MakeLeftHanded
+                        );
+        importer.ApplyPostProcessing(aiProcess_CalcTangentSpace);
+        LD_VERIFY(scene != nullptr, "Error loading model: {}", importer.GetErrorString());
+
+        Model* model = new Model();
+        model->m_Name = scene->mName.C_Str();
+        model->m_Meshes.reserve(scene->mNumMeshes);
+
+        model->m_Materials.reserve(scene->mNumMaterials);
+        auto mat = Assets::GetMaterialLibrary().GetAsset(8208622817716570807ULL);
+        for (int m = 0; m < scene->mNumMaterials; m++)
+                model->m_Materials.push_back(mat);
+
+
+        // scene->mAnimations[0]
+        for (int m = 0; m < scene->mNumMeshes; m++)
         {
-                //create vbo
                 Diligent::BufferDesc VertBuffDesc;
-                VertBuffDesc.Name = mesh.name.c_str();
                 VertBuffDesc.Usage = Diligent::USAGE_IMMUTABLE;
                 VertBuffDesc.BindFlags = Diligent::BIND_VERTEX_BUFFER;
-                VertBuffDesc.uiSizeInBytes = mesh.vertecies.size() * sizeof(BasicVertex);
+                Diligent::BufferDesc IndBuffDesc;
+                IndBuffDesc.Usage = Diligent::USAGE_IMMUTABLE;
+                IndBuffDesc.BindFlags = Diligent::BIND_INDEX_BUFFER;
+
+                auto& ai_mesh = *scene->mMeshes[m];
+                auto& mesh = model->m_Meshes.emplace_back();
+                mesh.m_Name = ai_mesh.mName.C_Str();
+                mesh.m_MaterialIndex = ai_mesh.mMaterialIndex;
+                mesh.m_nVertices = ai_mesh.mNumVertices;
+                Vertex* vertices = new Vertex[ai_mesh.mNumVertices];
+
+                if (!ai_mesh.HasTangentsAndBitangents())
+                        LD_LOG_WARN("Model: {}, Mesh {} doesn't have/didn't generate tangents and bitangents!", model->m_Name, mesh.m_Name);
+                for (int v = 0; v < ai_mesh.mNumVertices; v++)
+                {
+                        auto& vertex = vertices[v];
+                        vertex.Position = *reinterpret_cast<glm::vec3*>(&ai_mesh.mVertices[v]);
+                        vertex.Normal = *reinterpret_cast<glm::vec3*>(&ai_mesh.mNormals[v]);
+                        if (ai_mesh.mTangents)
+                                vertex.Tangent = *reinterpret_cast<glm::vec3*>(&ai_mesh.mTangents[v]);
+                        else
+                                vertex.Tangent = glm::vec3(1.f, 0.f, 0.f);
+                        if (ai_mesh.mBitangents)
+                                vertex.Bitangent = *reinterpret_cast<glm::vec3*>(&ai_mesh.mBitangents[v]);
+                        else
+                                vertex.Bitangent = glm::vec3(0.f, 1.f, 0.f);
+                        if (ai_mesh.mColors[0])
+                                vertex.Color = *reinterpret_cast<glm::vec4*>(&ai_mesh.mColors[0][v]);
+                        else
+                                vertex.Color = glm::vec4(1.f);
+                        if (ai_mesh.mTextureCoords[0])
+                                vertex.UV = *reinterpret_cast<glm::vec2*>(&ai_mesh.mTextureCoords[0][v]);
+                        else
+                                vertex.UV = glm::vec2(0.f);
+                }
+
+                mesh.m_nIndicies = ai_mesh.mNumFaces * 3;
+                uint32_t* indices = new uint32_t[ai_mesh.mNumFaces * 3];
+                for (int i = 0; i < ai_mesh.mNumFaces; i++)
+                {
+                        indices[(i * 3) + 0] = ai_mesh.mFaces[i].mIndices[0];
+                        indices[(i * 3) + 1] = ai_mesh.mFaces[i].mIndices[1];
+                        indices[(i * 3) + 2] = ai_mesh.mFaces[i].mIndices[2];
+                }
+                //TODO: bones
+
+                //create vbo
+                VertBuffDesc.Name = mesh.m_Name.c_str();
+                VertBuffDesc.uiSizeInBytes = mesh.m_nVertices * sizeof(Vertex);
                 Diligent::BufferData VBData;
-                VBData.pData = mesh.vertecies.data();
-                VBData.DataSize = mesh.vertecies.size() * sizeof(BasicVertex);
+                VBData.pData = reinterpret_cast<void*>(vertices);
+                VBData.DataSize = VertBuffDesc.uiSizeInBytes;
                 Renderer::GetDevice()->CreateBuffer(VertBuffDesc, &VBData, &mesh.m_pVertexBuffer);
 
                 //create ibo
-                Diligent::BufferDesc IndBuffDesc;
-                IndBuffDesc.Name = mesh.name.c_str();
-                IndBuffDesc.Usage = Diligent::USAGE_IMMUTABLE;
-                IndBuffDesc.BindFlags = Diligent::BIND_INDEX_BUFFER;
-                IndBuffDesc.uiSizeInBytes = mesh.indicies.size() * sizeof(uint32_t);
+                IndBuffDesc.Name = mesh.m_Name.c_str();
+                IndBuffDesc.uiSizeInBytes = mesh.m_nIndicies * sizeof(uint32_t);
                 Diligent::BufferData IBData;
-                IBData.pData = mesh.indicies.data();
-                IBData.DataSize = mesh.indicies.size() * sizeof(uint32_t);
+                IBData.pData = reinterpret_cast<void*>(indices);
+                IBData.DataSize = IndBuffDesc.uiSizeInBytes;
                 Renderer::GetDevice()->CreateBuffer(IndBuffDesc, &IBData, &mesh.m_pIndexBuffer);
+                delete [] vertices;
+                delete [] indices;
         }
+
+        int node_id_counter = 0;
+        AddNode(scene->mRootNode, -1, node_id_counter, model);
+        // for (int n = 0; n < scene->mRootNode->)
+        //         AllocateBuffers(model);
+        return model;
 }
 
-void BasicModelLibrary::AfterLoadProcessing(BasicModel* pModel)
+void ModelLibrary::AllocateBuffers(Model* model)
 {
-        for (auto& mesh : pModel->meshes)
+        // for (auto& mesh : model->meshes)
+        // {
+        // }
+}
+
+void ModelLibrary::AfterLoadProcessing(Model* pModel)
+{
+        LD_PROFILE_FUNCTION();
+        for (auto& mesh : pModel->m_Meshes)
         {
                 //transition resources
                 Diligent::StateTransitionDesc Barriers[] =
@@ -69,53 +175,5 @@ void BasicModelLibrary::AfterLoadProcessing(BasicModel* pModel)
 
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
         }
-}
-BasicModel* BasicModelLibrary::LoadOBJ(const std::filesystem::path& path)
-{
-        objl::Loader loader;
-        loader.LoadFile(path.string());
-
-        BasicModel* model = new BasicModel();
-
-        //load materials
-        // std::vector<MaterialHandle> materials;
-        // materials.reserve(loader.LoadedMaterials.size());
-        // for (auto obj_material : loader.LoadedMaterials)
-        // {
-        //         MaterialDescription MatDesc;
-        //         MatDesc.Name = obj_material.name;
-        //         MatDesc.Diffuse = ColorRGB(*(glm::vec3*)&obj_material.Kd);
-        //         MatDesc.Specular = ColorRGB(*(glm::vec3*)&obj_material.Ks);
-        //         // MatDesc.
-        //         if (!obj_material.map_Kd.empty())
-        //         {
-        //                 //Load Texture
-        //                 //use texture
-        //         }
-        // }
-
-        //load vertecies and indicies
-        for (auto obj_mesh : loader.LoadedMeshes)
-        {
-                BasicMesh& mesh = model->meshes.emplace_back();
-                mesh.name = obj_mesh.MeshName;
-                mesh.vertecies.reserve(obj_mesh.Vertices.size());
-                for (auto obj_vertex : obj_mesh.Vertices)
-                {
-                        mesh.vertecies.push_back({
-                                        *(glm::vec3*)&obj_vertex.Position,
-                                        *(glm::vec3*)&obj_vertex.Normal,
-                                        *(glm::vec2*)&obj_vertex.TextureCoordinate,
-                                });
-                }
-                mesh.indicies.reserve(obj_mesh.Indices.size());
-                //put indicies in reverse order to correct normal directions
-                for (auto rit = obj_mesh.Indices.rbegin(); rit != obj_mesh.Indices.rend(); ++rit)
-                {
-                        mesh.indicies.push_back(*rit);
-                }
-                // model->meshes.emplace_back(mesh);
-        }
-        return model;
 }
 }

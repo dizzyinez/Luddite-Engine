@@ -82,10 +82,40 @@ float3 DoPointLight(SurfaceProps props, PointLight point_light)
     return (kD * props.Diffuse / PI + specular) * radiance * dotNL;
 }
 
-// float3 DoSpotLight()
-// {
+float3 DoSpotLight(SurfaceProps props, SpotLight spot_light)
+{
+    float3 light_dir = normalize(spot_light.PositionWS - props.PosWS);
+    float minCos = cos(spot_light.HalfAngle);
+    float maxCos = lerp(minCos, 1, 0.5f);
+    float cosAngle = dot(spot_light.DirectionWS, -light_dir);
+    float spotIntensity = smoothstep(minCos, maxCos, cosAngle);
 
-// }
+    //attenuation
+    float distance = distance(spot_light.PositionWS, props.PosWS);
+    float attenuation = 1.0 / (distance * distance);
+    float3 radiance = spot_light.Color * attenuation * spot_light.Intensity;
+
+    //calculate vectors & dot products
+    float3 H = normalize(props.ViewDir + light_dir);
+    float dotHV = saturate(dot(H, props.ViewDir));
+    float dotNL = saturate(dot(props.Normal, light_dir));
+    float dotNH = saturate(dot(props.Normal, H));
+
+    //cook-rottancebrdf
+    float NDF = DistributionGGX(dotNH, props.Roughness);
+    float G = GeometrySmith(props.dotNV, dotNL, props.Roughness);
+    // float3 F = FresnelSchlick(dotHV, props.F0);
+    float3 F = FresnelSchlickRoughness(dotHV, props.F0, props.Roughness);
+
+    float3 kS = F;
+    float3 kD = float3(1.0) - kS;
+    kD *= 1.0 - props.Metallic;
+
+    float3 numerator = NDF * G * F;
+    float denominator = 4.0 * props.dotNV * dotNL;
+    float3 specular = numerator / max(denominator, 0.001);
+    return (kD * props.Diffuse / PI + specular) * radiance * dotNL * spotIntensity;
+}
 
 // float3 DoDirectionalLight()
 // {

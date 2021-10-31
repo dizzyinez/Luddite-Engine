@@ -12,6 +12,7 @@
 #include "Luddite/Platform/IO/IO.hpp"
 #include "Luddite/Core/EventPool.hpp"
 #include "Luddite/Core/Assets.hpp"
+#include "Luddite/Core/Profiler.hpp"
 
 //ECS
 #include "Luddite/ECS/Components/Components.hpp"
@@ -22,5 +23,4 @@
 
 //Graphics
 #include "Luddite/Graphics/Color.hpp"
-#include "Luddite/Graphics/MaterialLibrary.hpp"
 #include "Luddite/Graphics/Texture.hpp"

@@ -2,6 +2,7 @@
 #include "Luddite/Core/pch.hpp"
 #include "Luddite/Core/Asset.hpp"
 #include "yaml-cpp/yaml.h"
+#include <tuple>
 
 namespace Luddite
 {
@@ -10,19 +11,26 @@ template <typename T, typename Subclass>
 struct LUDDITE_API AssetLibrary
 {
         public:
-        typename T::Handle GetAsset(const AssetID& id)
+
+	AssetLibrary()
+		: m_PlaceHolderAssetRefCounter(&m_PlaceholderAsset)
+	{
+	}
+		
+        Handle<T> GetAsset(const AssetID& id)
         {
                 std::lock_guard<std::mutex> lock(m_Mutex);
                 auto it = m_AssetMap.find(id);
                 if (it == m_AssetMap.end())
                 {
                         LD_LOG_ERROR("Asset of ID: {} doesn't exist!", id);
-                        return typename T::Handle(&m_PlaceholderAsset);
+                        return Handle<T>(&m_PlaceHolderAssetRefCounter);
                 }
 
-                if (!it->second.m_pAsset)
-                {
-                        it->second.m_pAsset = new T(m_PlaceholderAsset);
+		if (!it->second.m_pAssetRefCounter->get())
+		{
+			T* temp_asset = new T(m_PlaceholderAsset);
+			it->second.m_pAssetRefCounter->ReplaceData(temp_asset);
 
                         auto it_future = m_LoadFutures.find(id);
                         if (it_future == m_LoadFutures.end())
@@ -30,7 +38,53 @@ struct LUDDITE_API AssetLibrary
                                 m_LoadFutures.insert(std::make_pair(id, std::async(std::launch::async, &Subclass::LoadFromFile, static_cast<Subclass*>(this), it->second.user_format_path)));
                         }
                 }
-                return typename T::Handle(it->second.m_pAsset);
+                return Handle<T>(it->second.m_pAssetRefCounter);
+        }
+
+        Handle<T> GetAssetSynchronous(const AssetID& id)
+        {
+                // std::iterator it;
+                typename std::unordered_map<AssetID, AssetDesc>::iterator it;
+
+                std::lock_guard<std::mutex> lock(m_Mutex);
+                it = m_AssetMap.find(id);
+                if (it == m_AssetMap.end())
+                {
+                        LD_LOG_ERROR("Asset of ID: {} doesn't exist!", id);
+                        return Handle<T>(&m_PlaceHolderAssetRefCounter);
+                }
+
+                if (!it->second.m_pAssetRefCounter->valid() || it->second.m_pAssetRefCounter->get() == m_PlaceHolderAssetRefCounter.get())
+                {
+			T* p;
+                        auto it_future = m_LoadFutures.find(id);
+                        if (it_future == m_LoadFutures.end())
+			{
+				p = LoadFromFile(it->second.user_format_path);
+			}
+                        else
+			{
+				p = it_future->second.get();
+				m_LoadFutures.erase(it_future);
+			}
+			if (!p)
+			{
+				LD_LOG_WARN("Failed to load {}", it->second.user_format_path.string());
+				if (!it->second.m_pAssetRefCounter->get())
+				{
+					T* temp_asset = new T(m_PlaceholderAsset);
+					it->second.m_pAssetRefCounter->ReplaceData(temp_asset);
+				}
+			}
+			else
+			{
+                        	it->second.m_pAssetRefCounter->ReplaceData(p);
+			}
+                }
+		LD_VERIFY(it->second.m_pAssetRefCounter->valid(), "Loading {} Synchronously Failed!", it->second.user_format_path.string());
+		AssetRefCounter<T>* p = it->second.m_pAssetRefCounter;
+		Handle<T> ret(p);
+                return ret;
         }
 
         void MergeLoadedAssets()
@@ -44,13 +98,18 @@ struct LUDDITE_API AssetLibrary
                         if (future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
                         {
                                 auto& asset = m_AssetMap[pair.first];
-                                if (asset.m_pAsset != &m_PlaceholderAsset)
-                                        UnloadAsset(asset.m_pAsset);
-                                T* p = future.get();
-                                asset.m_pAsset->ReplaceData(*p);
-                                delete p;
-                                loaded.push_back(pair.first);
-                                AfterLoadProcessing(asset.m_pAsset);
+	                        if (asset.m_pAssetRefCounter->get() != m_PlaceHolderAssetRefCounter.get())
+				{
+	                                T* p = future.get();
+	                                loaded.push_back(pair.first);
+					if (!p)
+					{
+						LD_LOG_WARN("Failed to load {}", asset.user_format_path.string());
+						continue;
+					}
+	                                asset.m_pAssetRefCounter->ReplaceData(p);
+	                                AfterLoadProcessing(asset.m_pAssetRefCounter->get());
+				}
                         }
                 }
                 for (auto& id : loaded)
@@ -65,7 +124,6 @@ struct LUDDITE_API AssetLibrary
                         if (future.wait_for(std::chrono::seconds(0)) == std::future_status::ready)
                         {
                                 T* p = future.get();
-                                UnloadAsset(p);
                                 delete p;
                                 m_ObsoleteFutures.erase(--rit.base());
                         }
@@ -92,11 +150,10 @@ struct LUDDITE_API AssetLibrary
                 for (auto& pair : m_AssetMap)
                 {
                         AssetDesc& asset = pair.second;
-                        if (asset.m_pAsset->GetReferenceCount() == 0 && !asset.m_pAsset->StayLoaded())
+                        if (asset.m_pAssetRefCounter->GetReferenceCount() == 0 && !asset.m_pAsset->StayLoaded())
                         {
-                                UnloadAsset(asset.m_pAsset);
-                                delete asset.m_pAsset;
-                                asset.m_pAsset = nullptr;
+                                //UnloadAsset(asset.m_pAssetRefCounter);
+                                asset.m_pAssetRefCounter->release();
                         }
                 }
         }
@@ -107,11 +164,10 @@ struct LUDDITE_API AssetLibrary
                 for (auto& pair : m_AssetMap)
                 {
                         AssetDesc& asset = pair.second;
-                        if (asset.m_pAsset->GetReferenceCount() == 0)
+                        if (asset.m_pAssetRefCounter->get().GetReferenceCount() == 0)
                         {
-                                UnloadAsset(asset.m_pAsset);
-                                delete asset.m_pAsset;
-                                asset.m_pAsset = nullptr;
+                                //UnloadAsset(asset.m_pAssetRefCounteget().get());
+                        	asset.m_pAssetRefCounter->release();
                         }
                 }
         }
@@ -122,9 +178,8 @@ struct LUDDITE_API AssetLibrary
                 for (auto& pair : m_AssetMap)
                 {
                         AssetDesc& asset = pair.second;
-                        UnloadAsset(asset.m_pAsset);
-                        delete asset.m_pAsset;
-                        asset.m_pAsset = nullptr;
+                        //UnloadAsset(asset.m_pAssetRefCounter->get());
+                        asset.m_pAssetRefCounter->release();
                 }
         }
 
@@ -137,23 +192,24 @@ struct LUDDITE_API AssetLibrary
                         if (path.is_regular_file())
                         {
                                 std::wstring extension = path.path().extension().wstring();
+                                //convert extension to lowercase
+                                std::transform(extension.begin(), extension.end(), extension.begin(), std::towlower);
                                 if (std::find(m_Extensions.begin(), m_Extensions.end(), extension) != m_Extensions.end())
                                 {
                                         std::filesystem::path rel_path = std::filesystem::relative(path, m_AssetBaseDir);
                                         static std::hash<std::string> hasher;
-                                        AssetID id = hasher(path.path().string());
+                                        const AssetID id = hasher(path.path().string());
                                         auto last_write = std::filesystem::last_write_time(path);
                                         if (!m_AssetListYaml[id])
                                         {
                                                 assets_changed = true;
                                                 m_AssetListYaml[id]["Name"] = rel_path.stem().string();
                                                 m_AssetListYaml[id]["Dir"] = path.path().string();
-                                                m_AssetMap.insert(std::make_pair(id, AssetDesc{
-                                                                path,
-                                                                path,
-                                                                last_write,
-                                                                nullptr
-                                                        }));
+						m_AssetMap.emplace(std::piecewise_construct, std::forward_as_tuple(id), std::forward_as_tuple(
+	                                        		path,
+			                                        path,
+								last_write
+								));
                                         }
                                         else
                                         {
@@ -207,37 +263,51 @@ struct LUDDITE_API AssetLibrary
                 for (YAML::const_iterator it = m_AssetListYaml.begin(); it != m_AssetListYaml.end(); ++it)
                 {
                         std::filesystem::path dir = it->second["Dir"].as<std::string>();
-                        m_AssetMap.insert(std::make_pair(it->first.as<uint64_t>(), AssetDesc{
+			const AssetID id = it->first.as<AssetID>();
+                        m_AssetMap.emplace(std::piecewise_construct, std::forward_as_tuple(id), std::forward_as_tuple(
                                         dir,
                                         dir,
-                                        std::filesystem::last_write_time(dir),
-                                        nullptr
-                                }));
+                                        std::filesystem::last_write_time(dir)
+					));
                 }
                 RefreshAssetsFromFilesystem();
         }
 
         ~AssetLibrary()
-        {
+        {        // Renderer::GetContext()->CommitShaderResources(Material->m_pMaterialShaderResourceBinding, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
                 ReleaseAllAssets();
         }
+
+        const auto& GetAssetMap() const {return m_AssetMap;}
+
         protected:
         struct AssetDesc
         {
+		AssetDesc() = default;
+		AssetDesc(const std::filesystem::path& user_format_path_,
+			  const std::filesystem::path& compressed_format_path_,
+			  const std::filesystem::file_time_type& last_write_)
+			  //AssetRefCounter<T> ref_counter)
+			: user_format_path{user_format_path_}
+			, compressed_format_path{compressed_format_path_}
+			, last_write{last_write_}
+		{ m_pAssetRefCounter = new AssetRefCounter<T>();}
+		~AssetDesc() {delete m_pAssetRefCounter;}
                 std::filesystem::path user_format_path;
                 std::filesystem::path compressed_format_path;
                 std::filesystem::file_time_type last_write;
-                T* m_pAsset = nullptr;
+                AssetRefCounter<T>* m_pAssetRefCounter;
         };
         virtual T* LoadFromFile(const std::filesystem::path& path) = 0;
         virtual void AfterLoadProcessing(T* pAsset) {}
-        virtual void UnloadAsset(T* pAsset) {}
         virtual void SaveUserFormat(const std::filesystem::path& path) {}
         virtual void SaveCompressedFormat(const std::filesystem::path& path) {}
         T m_PlaceholderAsset;
+	AssetRefCounter<T> m_PlaceHolderAssetRefCounter;
 
         std::filesystem::path m_AssetBaseDir;
         std::vector<std::wstring> m_Extensions;
+
 
         private:
         std::unordered_map<AssetID, AssetDesc> m_AssetMap;

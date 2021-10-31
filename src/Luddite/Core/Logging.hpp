@@ -34,7 +34,7 @@ public:
                         break;
 
                 case Diligent::DEBUG_MESSAGE_SEVERITY_FATAL_ERROR:
-                        diligent_console->critical(Message);
+                       diligent_console->critical(Message);
                         break;
                 }
 #endif

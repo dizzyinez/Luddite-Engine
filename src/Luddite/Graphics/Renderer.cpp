@@ -6,10 +6,9 @@
 namespace Luddite
 {
 // MaterialHandle awesome_material;
-BasicModel::Handle awesome_model;
 void Renderer::Initialize()
 {
-        m_pEngineFactory->CreateDefaultShaderSourceStreamFactory("./Assets/Shaders/;", &m_pShaderSourceFactory);
+        m_pEngineFactory->CreateDefaultShaderSourceStreamFactory("./Assets/Shaders/;./Assets/Shaders/", &m_pShaderSourceFactory);
 
         // m_basic_quad_renderer.Initialize(m_pDevice,
         //         m_pImmediateContext,
@@ -34,8 +33,7 @@ void Renderer::Initialize()
         //         // loadInfo.GenerateMips = false;
         //         // loadInfo.Name = "ENVIRONMENTAL CUBEMAP";
         //         // loadInfo.Format = Diligent::TEX_FORMAT_RGBA16_FLOAT;
-        //         // Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap;
-        //         // Diligent::CreateTextureFromFile("./Assets/irradiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
+        //         // Diligent::RefCntAutoPtr<Diligent::ITexture> awesome_cubemap         // Diligent::CreateTextureFromFile("./Assets/irradiance.dds", loadInfo, Renderer::GetDevice(), &awesome_cubemap);
         //         Texture::Handle ibl_texture = Assets::GetTextureLibrary().GetAsset(0);
         //         ibl_texture.get()->TransitionToShaderResource();
         //         m_DefferedRenderer.EnvironmentalLightingPipeline.GetConstantData().SetTexture("g_IrradianceMap", ibl_texture);
@@ -76,7 +74,7 @@ void Renderer::Initialize()
 
 void Renderer::BeginScene()
 {
-        m_RenderScene.m_BasicMeshes.clear();
+        m_RenderScene.m_Meshes.clear();
         m_RenderScene.m_PointLights.clear();
         m_RenderScene.m_SpotLights.clear();
         m_RenderScene.m_DirectionalLights.clear();
@@ -87,14 +85,18 @@ void Renderer::BeginScene()
         // }
 }
 
-void Renderer::SubmitMesh(BasicMesh* mesh, const glm::mat4& transform)
+void Renderer::SubmitMesh(Mesh* mesh, const glm::mat4& transform, Handle<Material> material)
 {
-        m_RenderScene.m_BasicMeshes[mesh].push_back(transform);
+        m_RenderScene.m_Meshes[material].push_back(std::make_pair(mesh, transform));
 }
 
 void Renderer::SubmitPointLight(const PointLightCPU& point_light)
 {
         m_RenderScene.m_PointLights.push_back(point_light);
+}
+void Renderer::SubmitSpotLight(const SpotLightCPU& spot_light)
+{
+	m_RenderScene.m_SpotLights.push_back(spot_light);
 }
 
 void Renderer::EndScene()
@@ -296,6 +298,6 @@ void Renderer::OnWindowResize(int width, int height)
 void Renderer::ReleaseBufferResources()
 {
         m_VTFSRenderer.ReleaseAllRenderTargetResources();
-        m_DefferedRenderer.ReleaseWindowResources();
+        // m_DefferedRenderer.ReleaseWindowResources();
 }
 }

@@ -16,6 +16,7 @@ class LUDDITE_API Layer
         virtual void Initialize() {}
         virtual void HandleEvents() {}
         virtual void Update(double delta_time) {}
+        virtual void FixedUpdate(double delta_time) {}
         virtual void Render(double alpha, RenderTarget render_target) {}
         virtual void RenderImGui(double alpha, RenderTarget render_target) {}
         virtual const char* GetName() {return "Unnamed";}
@@ -26,6 +27,7 @@ class LUDDITE_API LayerStack
 {
         public:
         void UpdateLayers(double delta_time);
+        void UpdateLayersFixed(double delta_time);
         void RenderLayers(double alpha, Luddite::RenderTarget render_target);
         void RenderLayersImGui(double alpha, Luddite::RenderTarget render_target);
         void PushLayer(std::shared_ptr<Layer> layer);

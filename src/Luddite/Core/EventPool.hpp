@@ -69,12 +69,12 @@ class LUDDITE_API Events
                 return *reinterpret_cast<EventList<T>* >(it->second);
         }
 
-        static inline void Clear() {
+        static void Clear() {
                 for (auto pair : m_EventMap)
                         pair.second->Clear();
         }
         private:
-        static inline std::unordered_map<EventIDType, EventList<BaseEvent>* > m_EventMap;
+        static std::unordered_map<EventIDType, EventList<BaseEvent>* > m_EventMap;
         // mutable std::mutex m_Mutex;
 };
 }

@@ -1,6 +1,8 @@
 #include "Luddite/Graphics/VTFSRenderer.hpp"
+#include "GraphicsTypes.h"
 #include "Luddite/Graphics/Renderer.hpp"
 #include "Graphics/GraphicsTools/interface/ShaderMacroHelper.hpp"
+#include "Luddite/Core/Profiler.hpp"
 
 using namespace Diligent;
 
@@ -45,6 +47,7 @@ inline uint32_t GetNumNodes(uint32_t numLeaves)
 
 void VTFSRenderer::Initialize(Diligent::TEXTURE_FORMAT RTVFormat)
 {
+        LD_PROFILE_FUNCTION();
         // m_ComputeConstantShaderAttributes.AddUVec3("numThreadGroups");
         // m_ComputeConstantShaderAttributes.AddUInt("padding");
         // m_ComputeConstantShaderAttributes.AddUVec3("numThreads");
@@ -53,12 +56,21 @@ void VTFSRenderer::Initialize(Diligent::TEXTURE_FORMAT RTVFormat)
         m_CameraCBAttributes.AddMat4("Projection");
         m_CameraCBAttributes.AddMat4("InverseProjection");
         m_CameraCBAttributes.AddVec2("ViewDimensions");
-        m_CameraCBData = m_CameraCBAttributes.CreateData();
+        m_CameraCBData = m_CameraCBAttributes.CreateData("Camera CB Attributes Data");
+        Assets::GetShaderLibrary().static_buffers["_CameraCB"] = m_CameraCB;
 
         CreateLightBuffers();
         CreateComputePSOs();
         CreateDrawPSOs();
         CreateWholeScreenPSOs();
+
+	Assets::GetShaderLibrary().mutable_buffers.emplace("UniqueClusters"); 
+	Assets::GetShaderLibrary().mutable_buffers.emplace("ClusterFlags");
+	Assets::GetShaderLibrary().mutable_buffers.emplace("ClusterAABBs");
+	Assets::GetShaderLibrary().mutable_buffers.emplace("PointLightGrid");
+	Assets::GetShaderLibrary().mutable_buffers.emplace("SpotLightGrid");
+	Assets::GetShaderLibrary().mutable_buffers.emplace("PointLightIndexList");
+	Assets::GetShaderLibrary().mutable_buffers.emplace("SpotLightIndexList");
 }
 
 void ClearBufferUInt(IBuffer* buffer)
@@ -89,6 +101,7 @@ void ClearBufferFloat(IBuffer* buffer)
 
 void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camera, const RenderScene& render_scene)
 {
+        LD_PROFILE_FUNCTION();
         // const auto& RPDesc = m_pRenderPass->GetDesc();
         //Map Camera CB
         glm::mat4 projection = render_target.GetProjectionMatrix(camera);
@@ -155,60 +168,62 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                 Renderer::GetContext()->ClearRenderTarget(depthZRTV, ClearColor, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
         }
         //Opaque Geometry Depth Pre-Pass
-        Renderer::GetContext()->SetPipelineState(m_pOpaqueDepthPSO);
-        Renderer::GetContext()->CommitShaderResources(data->OpaqueDepthSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        for (auto pair : render_scene.m_BasicMeshes)
         {
-                auto& mesh = pair.first;
-                Uint32 offset = 0;
-                IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
-                Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
-                Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-                for (auto& transform : pair.second)
+                Renderer::GetContext()->SetPipelineState(m_pOpaqueDepthPSO);
+                Renderer::GetContext()->CommitShaderResources(data->OpaqueDepthSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                for (auto material_pair : render_scene.m_Meshes)
                 {
-                        m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelViewProjection", view_projection * transform);
-                        m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelView", view * transform);
-                        m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "Model", transform);
-                        m_BasicModelCameraCBAttributes.MapBuffer(m_BasicModelCameraCBData, m_BasicModelCameraCB);
+                        for (auto mesh_pair : material_pair.second)
+                        {
+                                auto& mesh = mesh_pair.first;
+                                Uint32 offset = 0;
+                                IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
+                                Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
+                                Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
+                                auto& transform = mesh_pair.second;
 
-                        //For textures
-                        // Renderer::GetContext()->CommitShaderResources(m_pCurrentMaterial->m_pMaterialConstantsBuffer->)
+                                m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelViewProjection", view_projection * transform);
+                                m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelView", view * transform);
+                                m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "Model", transform);
+                                m_BasicModelCameraCBAttributes.MapBuffer(m_BasicModelCameraCBData, m_BasicModelCameraCB);
 
-                        DrawIndexedAttribs DrawAttrs;
-                        DrawAttrs.NumIndices = mesh->indicies.size();
-                        DrawAttrs.IndexType = VT_UINT32;
-                        DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL;
-                        Renderer::GetContext()->DrawIndexed(DrawAttrs);
+                                DrawIndexedAttribs DrawAttrs;
+                                DrawAttrs.NumIndices = mesh->m_nIndicies;
+                                DrawAttrs.IndexType = VT_UINT32;
+                                DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL;
+                                Renderer::GetContext()->DrawIndexed(DrawAttrs);
+                        }
                 }
         }
 
         //Set Render Targets
         Renderer::GetContext()->SetRenderTargets(0, nullptr, depthDSV, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
         //Cluster Samples
-        Renderer::GetContext()->SetPipelineState(m_pClusterSamplesPSO);
-        Renderer::GetContext()->CommitShaderResources(data->ClusterSamplesSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-        for (auto pair : render_scene.m_BasicMeshes)
         {
-                auto& mesh = pair.first;
-                Uint32 offset = 0;
-                IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
-                Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
-                Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-                for (auto& transform : pair.second)
+                Renderer::GetContext()->SetPipelineState(m_pClusterSamplesPSO);
+                Renderer::GetContext()->CommitShaderResources(data->ClusterSamplesSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                for (auto material_pair : render_scene.m_Meshes)
                 {
-                        m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelViewProjection", view_projection * transform);
-                        m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelView", view * transform);
-                        m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "Model", transform);
-                        m_BasicModelCameraCBAttributes.MapBuffer(m_BasicModelCameraCBData, m_BasicModelCameraCB);
+                        for (auto mesh_pair : material_pair.second)
+                        {
+                                auto& mesh = mesh_pair.first;
+                                Uint32 offset = 0;
+                                IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
+                                Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
+                                Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
+                                auto& transform = mesh_pair.second;
 
-                        //For textures
-                        // Renderer::GetContext()->CommitShaderResources(m_pCurrentMaterial->m_pMaterialConstantsBuffer->)
+                                m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelViewProjection", view_projection * transform);
+                                m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelView", view * transform);
+                                m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "Model", transform);
+                                m_BasicModelCameraCBAttributes.MapBuffer(m_BasicModelCameraCBData, m_BasicModelCameraCB);
 
-                        DrawIndexedAttribs DrawAttrs;
-                        DrawAttrs.NumIndices = mesh->indicies.size();
-                        DrawAttrs.IndexType = VT_UINT32;
-                        DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL;
-                        Renderer::GetContext()->DrawIndexed(DrawAttrs);
+                                DrawIndexedAttribs DrawAttrs;
+                                DrawAttrs.NumIndices = mesh->m_nIndicies;
+                                DrawAttrs.IndexType = VT_UINT32;
+                                DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL;
+                                Renderer::GetContext()->DrawIndexed(DrawAttrs);
+                        }
                 }
         }
 
@@ -504,17 +519,51 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
 
         //Opaque Lighting
         {
-                Renderer::GetContext()->SetPipelineState(m_pBasicMeshOpaqueLightingPSO);
-                Renderer::GetContext()->CommitShaderResources(data->BasicMeshOpaqueLightingSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                for (auto pair : render_scene.m_BasicMeshes)
+                for (auto material_pair : render_scene.m_Meshes)
                 {
-                        auto& mesh = pair.first;
-                        Uint32 offset = 0;
-                        IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
-                        Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
-                        Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-                        for (auto& transform : pair.second)
+			if (!material_pair.first->m_pShader.valid())
+				continue;
+			if (!material_pair.first->m_pShader->m_pPSO)
+				continue;
+                        Renderer::GetContext()->SetPipelineState(material_pair.first->m_pShader->m_pPSO);
+                        auto it = data->ShaderSRBs.find(material_pair.first->m_pShader);
+                        RefCntAutoPtr<IShaderResourceBinding> srb;
+                        if (it == data->ShaderSRBs.end())
                         {
+                                material_pair.first->m_pShader->m_pPSO->CreateShaderResourceBinding(&srb, true);
+                                // if (material_pair.first->m_pShader->vertex_shader_uses_properties)
+                                //         srb->GetVariableByName(SHADER_TYPE_VERTEX, "Properties")->Set(material_pair.first->m_pShader->m_PropertiesBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
+                                // if (material_pair.first->m_pShader->pixel_shader_uses_properties)
+                                //         srb->GetVariableByName(SHADER_TYPE_PIXEL, "Properties")->Set(material_pair.first->m_pShader->m_PropertiesBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
+				for (const std::string& buffer_name : material_pair.first->m_pShader->m_MutableBuffersVertex)
+				{
+					LD_LOG_INFO("{}", buffer_name);
+					auto buff = data->m_BufferMap.find(buffer_name);
+					if (buff != data->m_BufferMap.end())
+						srb->GetVariableByName(SHADER_TYPE_VERTEX, buff->first.c_str())->Set(buff->second->GetDefaultView(Diligent::BUFFER_VIEW_SHADER_RESOURCE));
+				}
+				for (const std::string& buffer_name : material_pair.first->m_pShader->m_MutableBuffersPixel)
+				{
+					LD_LOG_INFO("{}", buffer_name);
+					auto buff = data->m_BufferMap.find(buffer_name);
+					if (buff != data->m_BufferMap.end())
+						srb->GetVariableByName(SHADER_TYPE_PIXEL, buff->first.c_str())->Set(buff->second->GetDefaultView(Diligent::BUFFER_VIEW_SHADER_RESOURCE));
+				}
+                                data->ShaderSRBs.insert({material_pair.first->m_pShader, srb});
+                        }
+                        else
+                                srb = it->second;
+                        Renderer::GetContext()->CommitShaderResources(srb, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                        material_pair.first->m_pShader->m_PropertiesBufferDescription.MapBuffer(material_pair.first->m_Properties, material_pair.first->m_pShader->m_PropertiesBuffer);
+                        for (auto mesh_pair : material_pair.second)
+                        {
+                                auto& mesh = mesh_pair.first;
+                                Uint32 offset = 0;
+                                IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
+                                Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
+                                Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
+                                auto& transform = mesh_pair.second;
+
                                 m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelViewProjection", view_projection * transform);
                                 m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelView", view * transform);
                                 m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "Model", transform);
@@ -524,7 +573,7 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                                 // Renderer::GetContext()->CommitShaderResources(m_pCurrentMaterial->m_pMaterialConstantsBuffer->)
 
                                 DrawIndexedAttribs DrawAttrs;
-                                DrawAttrs.NumIndices = mesh->indicies.size();
+                                DrawAttrs.NumIndices = mesh->m_nIndicies;
                                 DrawAttrs.IndexType = VT_UINT32;
                                 DrawAttrs.Flags = DRAW_FLAG_VERIFY_ALL;
                                 Renderer::GetContext()->DrawIndexed(DrawAttrs);
@@ -553,6 +602,7 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
 
 VTFSRenderer::PerRenderTargetData VTFSRenderer::CreateRenderTargetData(const RenderTarget& render_target, const Camera& camera)
 {
+        LD_PROFILE_FUNCTION();
         PerRenderTargetData data;
 
         // const auto& RPDesc = m_pRenderPass->GetDesc();
@@ -756,12 +806,17 @@ VTFSRenderer::PerRenderTargetData VTFSRenderer::CreateRenderTargetData(const Ren
         m_pDebugDepthPSO->CreateShaderResourceBinding(&data.DebugDepthSRB, true);
         data.DebugDepthSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_SubpassInputDepthZ")->Set(data.pDepthZTexture->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
 
+	data.m_BufferMap["PointLights"] = m_pPointLightsBuffer->GetBuffer();
+	data.m_BufferMap["SpotLights"] = m_pSpotLightsBuffer->GetBuffer();
+	data.m_BufferMap["DirectionalLights"] = m_pDirectionalLightsBuffer->GetBuffer();
+
         ComputeClusterGrid(data, render_target, camera);
         return data;
 }
 
 VTFSRenderer::PerRenderTargetData* VTFSRenderer::GetRenderTargetData(const RenderTarget& render_target, const Camera& camera, const glm::mat4& projection)
 {
+        LD_PROFILE_FUNCTION();
         auto it = m_PerRenderTargetCache.find(render_target.RTV);
         if (it != m_PerRenderTargetCache.end())
         {
@@ -781,6 +836,7 @@ VTFSRenderer::PerRenderTargetData* VTFSRenderer::GetRenderTargetData(const Rende
 
 void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, const RenderTarget& render_target, const Camera& camera)
 {
+        LD_PROFILE_FUNCTION();
         float fov_y = camera.FOV * 0.5f;
         float z_near = camera.ClipNear;
         float z_far = camera.ClipFar;
@@ -799,6 +855,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         m_ClusterCBAttributes.SetFloat(m_ClusterCBData, "near_k", 1.0f + sD);
         m_ClusterCBAttributes.SetFloat(m_ClusterCBData, "log_grid_dim_y", log_dim_y);
         m_ClusterCBAttributes.MapBuffer(m_ClusterCBData, m_ClusterCB);
+	//.Assets::GetShaderLibrary().static_buffers["
 
         BufferDesc BuffDesc;
         BuffDesc.BindFlags = BIND_SHADER_RESOURCE | BIND_UNORDERED_ACCESS;
@@ -819,12 +876,14 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         BuffDesc.uiSizeInBytes = sizeof(uint32_t) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Unique Clusters";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.UniqueClustersBuffer);
+	data.m_BufferMap["UniqueClusters"] = data.UniqueClustersBuffer;
         data.FindUniqueClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWUniqueClusters")->Set(data.UniqueClustersBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "UniqueClusters")->Set(data.UniqueClustersBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "UniqueClusters")->Set(data.UniqueClustersBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
         BuffDesc.Name = "Clusters Flags";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.ClusterFlagsBuffer);
+	data.m_BufferMap["ClusterFlags"] = data.ClusterFlagsBuffer;
         data.ClusterSamplesSRB->GetVariableByName(SHADER_TYPE_PIXEL, "RWClusterFlags")->Set(data.ClusterFlagsBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.FindUniqueClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "ClusterFlags")->Set(data.ClusterFlagsBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
@@ -832,6 +891,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         BuffDesc.uiSizeInBytes = sizeof(AABB) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Cluster AABBs";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.ClusterAABBsBuffer);
+	data.m_BufferMap["ClusterAABBs"] = data.ClusterAABBsBuffer;
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "ClusterAABBs")->Set(data.ClusterAABBsBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "ClusterAABBs")->Set(data.ClusterAABBsBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
@@ -841,12 +901,14 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         BuffDesc.uiSizeInBytes = sizeof(glm::uvec2) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Point Light Grid";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.PointLightGridBuffer);
+	data.m_BufferMap["PointLightGrid"] = data.PointLightGridBuffer;
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightGrid")->Set(data.PointLightGridBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightGrid")->Set(data.PointLightGridBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.BasicMeshOpaqueLightingSRB->GetVariableByName(SHADER_TYPE_PIXEL, "PointLightGrid")->Set(data.PointLightGridBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
         BuffDesc.Name = "Spot Light Grid";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.SpotLightGridBuffer);
+	data.m_BufferMap["SpotLightGrid"] = data.SpotLightGridBuffer;
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWSpotLightGrid")->Set(data.SpotLightGridBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWSpotLightGrid")->Set(data.SpotLightGridBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
 
@@ -854,6 +916,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         BuffDesc.uiSizeInBytes = sizeof(uint32_t) * AVERAGE_OVERLAPPING_LIGHTS_PER_CLUSTER * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Point Light Index List";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.PointLightIndexListBuffer);
+	data.m_BufferMap["PointLightIndexList"] = data.PointLightIndexListBuffer;
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightIndexList")->Set(data.PointLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightIndexList")->Set(data.PointLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightIndexList")->Set(data.PointLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
@@ -861,6 +924,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
 
         BuffDesc.Name = "Spot Light Index List";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.SpotLightIndexListBuffer);
+	data.m_BufferMap["SpotLightIndexList"] = data.SpotLightIndexListBuffer;
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWSpotLightIndexList")->Set(data.SpotLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWSpotLightIndexList")->Set(data.SpotLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         // data.BasicMeshOpaqueLightingSRB->GetVariableByName(SHADER_TYPE_PIXEL, "SpotLightIndexList")->Set(data.SpotLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
@@ -932,6 +996,7 @@ bool VTFSRenderer::MergeSort(Diligent::RefCntAutoPtr<Diligent::IShaderResourceBi
                              Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> pMergeSortSwappedSRB,
                              uint32_t total_values, uint32_t chunk_size)
 {
+        LD_PROFILE_FUNCTION();
         m_SortParamsCBAttributes.SetUInt(m_SortParamsCBData, "NumElements", total_values);
         m_SortParamsCBAttributes.SetUInt(m_SortParamsCBData, "ChunkSize", chunk_size);
         m_SortParamsCBAttributes.MapBuffer(m_SortParamsCBData, m_SortParamsCB);
@@ -996,9 +1061,13 @@ bool VTFSRenderer::MergeSort(Diligent::RefCntAutoPtr<Diligent::IShaderResourceBi
 }
 void VTFSRenderer::CreateLightBuffers()
 {
+        LD_PROFILE_FUNCTION();
         m_pPointLightsBuffer = std::make_unique<StreamingBuffer<PointLightGPU> >(Renderer::GetDevice(), BIND_UNORDERED_ACCESS | BIND_SHADER_RESOURCE, BUFFER_MODE_STRUCTURED, MAX_POINT_LIGHTS, "Point Lights Buffer");
+	Assets::GetShaderLibrary().mutable_buffers.emplace("PointLights");
         m_pSpotLightsBuffer = std::make_unique<StreamingBuffer<SpotLightGPU> >(Renderer::GetDevice(), BIND_UNORDERED_ACCESS | BIND_SHADER_RESOURCE, BUFFER_MODE_STRUCTURED, MAX_SPOT_LIGHTS, "Spot Lights Buffer");
+	Assets::GetShaderLibrary().mutable_buffers.emplace("SpotLights");
         m_pDirectionalLightsBuffer = std::make_unique<StreamingBuffer<DirectionalLightGPU> >(Renderer::GetDevice(), BIND_UNORDERED_ACCESS | BIND_SHADER_RESOURCE, BUFFER_MODE_STRUCTURED, MAX_DIRECTIONAL_LIGHTS, "Directional Lights Buffer");
+	Assets::GetShaderLibrary().mutable_buffers.emplace("DirectionalLights");
 
         BufferDesc BuffDesc;
         BuffDesc.BindFlags = BIND_SHADER_RESOURCE | BIND_UNORDERED_ACCESS;
@@ -1041,6 +1110,7 @@ void VTFSRenderer::CreateLightBuffers()
 
 void VTFSRenderer::CreateComputePSOs()
 {
+        LD_PROFILE_FUNCTION();
         ShaderCreateInfo ShaderCI;
         ShaderCI.SourceLanguage = SHADER_SOURCE_LANGUAGE_HLSL;
         ShaderCI.UseCombinedTextureSamplers = true;
@@ -1196,12 +1266,14 @@ void VTFSRenderer::CreateComputePSOs()
                 m_ClusterCBAttributes.AddUVec2("size");
                 m_ClusterCBAttributes.AddFloat("near_k");
                 m_ClusterCBAttributes.AddFloat("log_grid_dim_y");
-                m_ClusterCBData = m_ClusterCBAttributes.CreateData();
+                m_ClusterCBData = m_ClusterCBAttributes.CreateData("Cluster CB Data");
 
                 // m_ClusterCB.Release();
                 CreateUniformBuffer(Renderer::GetDevice(), m_ClusterCBAttributes.GetSize(), "_ClusterCB", &m_ClusterCB);
+		Assets::GetShaderLibrary().static_buffers["_ClusterCB"] = m_ClusterCB;
                 // m_CameraCB.Release();
                 CreateUniformBuffer(Renderer::GetDevice(), m_CameraCBAttributes.GetSize(), "_CameraCB", &m_CameraCB);
+		Assets::GetShaderLibrary().static_buffers["_CameraCB"] = m_CameraCB;
 
                 StateTransitionDesc Barriers[] =
                 {
@@ -1264,12 +1336,13 @@ void VTFSRenderer::CreateComputePSOs()
                 m_LightCountsCBAttributes.AddUInt("NumPointLights");
                 m_LightCountsCBAttributes.AddUInt("NumSpotLights");
                 m_LightCountsCBAttributes.AddUInt("NumDirectionalLights");
-                m_LightCountsCBData = m_LightCountsCBAttributes.CreateData();
+                m_LightCountsCBData = m_LightCountsCBAttributes.CreateData("Light Counts CB Data");
 
                 m_UpdateLightsCBAttributes.AddMat4("view_matrix");
-                m_UpdateLightsCBData = m_UpdateLightsCBAttributes.CreateData();
+                m_UpdateLightsCBData = m_UpdateLightsCBAttributes.CreateData("Update Lights CB Data");
 
                 CreateUniformBuffer(Renderer::GetDevice(), m_LightCountsCBAttributes.GetSize(), "_LightCountsCB", &m_LightCountsCB);
+		Assets::GetShaderLibrary().static_buffers["_LightCountsCB"] = m_LightCountsCB;
                 CreateUniformBuffer(Renderer::GetDevice(), m_UpdateLightsCBAttributes.GetSize(), "UpdateLightsCB", &m_UpdateLightsCB);
                 StateTransitionDesc Barriers[] =
                 {
@@ -1299,10 +1372,8 @@ void VTFSRenderer::CreateComputePSOs()
                 LD_VERIFY(m_pReduceLightsAABB1PSO, "Failed to create {}", PSODesc.Name);
 
                 m_DispatchParamsCBAttributes.AddUVec3("NumThreadGroups");
-                m_DispatchParamsCBAttributes.AddFloat("Padding1");
                 m_DispatchParamsCBAttributes.AddUVec3("NumThreads");
-                m_DispatchParamsCBAttributes.AddFloat("Padding2");
-                m_DispatchParamsCBData = m_DispatchParamsCBAttributes.CreateData();
+                m_DispatchParamsCBData = m_DispatchParamsCBAttributes.CreateData("Dispatch Params CB Data");
 
                 CreateUniformBuffer(Renderer::GetDevice(), m_DispatchParamsCBAttributes.GetSize(), "_DispatchParamsCB", &m_DispatchParamsCB);
                 StateTransitionDesc Barriers[] =
@@ -1330,7 +1401,7 @@ void VTFSRenderer::CreateComputePSOs()
                 LD_VERIFY(m_pReduceLightsAABB2PSO, "Failed to create {}", PSODesc.Name);
 
                 m_ReductionParamsCBAttributes.AddUInt("NumElements");
-                m_ReductionParamsCBData = m_ReductionParamsCBAttributes.CreateData();
+                m_ReductionParamsCBData = m_ReductionParamsCBAttributes.CreateData("Reduction Params CB Data");
 
                 CreateUniformBuffer(Renderer::GetDevice(), m_DispatchParamsCBAttributes.GetSize(), "_ReductionParamsCB", &m_ReductionParamsCB);
                 StateTransitionDesc Barriers[] =
@@ -1384,7 +1455,7 @@ void VTFSRenderer::CreateComputePSOs()
 
                 m_SortParamsCBAttributes.AddUInt("NumElements");
                 m_SortParamsCBAttributes.AddUInt("ChunkSize");
-                m_SortParamsCBData = m_UpdateLightsCBAttributes.CreateData();
+                m_SortParamsCBData = m_SortParamsCBAttributes.CreateData("Sort Params CB Data");
 
                 CreateUniformBuffer(Renderer::GetDevice(), m_SortParamsCBAttributes.GetSize(), "_SortParamsCB", &m_SortParamsCB);
                 StateTransitionDesc Barriers[] =
@@ -1455,7 +1526,7 @@ void VTFSRenderer::CreateComputePSOs()
                 m_BVHParamsCBAttributes.AddUInt("PointLightLevels");
                 m_BVHParamsCBAttributes.AddUInt("SpotLightLevels");
                 m_BVHParamsCBAttributes.AddUInt("ChildLevel");
-                m_BVHParamsCBData = m_BVHParamsCBAttributes.CreateData();
+                m_BVHParamsCBData = m_BVHParamsCBAttributes.CreateData("BVH Params CB Data");
 
                 PSODesc.Name = "Build BVH Bottom PSO";
                 PSOCreateInfo.pCS = pBuildBVHBottomCS;
@@ -1554,6 +1625,7 @@ void VTFSRenderer::CreateComputePSOs()
 
 void VTFSRenderer::CreateDrawPSOs()
 {
+        LD_PROFILE_FUNCTION();
         GraphicsPipelineStateCreateInfo PSOCreateInfo;
         PipelineStateDesc& PSODesc = PSOCreateInfo.PSODesc;
         PSODesc.PipelineType = Diligent::PIPELINE_TYPE_GRAPHICS;
@@ -1567,15 +1639,8 @@ void VTFSRenderer::CreateDrawPSOs()
         PSOCreateInfo.GraphicsPipeline.DSVFormat = TEX_FORMAT_D32_FLOAT_S8X24_UINT;
         PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE_STATIC;
 
-        const LayoutElement LayoutElems[] =
-        {
-                LayoutElement{0, 0, 3, VT_FLOAT32, False}, // Attribute 0 - Vertex position
-                LayoutElement{1, 0, 3, VT_FLOAT32, False}, // Attribute 1 - Normal direction
-                LayoutElement{2, 0, 2, VT_FLOAT32, False} // Attribute 2 - Texture coordinates
-        };
-
-        PSOCreateInfo.GraphicsPipeline.InputLayout.LayoutElements = LayoutElems;
-        PSOCreateInfo.GraphicsPipeline.InputLayout.NumElements = _countof(LayoutElems);
+        PSOCreateInfo.GraphicsPipeline.InputLayout.LayoutElements = VertexLayoutElements;
+        PSOCreateInfo.GraphicsPipeline.InputLayout.NumElements = _countof(VertexLayoutElements);
 
         SamplerDesc SamLinearClampDesc
         {
@@ -1647,7 +1712,7 @@ void VTFSRenderer::CreateDrawPSOs()
                 m_BasicModelCameraCBAttributes.AddMat4("ModelViewProjection");
                 m_BasicModelCameraCBAttributes.AddMat4("ModelView");
                 m_BasicModelCameraCBAttributes.AddMat4("Model");
-                m_BasicModelCameraCBData = m_BasicModelCameraCBAttributes.CreateData();
+		m_BasicModelCameraCBData = m_BasicModelCameraCBAttributes.CreateData("Basic Model Camera CB Data");
 
                 CreateUniformBuffer(Renderer::GetDevice(), m_BasicModelCameraCBAttributes.GetSize(), "_BasicModelCameraCB", &m_BasicModelCameraCB);
                 StateTransitionDesc Barriers[] =
@@ -1656,6 +1721,7 @@ void VTFSRenderer::CreateDrawPSOs()
                 };
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
                 m_pOpaqueDepthPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "_BasicModelCameraCB")->Set(m_BasicModelCameraCB);
+                Assets::GetShaderLibrary().static_buffers["_BasicModelCameraCB"] = m_BasicModelCameraCB;
         }
         {
                 PSODesc.Name = "Cluster Samples PSO";
@@ -1714,6 +1780,7 @@ void VTFSRenderer::CreateDrawPSOs()
 
 void VTFSRenderer::CreateWholeScreenPSOs()
 {
+        LD_PROFILE_FUNCTION();
         GraphicsPipelineStateCreateInfo PSOCreateInfo;
         PipelineStateDesc& PSODesc = PSOCreateInfo.PSODesc;
         PSODesc.PipelineType = Diligent::PIPELINE_TYPE_GRAPHICS;
@@ -1774,6 +1841,7 @@ void VTFSRenderer::CreateWholeScreenPSOs()
 
 void VTFSRenderer::ReleaseAllRenderTargetResources()
 {
+        LD_PROFILE_FUNCTION();
         m_PerRenderTargetCache.clear();
 }
 }

@@ -8,6 +8,8 @@
 #include "Luddite/Graphics/RenderTarget.hpp"
 #include "Luddite/Graphics/StreamingBuffer.hpp"
 #include "Luddite/Graphics/Lights.hpp"
+#include <string>
+#include <unordered_map>
 
 namespace Luddite
 {
@@ -68,6 +70,7 @@ class LUDDITE_API VTFSRenderer
 
                 //DepthOnly Render Target
 
+                std::unordered_map<Handle<Shader>, Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> > ShaderSRBs;
 
 
 
@@ -98,6 +101,7 @@ class LUDDITE_API VTFSRenderer
                 glm::mat4 prev_projection_matrix;
 
                 //LightCullingDebugTexture
+		std::unordered_map<std::string, Diligent::RefCntAutoPtr<Diligent::IBuffer>> m_BufferMap;
         };
         PerRenderTargetData CreateRenderTargetData(const RenderTarget& render_target, const Camera& camera);
         void ComputeClusterGrid(PerRenderTargetData& data, const RenderTarget& render_target, const Camera& camera);
@@ -126,18 +130,18 @@ class LUDDITE_API VTFSRenderer
 
         // Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pComputeGridFrustumsPSO;
         // ShaderAttributeListDescription m_ComputeGridFrustumsDesc;
-        // ShaderAttributeListData m_ComputeGridFrustumsData;
+        // ShaderBufferData m_ComputeGridFrustumsData;
 
         //ComputeClusterGrid
         Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pComputeClusterGridPSO;
-        ShaderAttributeListDescription m_ClusterCBAttributes;
-        ShaderAttributeListData m_ClusterCBData;
+        ShaderBufferDescription m_ClusterCBAttributes;
+        ShaderBufferData m_ClusterCBData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_ClusterCB;
 
         //DepthPrePass
         Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pOpaqueDepthPSO;
-        ShaderAttributeListDescription m_BasicModelCameraCBAttributes;
-        ShaderAttributeListData m_BasicModelCameraCBData;
+        ShaderBufferDescription m_BasicModelCameraCBAttributes;
+        ShaderBufferData m_BasicModelCameraCBData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_BasicModelCameraCB;
 
         //Cluster Samples
@@ -151,23 +155,23 @@ class LUDDITE_API VTFSRenderer
 
         //Update Lights
         Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pUpdateLightsPSO;
-        ShaderAttributeListDescription m_UpdateLightsCBAttributes;
-        ShaderAttributeListData m_UpdateLightsCBData;
+        ShaderBufferDescription m_UpdateLightsCBAttributes;
+        ShaderBufferData m_UpdateLightsCBData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_UpdateLightsCB;
-        ShaderAttributeListDescription m_LightCountsCBAttributes;
-        ShaderAttributeListData m_LightCountsCBData;
+        ShaderBufferDescription m_LightCountsCBAttributes;
+        ShaderBufferData m_LightCountsCBData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_LightCountsCB;
 
         //ReduceLightsAABB1
         Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pReduceLightsAABB1PSO;
-        ShaderAttributeListDescription m_DispatchParamsCBAttributes;
-        ShaderAttributeListData m_DispatchParamsCBData;
+        ShaderBufferDescription m_DispatchParamsCBAttributes;
+        ShaderBufferData m_DispatchParamsCBData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_DispatchParamsCB;
 
         //ReduceLightsAABB2
         Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pReduceLightsAABB2PSO;
-        ShaderAttributeListDescription m_ReductionParamsCBAttributes;
-        ShaderAttributeListData m_ReductionParamsCBData;
+        ShaderBufferDescription m_ReductionParamsCBAttributes;
+        ShaderBufferData m_ReductionParamsCBData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_ReductionParamsCB;
 
         //ComputeLightMortonCodes
@@ -175,8 +179,8 @@ class LUDDITE_API VTFSRenderer
 
         //RadixSort
         Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pRadixSortPSO;
-        ShaderAttributeListDescription m_SortParamsCBAttributes;
-        ShaderAttributeListData m_SortParamsCBData;
+        ShaderBufferDescription m_SortParamsCBAttributes;
+        ShaderBufferData m_SortParamsCBData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_SortParamsCB;
 
         //MergePathPartitions
@@ -187,8 +191,8 @@ class LUDDITE_API VTFSRenderer
 
         //BuildBVHBottom
         Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pBuildBVHBottomPSO;
-        ShaderAttributeListDescription m_BVHParamsCBAttributes;
-        ShaderAttributeListData m_BVHParamsCBData;
+        ShaderBufferDescription m_BVHParamsCBAttributes;
+        ShaderBufferData m_BVHParamsCBData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_BVHParamsCB;
 
         //BuildBVHTop
@@ -271,8 +275,8 @@ class LUDDITE_API VTFSRenderer
 
         //Compute
 
-        ShaderAttributeListDescription m_CameraCBAttributes;
-        ShaderAttributeListData m_CameraCBData;
+        ShaderBufferDescription m_CameraCBAttributes;
+        ShaderBufferData m_CameraCBData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_CameraCB;
 };
 

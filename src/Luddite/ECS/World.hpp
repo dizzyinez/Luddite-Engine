@@ -57,9 +57,14 @@ class LUDDITE_API World
         }
 
         template <typename T, typename ... Args>
+        void UpdateSystemFixed(Args && ... args)
+        {
+                GetSystem<T>().FixedUpdate(std::forward<Args>(args)...);
+        }
+	
+        template <typename T, typename ... Args>
         void UpdateSystem(Args && ... args)
         {
-                //TODO: instrumentation here
                 GetSystem<T>().Update(std::forward<Args>(args)...);
         }
 
@@ -96,6 +101,11 @@ class LUDDITE_API World
         Entity GetEntityFromID(EntityID id)
         {
                 return Entity(id, &m_Registry);
+        }
+
+        bool IsEntityIDValid(EntityID id) const
+        {
+                return m_Registry.valid(id);
         }
 
 

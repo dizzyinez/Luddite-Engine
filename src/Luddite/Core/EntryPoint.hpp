@@ -18,7 +18,15 @@ int WINAPI WinMain(HINSTANCE instance, HINSTANCE hPrevInstance, LPSTR lpCmdLine,
         {
                 LD_LOG_ERROR("Luddite::CreateApplication returned nullptr!");
         }
-        app->Run();
+        try
+        {
+                app->Run();
+        }
+        catch (std::exception& e)
+        {
+                LD_LOG_ERROR("FATAL ERROR: {}", e.what());
+                return -1;
+        }
         LD_LOG_INFO("Exiting!");
         delete app;
 }
@@ -31,7 +39,16 @@ int main(int argc, char** argv)
         RegisterECSTypeIds();
         LD_LOG_INFO("Logger Initialized!");
         auto app = Luddite::CreateApplication();
-        app->Run();
+        try
+        {
+                app->Run();
+        }
+        catch (std::exception& e)
+        {
+                LD_LOG_ERROR("FATAL ERROR: {}", e.what());
+                return -1;
+        }
+        LD_LOG_INFO("Exiting!");
         delete app;
 }
 #endif //LD_PLATFORM_LINUX

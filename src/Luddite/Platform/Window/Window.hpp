@@ -45,6 +45,8 @@ class LUDDITE_API Window
         glm::mat4x4 GetSurfacePretransformMatrix(const glm::vec3& f3CameraViewAxis) const;
 
         #ifdef LD_ENABLE_IMGUI
+        void ImGuiSetup();
+        void ImGuiSetDefaultColors();
         inline std::unique_ptr<Diligent::ImGuiImplDiligent>& GetImGuiImpl() {return m_pImGuiImpl;}
         inline void ImGuiNewFrame()
         {

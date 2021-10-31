@@ -12,6 +12,17 @@ void LayerStack::UpdateLayers(double delta_time)
         for (auto layer : m_stack)
                 layer->Update(delta_time);
 }
+void LayerStack::UpdateLayersFixed(double delta_time)
+{
+        UpdateStack();
+        //handle events backwards so layers on top can clear events before lower layers
+        std::for_each(std::rbegin(m_stack), std::rend(m_stack), [](auto layer) {
+                        layer->HandleEvents();
+                });
+
+        for (auto layer : m_stack)
+                layer->FixedUpdate(delta_time);
+}
 void LayerStack::RenderLayers(double alpha, Luddite::RenderTarget window_render_target)
 {
         for (auto layer : m_stack)

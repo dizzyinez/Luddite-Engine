@@ -1,6 +1,7 @@
 #pragma once
 #include "Luddite/Core/pch.hpp"
 #include "Luddite/ECS/System.hpp"
+#include "Luddite/Core/Profiler.hpp"
 
 class S_RenderActiveCamera : public Luddite::System<S_RenderActiveCamera>
 {
@@ -8,6 +9,7 @@ class S_RenderActiveCamera : public Luddite::System<S_RenderActiveCamera>
 
         void Update(Luddite::World& world, Luddite::RenderTarget render_target)
         {
+                LD_PROFILE_FUNCTION();
                 auto active_camera = world.GetEntityFromID(world.GetSingleton<C_ActiveCamera>().ActiveCameraID);
                 auto& c_transform = active_camera.GetComponent<C_Transform3D>();
                 auto& c_camera = active_camera.GetComponent<C_Camera>();
