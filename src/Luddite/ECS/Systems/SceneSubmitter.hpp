@@ -2,6 +2,8 @@
 #include "Luddite/Core/pch.hpp"
 #include "Luddite/ECS/System.hpp"
 #include "Luddite/Core/Profiler.hpp"
+#include "Luddite/ECS/World.hpp"
+#include "Luddite/Graphics/Renderer.hpp"
 
 class S_SceneSubmitter : public Luddite::System<S_SceneSubmitter>
 {

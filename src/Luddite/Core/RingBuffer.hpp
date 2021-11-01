@@ -25,6 +25,11 @@ class LUDDITE_API RingBuffer
 			index += size;
 		return &m_Array[index];
 	}
+
+	void fill(const T& t)
+	{
+		std::fill(m_Array.data(), m_Array.data() + m_Array.size(), t);
+	}
 	static std::size_t getMaxSize() {return size;}
 	private:
 	std::size_t head = 0;
