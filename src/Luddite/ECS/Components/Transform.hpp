@@ -15,6 +15,6 @@ struct C_Transform3D
 
         glm::vec3 GetLookDirection() const
         {
-                return glm::vec4(0.f, 0.f, 1.f, 0.f) * glm::toMat4(glm::quat(Rotation));
+                return glm::toMat4(glm::quat(Rotation)) * glm::vec4(0.f, 0.f, 1.f, 0.f);
         }
 };

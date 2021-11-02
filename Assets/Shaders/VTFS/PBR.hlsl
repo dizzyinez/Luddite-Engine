@@ -87,7 +87,7 @@ float3 DoSpotLight(SurfaceProps props, SpotLight spot_light)
     float3 light_dir = normalize(spot_light.PositionWS - props.PosWS);
     float minCos = cos(spot_light.HalfAngle);
     float maxCos = lerp(minCos, 1, 0.5f);
-    float cosAngle = dot(spot_light.DirectionWS, -light_dir);
+    float cosAngle = dot(spot_light.DirectionWS.xyz, -light_dir);
     float spotIntensity = smoothstep(minCos, maxCos, cosAngle);
 
     //attenuation
