@@ -18,6 +18,9 @@ void Assets::Initialize()
 
         m_MaterialLibrary.Initialize();
         m_MaterialLibrary.InitializeFiles();
+
+        m_TextureLibrary.Initialize();
+        m_TextureLibrary.InitializeFiles();
 }
 
 void Assets::RefreshAssets()
@@ -26,6 +29,7 @@ void Assets::RefreshAssets()
         m_ModelLibrary.RefreshAssetsFromFilesystem();
         m_ShaderLibrary.RefreshAssetsFromFilesystem();
         m_MaterialLibrary.RefreshAssetsFromFilesystem();
+        m_TextureLibrary.RefreshAssetsFromFilesystem();
 }
 
 void Assets::MergeLoadedAssets()
@@ -34,5 +38,6 @@ void Assets::MergeLoadedAssets()
         m_ModelLibrary.MergeLoadedAssets();
         m_ShaderLibrary.MergeLoadedAssets();
         m_MaterialLibrary.MergeLoadedAssets();
+        m_TextureLibrary.MergeLoadedAssets();
 }
 }

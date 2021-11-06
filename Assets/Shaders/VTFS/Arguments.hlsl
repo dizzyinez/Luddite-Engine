@@ -10,6 +10,7 @@ struct CameraData
 {
     float4x4 Projection;
     float4x4 InverseProjection;
+    float4x4 InverseView;
     float2 ViewDimensions;
 };
 
@@ -17,7 +18,7 @@ cbuffer _CameraCB : register(b0)
 {
     CameraData CameraCB;
 };
-
+5
 struct BasicModelCameraData
 { 
     float4x4 ModelViewProjection;

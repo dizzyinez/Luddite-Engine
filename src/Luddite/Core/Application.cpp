@@ -16,8 +16,8 @@ void Application::Run()
 {
         LD_VERIFY(m_pMainWindow, "Main window was never created! Call the CreateMainWindow function in the app's constructor");
 
-        Renderer::Initialize();
         Assets::Initialize();
+        Renderer::Initialize();
 
         // m_SystemTable.pRuntimeObjectSystem = new RuntimeObjectSystem;
         // if (!m_SystemTable.pRuntimeObjectSystem->Initialise(&m_RCCppLogger, &m_SystemTable))
@@ -85,7 +85,7 @@ void Application::Run()
                 while (update_accululator > min_update_time)
                 {
                         update_accululator -= min_update_time;
-			OnFixedUpdate(fixed_dt);
+                        OnFixedUpdate(fixed_dt);
                         //update
                         // m_pMainWindow->GetLayerStack().UpdateLayers(0.016667f);
                 }

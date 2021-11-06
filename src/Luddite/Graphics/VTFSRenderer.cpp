@@ -55,6 +55,7 @@ void VTFSRenderer::Initialize(Diligent::TEXTURE_FORMAT RTVFormat)
 
         m_CameraCBAttributes.AddMat4("Projection");
         m_CameraCBAttributes.AddMat4("InverseProjection");
+        m_CameraCBAttributes.AddMat4("InverseView");
         m_CameraCBAttributes.AddVec2("ViewDimensions");
         m_CameraCBData = m_CameraCBAttributes.CreateData("Camera CB Attributes Data");
         Assets::GetShaderLibrary().static_buffers["_CameraCB"] = m_CameraCB;
@@ -64,13 +65,29 @@ void VTFSRenderer::Initialize(Diligent::TEXTURE_FORMAT RTVFormat)
         CreateDrawPSOs();
         CreateWholeScreenPSOs();
 
-	Assets::GetShaderLibrary().mutable_buffers.emplace("UniqueClusters"); 
-	Assets::GetShaderLibrary().mutable_buffers.emplace("ClusterFlags");
-	Assets::GetShaderLibrary().mutable_buffers.emplace("ClusterAABBs");
-	Assets::GetShaderLibrary().mutable_buffers.emplace("PointLightGrid");
-	Assets::GetShaderLibrary().mutable_buffers.emplace("SpotLightGrid");
-	Assets::GetShaderLibrary().mutable_buffers.emplace("PointLightIndexList");
-	Assets::GetShaderLibrary().mutable_buffers.emplace("SpotLightIndexList");
+        Assets::GetShaderLibrary().mutable_buffers.emplace("UniqueClusters");
+        Assets::GetShaderLibrary().mutable_buffers.emplace("ClusterFlags");
+        Assets::GetShaderLibrary().mutable_buffers.emplace("ClusterAABBs");
+        Assets::GetShaderLibrary().mutable_buffers.emplace("PointLightGrid");
+        Assets::GetShaderLibrary().mutable_buffers.emplace("SpotLightGrid");
+        Assets::GetShaderLibrary().mutable_buffers.emplace("PointLightIndexList");
+        Assets::GetShaderLibrary().mutable_buffers.emplace("SpotLightIndexList");
+
+        //Load textures
+        Assets::GetShaderLibrary().provided_textures.emplace("g_IrradianceMap");
+        Assets::GetShaderLibrary().provided_textures.emplace("g_RadianceMap");
+        Assets::GetShaderLibrary().provided_textures.emplace("g_Skybox");
+        Handle<Texture> irradiance_map = Assets::GetTextureLibrary().GetAsset(6739077507378108517ULL);
+        irradiance_map->TransitionToShaderResource();
+        m_TextureMap["g_IrradianceMap"] = irradiance_map;
+
+        Handle<Texture> radiance_map = Assets::GetTextureLibrary().GetAsset(696320760117772384ULL);
+        radiance_map->TransitionToShaderResource();
+        m_TextureMap["g_RadianceMap"] = radiance_map;
+
+        Handle<Texture> skybox = Assets::GetTextureLibrary().GetAsset(18060254626779487935ULL);
+        skybox->TransitionToShaderResource();
+        m_TextureMap["g_Skybox"] = skybox;
 }
 
 void ClearBufferUInt(IBuffer* buffer)
@@ -106,15 +123,17 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
         //Map Camera CB
         glm::mat4 projection = render_target.GetProjectionMatrix(camera);
         glm::mat4 inverse_projection = glm::inverse(projection);
-        m_CameraCBAttributes.SetMat4(m_CameraCBData, "Projection", projection);
-        m_CameraCBAttributes.SetMat4(m_CameraCBData, "InverseProjection", inverse_projection);
-        m_CameraCBAttributes.SetVec2(m_CameraCBData, "ViewDimensions", glm::vec2(render_target.width, render_target.height));
-        m_CameraCBAttributes.MapBuffer(m_CameraCBData, m_CameraCB);
-        PerRenderTargetData* data = GetRenderTargetData(render_target, camera, projection);
-
         //Map Camera View Projection Matrix
         glm::mat4 view = render_target.GetViewMatrix(camera);
         glm::mat4 view_projection = projection * view;
+        glm::mat4 inverse_view = glm::inverse(view);
+
+        m_CameraCBAttributes.SetMat4(m_CameraCBData, "Projection", projection);
+        m_CameraCBAttributes.SetMat4(m_CameraCBData, "InverseProjection", inverse_projection);
+        m_CameraCBAttributes.SetMat4(m_CameraCBData, "InverseView", inverse_view);
+        m_CameraCBAttributes.SetVec2(m_CameraCBData, "ViewDimensions", glm::vec2(render_target.width, render_target.height));
+        m_CameraCBAttributes.MapBuffer(m_CameraCBData, m_CameraCB);
+        PerRenderTargetData* data = GetRenderTargetData(render_target, camera, projection);
 
         auto colorRTV = render_target.RTV;
         auto depthZRTV = data->pDepthZTexture->GetDefaultView(TEXTURE_VIEW_RENDER_TARGET);
@@ -521,10 +540,10 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
         {
                 for (auto material_pair : render_scene.m_Meshes)
                 {
-			if (!material_pair.first->m_pShader.valid())
-				continue;
-			if (!material_pair.first->m_pShader->m_pPSO)
-				continue;
+                        if (!material_pair.first->m_pShader.valid())
+                                continue;
+                        if (!material_pair.first->m_pShader->m_pPSO)
+                                continue;
                         Renderer::GetContext()->SetPipelineState(material_pair.first->m_pShader->m_pPSO);
                         auto it = data->ShaderSRBs.find(material_pair.first->m_pShader);
                         RefCntAutoPtr<IShaderResourceBinding> srb;
@@ -535,20 +554,35 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                                 //         srb->GetVariableByName(SHADER_TYPE_VERTEX, "Properties")->Set(material_pair.first->m_pShader->m_PropertiesBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
                                 // if (material_pair.first->m_pShader->pixel_shader_uses_properties)
                                 //         srb->GetVariableByName(SHADER_TYPE_PIXEL, "Properties")->Set(material_pair.first->m_pShader->m_PropertiesBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
-				for (const std::string& buffer_name : material_pair.first->m_pShader->m_MutableBuffersVertex)
-				{
-					LD_LOG_INFO("{}", buffer_name);
-					auto buff = data->m_BufferMap.find(buffer_name);
-					if (buff != data->m_BufferMap.end())
-						srb->GetVariableByName(SHADER_TYPE_VERTEX, buff->first.c_str())->Set(buff->second->GetDefaultView(Diligent::BUFFER_VIEW_SHADER_RESOURCE));
-				}
-				for (const std::string& buffer_name : material_pair.first->m_pShader->m_MutableBuffersPixel)
-				{
-					LD_LOG_INFO("{}", buffer_name);
-					auto buff = data->m_BufferMap.find(buffer_name);
-					if (buff != data->m_BufferMap.end())
-						srb->GetVariableByName(SHADER_TYPE_PIXEL, buff->first.c_str())->Set(buff->second->GetDefaultView(Diligent::BUFFER_VIEW_SHADER_RESOURCE));
-				}
+                                for (const std::string& buffer_name : material_pair.first->m_pShader->m_MutableBuffersVertex)
+                                {
+                                        LD_LOG_INFO("{}", buffer_name);
+                                        auto buff = data->m_BufferMap.find(buffer_name);
+                                        if (buff != data->m_BufferMap.end())
+                                                srb->GetVariableByName(SHADER_TYPE_VERTEX, buff->first.c_str())->Set(buff->second->GetDefaultView(Diligent::BUFFER_VIEW_SHADER_RESOURCE));
+                                }
+                                for (const std::string& buffer_name : material_pair.first->m_pShader->m_MutableBuffersPixel)
+                                {
+                                        LD_LOG_INFO("{}", buffer_name);
+                                        auto buff = data->m_BufferMap.find(buffer_name);
+                                        if (buff != data->m_BufferMap.end())
+                                                srb->GetVariableByName(SHADER_TYPE_PIXEL, buff->first.c_str())->Set(buff->second->GetDefaultView(Diligent::BUFFER_VIEW_SHADER_RESOURCE));
+                                }
+                                //for (const std::string& texture_name : material_pair.first->m_pShader->m_PropertiesBufferDescription.TexturesVertexShader
+                                for (const std::string& texture_name : material_pair.first->m_pShader->m_ProvidedTexturesVertex)
+                                {
+                                        LD_LOG_INFO("{}", texture_name);
+                                        auto tex = m_TextureMap.find(texture_name);
+                                        if (tex != m_TextureMap.end())
+                                                srb->GetVariableByName(SHADER_TYPE_VERTEX, tex->first.c_str())->Set(tex->second->GetTexture()->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
+                                }
+                                for (const std::string& texture_name : material_pair.first->m_pShader->m_ProvidedTexturesPixel)
+                                {
+                                        LD_LOG_INFO("{}", texture_name);
+                                        auto tex = m_TextureMap.find(texture_name);
+                                        if (tex != m_TextureMap.end())
+                                                srb->GetVariableByName(SHADER_TYPE_PIXEL, tex->first.c_str())->Set(tex->second->GetTexture()->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
+                                }
                                 data->ShaderSRBs.insert({material_pair.first->m_pShader, srb});
                         }
                         else
@@ -806,9 +840,9 @@ VTFSRenderer::PerRenderTargetData VTFSRenderer::CreateRenderTargetData(const Ren
         m_pDebugDepthPSO->CreateShaderResourceBinding(&data.DebugDepthSRB, true);
         data.DebugDepthSRB->GetVariableByName(SHADER_TYPE_PIXEL, "g_SubpassInputDepthZ")->Set(data.pDepthZTexture->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
 
-	data.m_BufferMap["PointLights"] = m_pPointLightsBuffer->GetBuffer();
-	data.m_BufferMap["SpotLights"] = m_pSpotLightsBuffer->GetBuffer();
-	data.m_BufferMap["DirectionalLights"] = m_pDirectionalLightsBuffer->GetBuffer();
+        data.m_BufferMap["PointLights"] = m_pPointLightsBuffer->GetBuffer();
+        data.m_BufferMap["SpotLights"] = m_pSpotLightsBuffer->GetBuffer();
+        data.m_BufferMap["DirectionalLights"] = m_pDirectionalLightsBuffer->GetBuffer();
 
         ComputeClusterGrid(data, render_target, camera);
         return data;
@@ -855,7 +889,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         m_ClusterCBAttributes.SetFloat(m_ClusterCBData, "near_k", 1.0f + sD);
         m_ClusterCBAttributes.SetFloat(m_ClusterCBData, "log_grid_dim_y", log_dim_y);
         m_ClusterCBAttributes.MapBuffer(m_ClusterCBData, m_ClusterCB);
-	//.Assets::GetShaderLibrary().static_buffers["
+        //.Assets::GetShaderLibrary().static_buffers["
 
         BufferDesc BuffDesc;
         BuffDesc.BindFlags = BIND_SHADER_RESOURCE | BIND_UNORDERED_ACCESS;
@@ -876,14 +910,14 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         BuffDesc.uiSizeInBytes = sizeof(uint32_t) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Unique Clusters";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.UniqueClustersBuffer);
-	data.m_BufferMap["UniqueClusters"] = data.UniqueClustersBuffer;
+        data.m_BufferMap["UniqueClusters"] = data.UniqueClustersBuffer;
         data.FindUniqueClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWUniqueClusters")->Set(data.UniqueClustersBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "UniqueClusters")->Set(data.UniqueClustersBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "UniqueClusters")->Set(data.UniqueClustersBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
         BuffDesc.Name = "Clusters Flags";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.ClusterFlagsBuffer);
-	data.m_BufferMap["ClusterFlags"] = data.ClusterFlagsBuffer;
+        data.m_BufferMap["ClusterFlags"] = data.ClusterFlagsBuffer;
         data.ClusterSamplesSRB->GetVariableByName(SHADER_TYPE_PIXEL, "RWClusterFlags")->Set(data.ClusterFlagsBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.FindUniqueClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "ClusterFlags")->Set(data.ClusterFlagsBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
@@ -891,7 +925,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         BuffDesc.uiSizeInBytes = sizeof(AABB) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Cluster AABBs";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.ClusterAABBsBuffer);
-	data.m_BufferMap["ClusterAABBs"] = data.ClusterAABBsBuffer;
+        data.m_BufferMap["ClusterAABBs"] = data.ClusterAABBsBuffer;
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "ClusterAABBs")->Set(data.ClusterAABBsBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "ClusterAABBs")->Set(data.ClusterAABBsBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
@@ -901,14 +935,14 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         BuffDesc.uiSizeInBytes = sizeof(glm::uvec2) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Point Light Grid";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.PointLightGridBuffer);
-	data.m_BufferMap["PointLightGrid"] = data.PointLightGridBuffer;
+        data.m_BufferMap["PointLightGrid"] = data.PointLightGridBuffer;
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightGrid")->Set(data.PointLightGridBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightGrid")->Set(data.PointLightGridBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.BasicMeshOpaqueLightingSRB->GetVariableByName(SHADER_TYPE_PIXEL, "PointLightGrid")->Set(data.PointLightGridBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
         BuffDesc.Name = "Spot Light Grid";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.SpotLightGridBuffer);
-	data.m_BufferMap["SpotLightGrid"] = data.SpotLightGridBuffer;
+        data.m_BufferMap["SpotLightGrid"] = data.SpotLightGridBuffer;
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWSpotLightGrid")->Set(data.SpotLightGridBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWSpotLightGrid")->Set(data.SpotLightGridBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
 
@@ -916,7 +950,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         BuffDesc.uiSizeInBytes = sizeof(uint32_t) * AVERAGE_OVERLAPPING_LIGHTS_PER_CLUSTER * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Point Light Index List";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.PointLightIndexListBuffer);
-	data.m_BufferMap["PointLightIndexList"] = data.PointLightIndexListBuffer;
+        data.m_BufferMap["PointLightIndexList"] = data.PointLightIndexListBuffer;
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightIndexList")->Set(data.PointLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightIndexList")->Set(data.PointLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightIndexList")->Set(data.PointLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
@@ -924,7 +958,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
 
         BuffDesc.Name = "Spot Light Index List";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.SpotLightIndexListBuffer);
-	data.m_BufferMap["SpotLightIndexList"] = data.SpotLightIndexListBuffer;
+        data.m_BufferMap["SpotLightIndexList"] = data.SpotLightIndexListBuffer;
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWSpotLightIndexList")->Set(data.SpotLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWSpotLightIndexList")->Set(data.SpotLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         // data.BasicMeshOpaqueLightingSRB->GetVariableByName(SHADER_TYPE_PIXEL, "SpotLightIndexList")->Set(data.SpotLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
@@ -1063,11 +1097,11 @@ void VTFSRenderer::CreateLightBuffers()
 {
         LD_PROFILE_FUNCTION();
         m_pPointLightsBuffer = std::make_unique<StreamingBuffer<PointLightGPU> >(Renderer::GetDevice(), BIND_UNORDERED_ACCESS | BIND_SHADER_RESOURCE, BUFFER_MODE_STRUCTURED, MAX_POINT_LIGHTS, "Point Lights Buffer");
-	Assets::GetShaderLibrary().mutable_buffers.emplace("PointLights");
+        Assets::GetShaderLibrary().mutable_buffers.emplace("PointLights");
         m_pSpotLightsBuffer = std::make_unique<StreamingBuffer<SpotLightGPU> >(Renderer::GetDevice(), BIND_UNORDERED_ACCESS | BIND_SHADER_RESOURCE, BUFFER_MODE_STRUCTURED, MAX_SPOT_LIGHTS, "Spot Lights Buffer");
-	Assets::GetShaderLibrary().mutable_buffers.emplace("SpotLights");
+        Assets::GetShaderLibrary().mutable_buffers.emplace("SpotLights");
         m_pDirectionalLightsBuffer = std::make_unique<StreamingBuffer<DirectionalLightGPU> >(Renderer::GetDevice(), BIND_UNORDERED_ACCESS | BIND_SHADER_RESOURCE, BUFFER_MODE_STRUCTURED, MAX_DIRECTIONAL_LIGHTS, "Directional Lights Buffer");
-	Assets::GetShaderLibrary().mutable_buffers.emplace("DirectionalLights");
+        Assets::GetShaderLibrary().mutable_buffers.emplace("DirectionalLights");
 
         BufferDesc BuffDesc;
         BuffDesc.BindFlags = BIND_SHADER_RESOURCE | BIND_UNORDERED_ACCESS;
@@ -1270,10 +1304,10 @@ void VTFSRenderer::CreateComputePSOs()
 
                 // m_ClusterCB.Release();
                 CreateUniformBuffer(Renderer::GetDevice(), m_ClusterCBAttributes.GetSize(), "_ClusterCB", &m_ClusterCB);
-		Assets::GetShaderLibrary().static_buffers["_ClusterCB"] = m_ClusterCB;
+                Assets::GetShaderLibrary().static_buffers["_ClusterCB"] = m_ClusterCB;
                 // m_CameraCB.Release();
                 CreateUniformBuffer(Renderer::GetDevice(), m_CameraCBAttributes.GetSize(), "_CameraCB", &m_CameraCB);
-		Assets::GetShaderLibrary().static_buffers["_CameraCB"] = m_CameraCB;
+                Assets::GetShaderLibrary().static_buffers["_CameraCB"] = m_CameraCB;
 
                 StateTransitionDesc Barriers[] =
                 {
@@ -1342,7 +1376,7 @@ void VTFSRenderer::CreateComputePSOs()
                 m_UpdateLightsCBData = m_UpdateLightsCBAttributes.CreateData("Update Lights CB Data");
 
                 CreateUniformBuffer(Renderer::GetDevice(), m_LightCountsCBAttributes.GetSize(), "_LightCountsCB", &m_LightCountsCB);
-		Assets::GetShaderLibrary().static_buffers["_LightCountsCB"] = m_LightCountsCB;
+                Assets::GetShaderLibrary().static_buffers["_LightCountsCB"] = m_LightCountsCB;
                 CreateUniformBuffer(Renderer::GetDevice(), m_UpdateLightsCBAttributes.GetSize(), "UpdateLightsCB", &m_UpdateLightsCB);
                 StateTransitionDesc Barriers[] =
                 {
@@ -1712,7 +1746,7 @@ void VTFSRenderer::CreateDrawPSOs()
                 m_BasicModelCameraCBAttributes.AddMat4("ModelViewProjection");
                 m_BasicModelCameraCBAttributes.AddMat4("ModelView");
                 m_BasicModelCameraCBAttributes.AddMat4("Model");
-		m_BasicModelCameraCBData = m_BasicModelCameraCBAttributes.CreateData("Basic Model Camera CB Data");
+                m_BasicModelCameraCBData = m_BasicModelCameraCBAttributes.CreateData("Basic Model Camera CB Data");
 
                 CreateUniformBuffer(Renderer::GetDevice(), m_BasicModelCameraCBAttributes.GetSize(), "_BasicModelCameraCB", &m_BasicModelCameraCB);
                 StateTransitionDesc Barriers[] =

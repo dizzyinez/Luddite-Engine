@@ -16,15 +16,15 @@ class LUDDITE_API AssetRefCounter
         bool stay_loaded = false;
         void IncrementReferences() {m_ReferenceCount++;}
         void DecrementReferences() {m_ReferenceCount--;}
-	T* m_pAsset = nullptr;
+        T* m_pAsset = nullptr;
         friend class Handle<T>;
 
         protected:
         //AssetRefCounter(const AssetRefCounter& other) = delete;
 
         public:
-	AssetRefCounter() {};
-	AssetRefCounter(T* asset) : m_pAsset(asset) {}
+        AssetRefCounter() {};
+        AssetRefCounter(T* asset) : m_pAsset(asset) {}
         AssetRefCounter& operator=(const AssetRefCounter& other) = default;
         std::mutex m_Mutex{};
 
@@ -45,40 +45,40 @@ class LUDDITE_API AssetRefCounter
                 std::lock_guard lock{m_Mutex};
                 for (auto& pair : m_ReloadFunctions)
                         pair.second(pair.first, m_pAsset, other);
-		if (m_pAsset)
-			delete m_pAsset;
-                m_pAsset=other;
+                if (m_pAsset)
+                        delete m_pAsset;
+                m_pAsset = other;
                 m_Version++;
         }
 
-	T* get() {return m_pAsset;}
-	const T* get() const {return m_pAsset;}
-	
-	void set(T* p) 
-	{
-		if (m_pAsset)
-			delete m_pAsset;
-		m_pAsset = p;
-	}
+        T* get() {return m_pAsset;}
+        const T* get() const {return m_pAsset;}
 
-	void release()
-	{
-		if (m_pAsset)
-			delete m_pAsset;
-		m_pAsset = nullptr;
-	}
-	
-	bool valid() const {return m_pAsset != nullptr;}
+        void set(T* p)
+        {
+                if (m_pAsset)
+                        delete m_pAsset;
+                m_pAsset = p;
+        }
 
-	unsigned int GetVersion() const {return m_Version;}
+        void release()
+        {
+                if (m_pAsset)
+                        delete m_pAsset;
+                m_pAsset = nullptr;
+        }
+
+        bool valid() const {return m_pAsset != nullptr;}
+
+        unsigned int GetVersion() const {return m_Version;}
 
         const bool StayLoaded() const {return stay_loaded;}
         const int GetReferenceCount() const {return m_ReferenceCount;}
         ~AssetRefCounter()
-	{
-		if (m_pAsset)
-			delete m_pAsset;
-	}
+        {
+                if (m_pAsset)
+                        delete m_pAsset;
+        }
 };
 
 template <class T>
@@ -100,9 +100,13 @@ class Handle
                 m_Version = other.m_Version;
         }
         Handle(AssetRefCounter<T>* p)
-                : m_pAssetRefCounter(p), m_Version(p->m_Version)
+                : m_pAssetRefCounter(p)
         {
-                m_pAssetRefCounter->IncrementReferences();
+                if (m_pAssetRefCounter)
+                {
+                        m_Version = p->m_Version;
+                        m_pAssetRefCounter->IncrementReferences();
+                }
         }
         ~Handle()
         {
@@ -119,25 +123,25 @@ class Handle
         }
 
         T* get() const {return m_pAssetRefCounter->get();}
-	AssetRefCounter<T>* getCounter() const {return m_pAssetRefCounter;}
+        AssetRefCounter<T>* getCounter() const {return m_pAssetRefCounter;}
 
         Handle& operator=(const Handle& other)
         {
-		if (m_pAssetRefCounter)
-		{
-	                if (m_pAssetRefCounter->get() != other.m_pAssetRefCounter->get())
-        	        {
-	                        if (m_pAssetRefCounter)
-	                                m_pAssetRefCounter->DecrementReferences();
-	                        m_pAssetRefCounter = other.getCounter();
-            	            if (m_pAssetRefCounter)
-	                                m_pAssetRefCounter->IncrementReferences();
-	                }
-			else 
-				m_pAssetRefCounter = other.getCounter();
-		}
-		else 
-			m_pAssetRefCounter = other.getCounter();
+                if (m_pAssetRefCounter)
+                {
+                        if (m_pAssetRefCounter->get() != other.m_pAssetRefCounter->get())
+                        {
+                                if (m_pAssetRefCounter)
+                                        m_pAssetRefCounter->DecrementReferences();
+                                m_pAssetRefCounter = other.getCounter();
+                                if (m_pAssetRefCounter)
+                                        m_pAssetRefCounter->IncrementReferences();
+                        }
+                        else
+                                m_pAssetRefCounter = other.getCounter();
+                }
+                else
+                        m_pAssetRefCounter = other.getCounter();
                 m_Version = other.m_Version;
                 return *this;
         }
@@ -154,7 +158,7 @@ class Handle
                 m_Version = asset->m_Version;
                 return *this;
         }
-	inline bool valid() const {return m_pAssetRefCounter && m_pAssetRefCounter->valid();}
+        inline bool valid() const {return m_pAssetRefCounter && m_pAssetRefCounter->valid();}
         inline bool operator==(const Handle& other) const {return m_pAssetRefCounter == other.m_pAssetRefCounter && m_Version == other.m_Version;}
         inline bool operator!=(const Handle& other) const {return m_pAssetRefCounter != other.m_pAssetRefCounter && m_Version != other.m_Version;}
 };

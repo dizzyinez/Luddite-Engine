@@ -16,8 +16,10 @@ struct LUDDITE_API Shader
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_PropertiesBuffer;
         bool vertex_shader_uses_properties = false;
         bool pixel_shader_uses_properties = false;
-	std::vector<std::string> m_MutableBuffersVertex;
-	std::vector<std::string> m_MutableBuffersPixel;
+        std::vector<std::string> m_MutableBuffersVertex;
+        std::vector<std::string> m_MutableBuffersPixel;
+        std::vector<std::string> m_ProvidedTexturesVertex;
+        std::vector<std::string> m_ProvidedTexturesPixel;
         // Diligent::RefCntAutoPtr<Diligent::ITexture> m_pTexture;// {nullptr};
         // void TransitionToShaderResource();
         // bool Valid() const {return m_pTexture;}
@@ -32,5 +34,6 @@ class LUDDITE_API ShaderLibrary : public AssetLibrary<Shader, ShaderLibrary>
         // virtual void AfterLoadProcessing(BasicModel* pModel) override;
         std::unordered_map<std::string, Diligent::RefCntAutoPtr<Diligent::IBuffer> > static_buffers;
         std::unordered_set<std::string> mutable_buffers;
+        std::unordered_set<std::string> provided_textures;
 };
 }

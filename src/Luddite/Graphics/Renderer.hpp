@@ -37,6 +37,7 @@ class LUDDITE_API Renderer
         static void SubmitMesh(Mesh* mesh, const glm::mat4& transform, Handle<Material> material);
         static void SubmitPointLight(const PointLightCPU& point_light);
         static void SubmitSpotLight(const SpotLightCPU& spot_light);
+	static void SubmitDirectionalLight(const DirectionalLightCPU& directional_light);
         static void EndScene();
         static void Draw(RenderTarget& render_target, const Camera& camera);
         static void Present();

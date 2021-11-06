@@ -8,8 +8,6 @@
 #include "Luddite/Graphics/RenderTarget.hpp"
 #include "Luddite/Graphics/StreamingBuffer.hpp"
 #include "Luddite/Graphics/Lights.hpp"
-#include <string>
-#include <unordered_map>
 
 namespace Luddite
 {
@@ -101,9 +99,13 @@ class LUDDITE_API VTFSRenderer
                 glm::mat4 prev_projection_matrix;
 
                 //LightCullingDebugTexture
-		std::unordered_map<std::string, Diligent::RefCntAutoPtr<Diligent::IBuffer>> m_BufferMap;
+                std::unordered_map<std::string, Diligent::RefCntAutoPtr<Diligent::IBuffer> > m_BufferMap;
         };
         PerRenderTargetData CreateRenderTargetData(const RenderTarget& render_target, const Camera& camera);
+
+        std::unordered_map<std::string, Handle<Texture> > m_TextureMap;
+        //std::unordered_map<std::string, Diligent::RefCntAutoPtr<Diligent::ITexture> > m_TextureMap;
+
         void ComputeClusterGrid(PerRenderTargetData& data, const RenderTarget& render_target, const Camera& camera);
         bool MergeSort(Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> pMergePathPartitionsSRB,
                        Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> pMergePathPartitionsSwappedSRB,

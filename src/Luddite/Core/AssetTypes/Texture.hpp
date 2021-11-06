@@ -17,9 +17,9 @@ struct LUDDITE_API Texture
 class LUDDITE_API TextureLibrary : public AssetLibrary<Texture, TextureLibrary>
 {
         public:
-        // virtual void Initialize() override;
-        virtual Texture* LoadFromFile(const std::filesystem::path& path) override;
+        virtual void Initialize() override;
         // virtual void AfterLoadProcessing(BasicModel* pModel) override;
+        virtual Texture* LoadFromFile(const std::filesystem::path& path) override;
         private:
 };
 }

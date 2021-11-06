@@ -8,9 +8,6 @@
     #define OBJL_CONSOLE_OUTPUT
 #endif // LD_DEBUG
 
-#define TINYOBJLOADER_IMPLEMENTATION
-#include "OBJ_Loader.h"
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -61,7 +58,8 @@ Model* ModelLibrary::LoadFromFile(const std::filesystem::path& path)
                         aiProcess_Triangulate |
                         aiProcess_JoinIdenticalVertices |
                         aiProcess_SortByPType |
-                        aiProcess_MakeLeftHanded
+                        aiProcess_MakeLeftHanded |
+                        aiProcess_CalcTangentSpace
                         );
         importer.ApplyPostProcessing(aiProcess_CalcTangentSpace);
         LD_VERIFY(scene != nullptr, "Error loading model: {}", importer.GetErrorString());

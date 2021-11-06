@@ -5,6 +5,18 @@ float4 ClipToView(float4 clip)
     return view;
 }
 
+float4 ViewToWorld(float4 view)
+{
+    return mul(CameraCB.InverseView, view);
+}
+
+float4 ClipToWorld(float4 clip)
+{
+    float4 view = mul(CameraCB.InverseProjection, clip);
+    view = view / view.w;
+    return mul(CameraCB.InverseView, view);
+}
+
 float4 ScreenToView(float4 screen)
 {
     float2 tex_coord = screen.xy / CameraCB.ViewDimensions;
@@ -12,24 +24,19 @@ float4 ScreenToView(float4 screen)
     return ClipToView(clip);
 }
 
-float4 LocalToClipPos(float4 object)
+float4 LocalToClip(float4 local)
 {
-    return mul(BasicModelCameraCB.ModelViewProjection, object);
+    return mul(BasicModelCameraCB.ModelViewProjection, local);
 }
 
-float4 LocalToClipPos(float3 object)
+float4 LocalToView(float4 local)
 {
-    return mul(BasicModelCameraCB.ModelViewProjection, float4(object, 1.0f));
+    return mul(BasicModelCameraCB.ModelView, local);
 }
 
-float4 LocalToViewPos(float4 object)
+float4 LocalToWorld(float4 local)
 {
-    return mul(BasicModelCameraCB.ModelView, object);
-}
-
-float4 LocalToViewPos(float3 object)
-{
-    return mul(BasicModelCameraCB.ModelView, float4(object, 1.0f));
+    return mul(BasicModelCameraCB.Model, local);
 }
 
 //computes a plane from 3 noncollinear counter-clockwise points

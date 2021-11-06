@@ -18,8 +18,10 @@ namespace Luddite
 struct LUDDITE_API ShaderBufferData
 {
         std::string Name{};
+        std::vector<Handle<Texture> > TexturesVertexShader;
+        std::vector<Handle<Texture> > TexturesPixelShader;
         // std::unordered_map<std::string, Texture::Handle> texture_map;
-        // Texture::Handle GetTexture(const std::string& id) {return texture_map[id];}
+        // Handle<Texture> GetTexture(const std::string& id) {return texture_map[id];}
         // void SetTexture(const std::string& id, const Texture::Handle handle) {texture_map[id] = handle;}
 
         char* Data = nullptr;
@@ -43,7 +45,8 @@ struct LUDDITE_API ShaderBufferData
                 }
                 memcpy(Data, other.Data, Size);
                 Name = other.Name;
-                // texture_map = other.texture_map;
+                TexturesVertexShader = other.TexturesVertexShader;
+                TexturesPixelShader = other.TexturesPixelShader;
                 return *this;
         }
 };
@@ -96,9 +99,15 @@ struct LUDDITE_API ShaderBufferDescription
                 std::size_t offset;
         };
         std::map<std::string, BufferValue> Attributes;
-        // std::vector<std::string> Textures;
+        std::vector<std::string> TexturesVertexShader;
+        std::vector<std::string> TexturesPixelShader;
 
-        // inline void AddTexture(const std::string& name) {Textures.emplace_back(name);}
+        inline void AddTextureVertexShader(const std::string& name) {TexturesVertexShader.emplace_back(name);}
+        inline void AddTexturePixelShader(const std::string& name) {TexturesPixelShader.emplace_back(name);}
+        void SetTextureVertexShader(ShaderBufferData& data, const std::string& name, Handle<Texture> texture);
+        void SetTexturePixelShader(ShaderBufferData& data, const std::string& name, Handle<Texture> texture);
+        Handle<Texture> GetTextureVertexShader(ShaderBufferData& data, const std::string& name);
+        Handle<Texture> GetTexturePixelShader(ShaderBufferData& data, const std::string& name);
 
         #define VALUE_TYPE_DECLARATION(Name, Type, Default) inline void Add ## Name(const std::string& name) \
         { \
@@ -131,7 +140,7 @@ struct LUDDITE_API ShaderBufferDescription
         VALUE_TYPES_DECLARE
         #undef VALUE_TYPE_DECLARATION
 
-        #define VALUE_TYPE_DECLARATION(Name, Type, Default) inline Type Get ## Name(ShaderBufferData & data, const std::string& name) const\
+        #define VALUE_TYPE_DECLARATION(Name, Type, Default) inline Type Get ## Name(ShaderBufferData & data, const std::string& name) const \
         { \
                 std::size_t offset = Attributes.find(name)->second.offset; \
                 Type ret; \
@@ -146,8 +155,8 @@ struct LUDDITE_API ShaderBufferDescription
                 return m_Size;
         }
         void MapBuffer(ShaderBufferData & data, Diligent::RefCntAutoPtr<Diligent::IBuffer> buffer) const;
-        // void MapTextures(ShaderAttributeListData& data, Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb);
-        void SetDefaultAttribs(ShaderBufferData & data) const;
+        void MapTextures(ShaderBufferData& data, Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb);
+        void SetDefaultAttribs(ShaderBufferData& data) const;
 
         ShaderBufferData CreateData(const std::string& name) const;
         private:

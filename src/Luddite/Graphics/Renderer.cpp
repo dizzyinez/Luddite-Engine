@@ -98,6 +98,10 @@ void Renderer::SubmitSpotLight(const SpotLightCPU& spot_light)
 {
 	m_RenderScene.m_SpotLights.push_back(spot_light);
 }
+void Renderer::SubmitDirectionalLight(const DirectionalLightCPU& directional_light)
+{
+	m_RenderScene.m_DirectionalLights.push_back(directional_light);
+}
 
 void Renderer::EndScene()
 {
