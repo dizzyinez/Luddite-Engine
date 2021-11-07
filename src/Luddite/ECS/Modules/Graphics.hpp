@@ -55,7 +55,7 @@ struct Components
 {
         Components(flecs::world& w)
         {
-                w.module<Components>("Components");
+                w.module<Components>();
                 w.component<Camera>("Camera");
                 w.component<PointLight>("Point Light");
                 w.component<SpotLight>("Spot Light");
@@ -70,7 +70,7 @@ struct Systems
         {
                 w.import<Transform3D::Components>();
                 w.import<Components>();
-                w.module<Systems>("Systems");
+                w.module<Systems>();
                 w.system<const RenderTarget, const Camera, const Transform3D::Translation, const Transform3D::Rotation>("Begin Scene")
                 .iter([](flecs::iter it){
                                 Luddite::Renderer::BeginScene();

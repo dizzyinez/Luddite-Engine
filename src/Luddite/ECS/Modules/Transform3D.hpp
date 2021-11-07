@@ -26,7 +26,7 @@ struct Components
 {
         Components(flecs::world& w)
         {
-                w.module<Components>("Components");
+                w.module<Components>();
                 w.component<Translation>();
                 w.component<Rotation>();
                 w.component<Scale>();
@@ -37,7 +37,7 @@ struct Systems
 {
         Systems(flecs::world& w)
         {
-                w.module<Components>("Systems");
+                w.module<Components>();
         }
 };
 }

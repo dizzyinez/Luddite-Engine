@@ -15,9 +15,8 @@
 #include "Luddite/Core/Profiler.hpp"
 
 //ECS
-#include "Luddite/ECS/Components/Components.hpp"
-#include "Luddite/ECS/World.hpp"
-#include "Luddite/ECS/Systems/Systems.hpp"
+#include "Luddite/ECS/Modules/Transform3D.hpp"
+#include "Luddite/ECS/Modules/Graphics.hpp"
 
 
 
