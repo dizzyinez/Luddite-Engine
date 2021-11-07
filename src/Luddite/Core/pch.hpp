@@ -24,7 +24,7 @@
 #include <unordered_set>
 #include <stack>
 
-#include "entt/entt.hpp"
+#include "flecs.h"
 
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/glm.hpp"

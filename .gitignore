@@ -36,3 +36,5 @@
 
 # Build
 bin/*
+Debug/*
+.cache/*

@@ -96,11 +96,11 @@ void Renderer::SubmitPointLight(const PointLightCPU& point_light)
 }
 void Renderer::SubmitSpotLight(const SpotLightCPU& spot_light)
 {
-	m_RenderScene.m_SpotLights.push_back(spot_light);
+        m_RenderScene.m_SpotLights.push_back(spot_light);
 }
 void Renderer::SubmitDirectionalLight(const DirectionalLightCPU& directional_light)
 {
-	m_RenderScene.m_DirectionalLights.push_back(directional_light);
+        m_RenderScene.m_DirectionalLights.push_back(directional_light);
 }
 
 void Renderer::EndScene()
@@ -170,7 +170,7 @@ RenderTexture Renderer::CreateRenderTexture(uint32_t width, uint32_t height,
 
         return rt;
 }
-void Renderer::Draw(RenderTarget& render_target, const Camera& camera)
+void Renderer::Draw(const RenderTarget& render_target, const Camera& camera)
 {
         // SetMatricies();
         // BindRenderTarget(render_target);

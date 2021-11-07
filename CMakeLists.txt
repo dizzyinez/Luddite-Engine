@@ -24,6 +24,7 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentFX)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentTools)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/yaml-cpp)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/flecs)
 
 
 set(BUILD_CPU_DEMOS OFF CACHE BOOL "" FORCE)
@@ -77,7 +78,7 @@ set(LUDDITE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src "${CMAKE_CURRENT_SOURCE_DIR}
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentFX"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentTools"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog/include"
-"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/entt/single_include"
+"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/flecs/include"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glm"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/OBJ-Loader/Source"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/ImGuizmo/"
@@ -133,6 +134,7 @@ spdlog
 yaml-cpp
 Bullet3Dynamics Bullet3Collision Bullet3Geometry BulletInverseDynamics BulletSoftBody BulletCollision BulletDynamics LinearMath Bullet3Common
 assimp
+flecs
 )
 target_link_directories(Luddite-Engine PUBLIC
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libxkbcommon/bin/"

@@ -1,6 +1,5 @@
 #pragma once
 #include "Luddite/Core/pch.hpp"
-#include "Luddite/ECS/World.hpp"
 #include "Luddite/Graphics/RenderTarget.hpp"
 
 namespace Luddite
@@ -9,7 +8,7 @@ class LUDDITE_API LayerStack;
 class LUDDITE_API Layer
 {
         public:
-        World& GetWorld() {return m_World;}
+        flecs::world& GetWorld() {return m_World;}
         virtual ~Layer() {}
         protected:
         friend class LayerStack;
@@ -20,7 +19,7 @@ class LUDDITE_API Layer
         virtual void Render(double alpha, RenderTarget render_target) {}
         virtual void RenderImGui(double alpha, RenderTarget render_target) {}
         virtual const char* GetName() {return "Unnamed";}
-        World m_World;
+        flecs::world m_World;
         bool initialized;
 };
 class LUDDITE_API LayerStack
