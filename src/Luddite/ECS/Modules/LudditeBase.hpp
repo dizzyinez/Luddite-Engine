@@ -23,6 +23,11 @@ struct PreSimulate {};
 struct OnSimulate {};
 struct PostSimulate {};
 
+struct Pipeline
+{
+        //flecs::pipeline
+};
+
 struct Components
 {
         Components(flecs::world& w)
@@ -48,33 +53,31 @@ struct Components
                 auto post_simulate = w.component<PostSimulate >();
 
                 w.component<InputPipeline>("InputPipeline")
-                .add(flecs::Pipeline);
-                w.pipeline("Input Pipeline")
-                .add(on_input)
-                .add(post_input);
+                .emplace<flecs::pipeline>(
+                        w.pipeline("Input Pipeline")
+                        .add(on_input)
+                        .add(post_input));
 
                 w.component<UpdatePipeline>("UpdatePipeline")
-                .add(flecs::Pipeline)
-                .add(pre_update)
-                .add(on_update)
-                .add(post_update);
+                .emplace<flecs::pipeline>(
+                        w.pipeline("Update Pipeline")
+                        .add(pre_update)
+                        .add(on_update)
+                        .add(post_update));
 
-                w.component<RenderPipeline>("RenderPipeline");
-                auto rp = w.pipeline("Render Pipeline")
-                          .add(pre_render)
-                          .add(on_render)
-                          .add(post_render);
+                w.component<RenderPipeline>("RenderPipeline")
+                .emplace<flecs::pipeline>(
+                        w.pipeline("Render Pipeline")
+                        .add(pre_render)
+                        .add(on_render)
+                        .add(post_render));
 
                 w.component<SimulationPipeline>("SimulationPipeline")
-                .add(flecs::Pipeline)
-                .add(pre_simulate)
-                .add(on_simulate)
-                .add(post_simulate);
-
-                w.set_pipeline(rp);
-                //ecs_set_pipeline(w.c_ptr(), rp.id());
-
-                //w.system<>().kind(w.id<OnLoad>());
+                .emplace<flecs::pipeline>(
+                        w.pipeline("Simulation Pipeline")
+                        .add(pre_simulate)
+                        .add(on_simulate)
+                        .add(post_simulate));
         }
 };
 }

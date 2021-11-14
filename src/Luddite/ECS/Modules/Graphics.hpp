@@ -117,8 +117,8 @@ struct Systems
                                                 //if (true)
                                                 node_transforms[idx] = node.m_Transform;
                                         else
-                                                node_transforms[idx] = node.m_Transform * node_transforms[node.m_ParentNodeID];
-                                        //node_transforms[idx] = node_transforms[node.m_ParentNodeID] * node.m_Transform;
+                                                //node_transforms[idx] = node.m_Transform * node_transforms[node.m_ParentNodeID];
+                                                node_transforms[idx] = node_transforms[node.m_ParentNodeID] * node.m_Transform;
                                         idx++;
                                 }
                                 for (auto& pair : m.ModelHandle->m_MeshNodePairs)

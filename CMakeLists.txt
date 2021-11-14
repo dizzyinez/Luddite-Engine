@@ -23,7 +23,6 @@ set(DILIGENT_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(DILIGENT_BUILD_FX OFF CACHE BOOL "" FORCE)
 set(DILIGENT_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentCore)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentFX)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentTools)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog)
@@ -79,7 +78,6 @@ endif()
 target_compile_definitions(Luddite-Engine PRIVATE ${ENGINE_COMPILE_DEFINES} ${PLATFORM_DEFINE} ${CONFIGURATION_DEFINE})
 
 set(LUDDITE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentCore"
-"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentFX"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentTools"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog/include"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/flecs/include"
@@ -102,7 +100,6 @@ set(DILIGENT_NO_FORMAT_VALIDATION ON CACHE BOOL "" FORCE)
 Set(DILIGENT_LIBS
     Diligent-GraphicsTools
     Diligent-TextureLoader
-    DiligentFX
     Diligent-Imgui
 )
 if(D3D11_SUPPORTED)
