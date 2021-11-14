@@ -19,9 +19,13 @@ set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/assimp)
 
+set(DILIGENT_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+set(DILIGENT_BUILD_FX OFF CACHE BOOL "" FORCE)
+set(DILIGENT_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentCore)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentFX)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentTools)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/yaml-cpp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/flecs)

@@ -30,16 +30,16 @@ void ProcessMesh()
 {
 }
 
-void AddNode(aiNode* node, int parent_node_id, int& node_id_counter, Model* model) {
+void AddNode(aiNode* node, int parent_node_id, unsigned int& node_id_counter, Model* model) {
         model->m_Nodes.push_back({
                         glm::transpose(*reinterpret_cast<glm::mat4*>(&node->mTransformation)),
                         parent_node_id
                 });
-        int this_node_id = node_id_counter;
-        for (int i = 0; i < node->mNumMeshes; i++)
+        unsigned int this_node_id = node_id_counter;
+        for (unsigned int i = 0; i < node->mNumMeshes; i++)
                 model->m_MeshNodePairs.push_back({node->mMeshes[i], this_node_id});
         node_id_counter++;
-        for (int i = 0; i < node->mNumChildren; i++)
+        for (unsigned int i = 0; i < node->mNumChildren; i++)
                 AddNode(node->mChildren[i], this_node_id, node_id_counter, model);
 };
 
@@ -145,7 +145,7 @@ Model* ModelLibrary::LoadFromFile(const std::filesystem::path& path)
                 delete [] indices;
         }
 
-        int node_id_counter = 0;
+        unsigned int node_id_counter = 0;
         AddNode(scene->mRootNode, -1, node_id_counter, model);
         // for (int n = 0; n < scene->mRootNode->)
         //         AllocateBuffers(model);

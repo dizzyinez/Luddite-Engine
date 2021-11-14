@@ -56,6 +56,7 @@ bool XCBWindow::InitVulkan()
 
         auto& SCDesc = m_pSwapChain->GetDesc();
         Renderer::SetDefaultRTVFormat(SCDesc.ColorBufferFormat);
+        Renderer::SetDefaultDSVFormat(SCDesc.DepthBufferFormat);
         m_pImGuiImpl.reset(new Diligent::ImGuiImplLinuxXCB(
                 info.connection,
                 Renderer::GetDevice(),

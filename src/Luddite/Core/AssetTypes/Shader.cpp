@@ -85,7 +85,8 @@ Shader *ShaderLibrary::LoadFromFile(const std::filesystem::path &path) {
         PSOCreateInfo.GraphicsPipeline.NumRenderTargets = 1;
         PSOCreateInfo.GraphicsPipeline.RTVFormats[0] =
                 Renderer::GetDefaultRTVFormat();
-        PSOCreateInfo.GraphicsPipeline.DSVFormat = TEX_FORMAT_D32_FLOAT_S8X24_UINT;
+        PSOCreateInfo.GraphicsPipeline.DSVFormat =
+                Renderer::GetDefaultDSVFormat();
         PSODesc.ResourceLayout.DefaultVariableType =
                 SHADER_RESOURCE_VARIABLE_TYPE_STATIC;
 

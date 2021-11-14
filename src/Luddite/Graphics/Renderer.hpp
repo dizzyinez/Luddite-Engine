@@ -47,13 +47,15 @@ class LUDDITE_API Renderer
         static inline Diligent::RefCntAutoPtr<Diligent::IEngineFactory>& GetEngineFactory() {return m_pEngineFactory;}
         static inline Diligent::RefCntAutoPtr<Diligent::IShaderSourceInputStreamFactory>& GetShaderSourceFactory() {return m_pShaderSourceFactory;}
         static inline void SetDefaultRTVFormat(Diligent::TEXTURE_FORMAT format) {m_DefaultRTVFormat = format;}
+        static inline void SetDefaultDSVFormat(Diligent::TEXTURE_FORMAT format) {m_DefaultDSVFormat = format;}
         static inline Diligent::TEXTURE_FORMAT GetDefaultRTVFormat() {return m_DefaultRTVFormat;}
+        static inline Diligent::TEXTURE_FORMAT GetDefaultDSVFormat() {return m_DefaultDSVFormat;}
 
         static void BindRenderTarget(RenderTarget& render_target);
         static void ClearRenderTarget(RenderTarget& render_target, const float clear_color[4] = DefaultClearColor);
         static RenderTexture CreateRenderTexture(uint32_t width, uint32_t height,
                                                  Diligent::TEXTURE_FORMAT color_format = m_DefaultRTVFormat,
-                                                 Diligent::TEXTURE_FORMAT depth_format = Diligent::TEX_FORMAT_D32_FLOAT_S8X24_UINT);
+                                                 Diligent::TEXTURE_FORMAT depth_format = m_DefaultDSVFormat);
         static void TransitionRenderTextureToRenderTarget(RenderTexture& RenderTexture);
         static void TransitionRenderTextureToShaderResource(RenderTexture& RenderTexture);
         static void ReleaseBufferResources();
@@ -73,6 +75,7 @@ class LUDDITE_API Renderer
         static inline Diligent::RefCntAutoPtr<Diligent::IEngineFactory> m_pEngineFactory;
         static inline Diligent::RefCntAutoPtr<Diligent::IShaderSourceInputStreamFactory> m_pShaderSourceFactory;
         static inline Diligent::TEXTURE_FORMAT m_DefaultRTVFormat;
+        static inline Diligent::TEXTURE_FORMAT m_DefaultDSVFormat;
         // Diligent::float4x4 m_WorldViewProjMatrix;
         // float accum = 0.0f;
 
@@ -85,5 +88,6 @@ class LUDDITE_API Renderer
 
         // Window* m_pWindow;
         // Texture t;
+        static inline std::mutex m_Mutex;
 };
 }

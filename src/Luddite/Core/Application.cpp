@@ -3,6 +3,7 @@
 #include "Luddite/Platform/Window/NativeWindow.hpp"
 #include "Luddite/Core/Assets.hpp"
 #include "Luddite/Core/Profiler.hpp"
+#include "imgui.h"
 
 namespace Luddite
 {
@@ -15,29 +16,10 @@ Application::~Application()
 void Application::Run()
 {
         LD_VERIFY(m_pMainWindow, "Main window was never created! Call the CreateMainWindow function in the app's constructor");
+        //ImGui::SetCurrentContext(m_pMainWindow->GetImGuiContext());
 
         Assets::Initialize();
         Renderer::Initialize();
-
-        // m_SystemTable.pRuntimeObjectSystem = new RuntimeObjectSystem;
-        // if (!m_SystemTable.pRuntimeObjectSystem->Initialise(&m_RCCppLogger, &m_SystemTable))
-        // // if (!m_SystemTable.pRuntimeObjectSystem->Initialise(&m_RCCppLogger, &m_SystemTable))
-        // {
-        //         delete m_SystemTable.pRuntimeObjectSystem;
-        //         m_SystemTable.pRuntimeObjectSystem = nullptr;
-        //         LD_LOG_CRITICAL("Couldn't Create Game Instance");
-        // }
-        // m_SystemTable.pRuntimeObjectSystem->CleanObjectFiles();
-
-// #ifndef LD_PLATFORM_WINDOWS
-//         m_SystemTable.pRuntimeObjectSystem->SetAdditionalCompileOptions("-std=c++17");
-// #endif //LD_PLATFORM_WINDOWS
-
-        // ensure include directories are set - use location of this file as starting point
-        // FileSystemUtils::Path basePath = m_SystemTable.pRuntimeObjectSystem->FindFile(__FILE__).ParentPath();
-        // FileSystemUtils::Path imguiIncludeDir = basePath / "imgui";
-        // m_SystemTable.pRuntimeObjectSystem->AddIncludeDir(imguiIncludeDir.c_str());
-
 
         std::chrono::microseconds min_update_time(1000000 / 60);
         std::chrono::duration<double> update_delta_time(min_update_time);
@@ -78,16 +60,19 @@ void Application::Run()
                 //TEMP
 
                 //event handling
+                auto MainWindowRenderTarget = m_pMainWindow->GetRenderTarget();
+                Renderer::BindRenderTarget(MainWindowRenderTarget);
+                Renderer::ClearRenderTarget(MainWindowRenderTarget);
+
                 Events::Clear();
                 m_pMainWindow->PollEvents();
                 m_pMainWindow->HandleEvents();
                 OnUpdate(delta_time);
                 while (update_accululator > min_update_time)
                 {
+                        //update
                         update_accululator -= min_update_time;
                         OnFixedUpdate(fixed_dt);
-                        //update
-                        // m_pMainWindow->GetLayerStack().UpdateLayers(0.016667f);
                 }
 
                 //TEMP
@@ -97,28 +82,20 @@ void Application::Run()
                 Assets::RefreshAssets();
 
                 //render
-                auto MainWindowRenderTarget = m_pMainWindow->GetRenderTarget();
-                Renderer::BindRenderTarget(MainWindowRenderTarget);
-                Renderer::ClearRenderTarget(MainWindowRenderTarget);
                 OnRender(lerp_alpha);
-                // m_pMainWindow->GetLayerStack().RenderLayers(1.0f, MainWindowRenderTarget);
 
 
-                // while (render_accululator > min_render_time)
-                // {
-                // render_accululator -= min_render_time;
-                //imgui render
-                Renderer::BindRenderTarget(MainWindowRenderTarget);
-                m_pMainWindow->ImGuiNewFrame();
-                ImGuizmo::BeginFrame();
-                OnImGuiRender(lerp_alpha);
-                // m_pMainWindow->GetLayerStack().RenderLayersImGui(1.0f, MainWindowRenderTarget);
-                m_pMainWindow->GetImGuiImpl()->Render(Renderer::m_pImmediateContext);
+                ////imgui render
+                //Renderer::BindRenderTarget(MainWindowRenderTarget);
+                //m_pMainWindow->ImGuiNewFrame();
+                //ImGuizmo::BeginFrame();
+                //OnImGuiRender(lerp_alpha);
+                //m_pMainWindow->GetImGuiImpl()->Render(Renderer::m_pImmediateContext);
+
                 {
                         LD_PROFILE_SCOPE("Swapping Window Buffers");
                         m_pMainWindow->SwapBuffers();
                 }
-                // }
 
                 std::chrono::microseconds loop_time_span = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - loop_start);
                 update_accululator += loop_time_span;
@@ -132,6 +109,7 @@ void Application::Run()
                 // std::chrono::microseconds µs;
                 // LD_LOG_INFO("DT: {}", update_delta_time.count());
         }
+        LD_LOG_INFO("Exiting Main Window");
 }
 void Application::CreateMainWindow(const std::string& Name, int width, int height, int min_width, int min_height)
 {

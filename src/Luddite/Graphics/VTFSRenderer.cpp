@@ -1670,7 +1670,7 @@ void VTFSRenderer::CreateDrawPSOs()
         PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_LESS_EQUAL;
         // PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthFunc = COMPARISON_FUNC_GREATER_EQUAL;
         PSOCreateInfo.GraphicsPipeline.NumRenderTargets = 1;
-        PSOCreateInfo.GraphicsPipeline.DSVFormat = TEX_FORMAT_D32_FLOAT_S8X24_UINT;
+        PSOCreateInfo.GraphicsPipeline.DSVFormat = Renderer::GetDefaultDSVFormat();
         PSODesc.ResourceLayout.DefaultVariableType = SHADER_RESOURCE_VARIABLE_TYPE_STATIC;
 
         PSOCreateInfo.GraphicsPipeline.InputLayout.LayoutElements = VertexLayoutElements;

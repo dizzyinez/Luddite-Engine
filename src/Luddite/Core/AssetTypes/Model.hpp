@@ -49,8 +49,8 @@ struct Node
 
 struct MeshInstance
 {
-        int m_MeshIndex;
-        int m_NodeIndex;
+        unsigned int m_MeshIndex;
+        unsigned int m_NodeIndex;
 };
 
 struct Mesh

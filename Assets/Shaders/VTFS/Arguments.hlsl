@@ -18,7 +18,7 @@ cbuffer _CameraCB : register(b0)
 {
     CameraData CameraCB;
 };
-5
+
 struct BasicModelCameraData
 { 
     float4x4 ModelViewProjection;

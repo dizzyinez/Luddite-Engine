@@ -1,6 +1,7 @@
 #include "Luddite/Graphics/Renderer.hpp"
 #include "Graphics/GraphicsTools/interface/MapHelper.hpp"
 #include "Luddite/Platform/Window/Window.hpp"
+#include <mutex>
 
 
 namespace Luddite
@@ -8,6 +9,7 @@ namespace Luddite
 // MaterialHandle awesome_material;
 void Renderer::Initialize()
 {
+        std::lock_guard<std::mutex> lock{m_Mutex};
         m_pEngineFactory->CreateDefaultShaderSourceStreamFactory("./Assets/Shaders/;./Assets/Shaders/", &m_pShaderSourceFactory);
 
         // m_basic_quad_renderer.Initialize(m_pDevice,
@@ -74,6 +76,7 @@ void Renderer::Initialize()
 
 void Renderer::BeginScene()
 {
+        std::lock_guard<std::mutex> lock{m_Mutex};
         m_RenderScene.m_Meshes.clear();
         m_RenderScene.m_PointLights.clear();
         m_RenderScene.m_SpotLights.clear();
@@ -87,19 +90,23 @@ void Renderer::BeginScene()
 
 void Renderer::SubmitMesh(Mesh* mesh, const glm::mat4& transform, Handle<Material> material)
 {
+        std::lock_guard<std::mutex> lock{m_Mutex};
         m_RenderScene.m_Meshes[material].push_back(std::make_pair(mesh, transform));
 }
 
 void Renderer::SubmitPointLight(const PointLightCPU& point_light)
 {
+        std::lock_guard<std::mutex> lock{m_Mutex};
         m_RenderScene.m_PointLights.push_back(point_light);
 }
 void Renderer::SubmitSpotLight(const SpotLightCPU& spot_light)
 {
+        std::lock_guard<std::mutex> lock{m_Mutex};
         m_RenderScene.m_SpotLights.push_back(spot_light);
 }
 void Renderer::SubmitDirectionalLight(const DirectionalLightCPU& directional_light)
 {
+        std::lock_guard<std::mutex> lock{m_Mutex};
         m_RenderScene.m_DirectionalLights.push_back(directional_light);
 }
 
@@ -109,6 +116,7 @@ void Renderer::EndScene()
 
 void Renderer::BindRenderTarget(RenderTarget& render_target)
 {
+        std::lock_guard<std::mutex> lock{m_Mutex};
         m_pImmediateContext->SetRenderTargets(1, &render_target.RTV, render_target.DSV, Diligent::RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 }
 
@@ -172,6 +180,7 @@ RenderTexture Renderer::CreateRenderTexture(uint32_t width, uint32_t height,
 }
 void Renderer::Draw(const RenderTarget& render_target, const Camera& camera)
 {
+        std::lock_guard<std::mutex> lock{m_Mutex};
         // SetMatricies();
         // BindRenderTarget(render_target);
 
@@ -297,6 +306,7 @@ void Renderer::PrepareDraw()
 
 void Renderer::OnWindowResize(int width, int height)
 {
+        std::lock_guard<std::mutex> lock{m_Mutex};
         ReleaseBufferResources();
 }
 void Renderer::ReleaseBufferResources()
