@@ -152,13 +152,10 @@ Shader *ShaderLibrary::LoadFromFile(const std::filesystem::path &path) {
         if (pShader->m_pVertexShader)
         {
                 uint32_t rcount = pShader->m_pVertexShader->GetResourceCount();
-                LD_LOG_TRACE("Vertex Shader for {} has {} resources", name, rcount);
                 Diligent::ShaderResourceDesc desc;
                 for (uint32_t i = 0; i < rcount; i++)
                 {
                         pShader->m_pVertexShader->GetResourceDesc(i, desc);
-                        LD_LOG_TRACE("Name: {}, Type:{}, Size: {} ", desc.Name, desc.Type,
-                                desc.ArraySize);
                         switch (desc.Type)
                         {
                         case Diligent::SHADER_RESOURCE_TYPE_CONSTANT_BUFFER:
@@ -204,13 +201,10 @@ Shader *ShaderLibrary::LoadFromFile(const std::filesystem::path &path) {
         if (pShader->m_pPixelShader)
         {
                 uint32_t rcount = pShader->m_pPixelShader->GetResourceCount();
-                LD_LOG_TRACE("Pixel Shader for {} has {} resources", name, rcount);
                 Diligent::ShaderResourceDesc desc;
                 for (uint32_t i = 0; i < rcount; i++)
                 {
                         pShader->m_pPixelShader->GetResourceDesc(i, desc);
-                        LD_LOG_TRACE("Name: {}, Type:{}, Size: {} ", desc.Name, desc.Type,
-                                desc.ArraySize);
                         switch (desc.Type)
                         {
                         case Diligent::SHADER_RESOURCE_TYPE_CONSTANT_BUFFER:

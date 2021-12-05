@@ -6,10 +6,12 @@
 #include "Luddite/Core/AssetTypes/Model.hpp"
 #include "Luddite/ECS/Modules/LudditeBase.hpp"
 #include "Luddite/ECS/Modules/Transform3D.hpp"
+#include "Luddite/ECS/Reflection.hpp"
 #include "Luddite/Graphics/Lights.hpp"
 #include "Luddite/Graphics/RenderTarget.hpp"
 #include "Luddite/Graphics/Renderer.hpp"
 #include "flecs/addons/cpp/flecs.hpp"
+#include "imgui.h"
 
 namespace Graphics
 {
@@ -23,14 +25,24 @@ struct RenderTarget
         Luddite::RenderTarget RenderTarget;
 };
 
-struct Camera
-{
-        Luddite::Camera::ProjectionType Projection = Luddite::Camera::ProjectionType::PERSPECTIVE;
-        float FOV = glm::radians(90.f);
-        float OrthoScale = 100.f;
-        float ClipNear = 0.1f;
-        float ClipFar = 1000.f;
-};
+//LD_COMPONENT_DEFINE
+
+LD_COMPONENT_DEFINE(Camera,
+        (),
+        ((Luddite::Camera::ProjectionType)Projection, (Luddite::Camera::ProjectionType::PERSPECTIVE)),
+        ((float)FOV, (glm::radians(90.f)), .min = 20.f, .max = 179.f, .gui_elem = LD_GUI_ELEMENT_SLIDERANGLE, .format = "%.0f deg", .flags = ImGuiSliderFlags_ClampOnInput | ImGuiSliderFlags_AlwaysClamp),
+        ((float)OrthoScale, (100.f)),
+        ((float)ClipNear, (0.001f), .speed = 0.001f, .min = 0.001f, .max = 1.0f, .flags = ImGuiSliderFlags_ClampOnInput | ImGuiSliderFlags_AlwaysClamp),
+        ((float)ClipFar, (1000.f), .min = 2.0f, .flags = ImGuiSliderFlags_ClampOnInput | ImGuiSliderFlags_AlwaysClamp)
+        )
+//struct Camera
+//{
+//        Luddite::Camera::ProjectionType Projection = Luddite::Camera::ProjectionType::PERSPECTIVE;
+//        float FOV = glm::radians(90.f);
+//        float OrthoScale = 100.f;
+//        float ClipNear = 0.1f;
+//        float ClipFar = 1000.f;
+//};
 
 struct PointLight
 {
@@ -67,7 +79,7 @@ struct Components
                 w.component<MainWindow>("Main Window");
                 w.set<MainWindow>({});
                 w.component<RenderToMainWindow>("Render To Main Window");
-                w.component<Camera>("Camera");
+                LD_COMPONENT_REGISTER(Camera, "Camera", w);
                 w.component<RenderTarget>("Render Target");
                 w.component<PointLight>("Point Light");
                 w.component<SpotLight>("Spot Light");

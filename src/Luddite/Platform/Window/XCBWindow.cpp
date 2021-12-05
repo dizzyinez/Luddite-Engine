@@ -1,4 +1,5 @@
 #include "Luddite/Core/pch.hpp"
+#include "xkbcommon/xkbcommon-keysyms.h"
 #include <xcb/xcb.h>
 #ifdef LD_PLATFORM_LINUX
 #include "Luddite/Platform/Window/XCBWindow.hpp"
@@ -189,8 +190,8 @@ void XCBWindow::PollEvents()
         while ((event = xcb_poll_for_event(info.connection)) != nullptr)
         {
                 bool imgui_handled = static_cast<Diligent::ImGuiImplLinuxXCB*>(m_pImGuiImpl.get())->HandleXCBEvent(event);
-                // if (imgui_handled)
-                //         continue;
+                //if (imgui_handled)
+                //        continue;
                 switch (event->response_type & 0x7f)
                 {
                 case XCB_CLIENT_MESSAGE:
@@ -226,6 +227,26 @@ void XCBWindow::PollEvents()
                         xkb_keycode_t keycode = key_press->detail;
                         xkb_keysym_t keysym = xkb_state_key_get_one_sym(kb_info.state, keycode);
                         Events::GetList<KeyPressEvent>().DispatchEvent(keysym);
+
+                        auto& io = ImGui::GetIO();
+                        switch (keysym)
+                        {
+                        case XKB_KEY_Control_L:
+                        case XKB_KEY_Control_R:
+                                io.KeyCtrl = true;
+                                break;
+
+                        case XKB_KEY_Shift_L:
+                        case XKB_KEY_Shift_R:
+                                io.KeyShift = true;
+                                break;
+
+                        case XKB_KEY_Alt_L:
+                        case XKB_KEY_Alt_R:
+                                io.KeyAlt = true;
+                                break;
+                        }
+
                         break;
                 }
 
@@ -235,6 +256,26 @@ void XCBWindow::PollEvents()
                         xkb_keycode_t keycode = key_release->detail;
                         xkb_keysym_t keysym = xkb_state_key_get_one_sym(kb_info.state, keycode);
                         Events::GetList<KeyReleaseEvent>().DispatchEvent(keysym);
+
+                        auto& io = ImGui::GetIO();
+                        switch (keysym)
+                        {
+                        case XKB_KEY_Control_L:
+                        case XKB_KEY_Control_R:
+                                io.KeyCtrl = false;
+                                break;
+
+                        case XKB_KEY_Shift_L:
+                        case XKB_KEY_Shift_R:
+                                io.KeyShift = false;
+                                break;
+
+                        case XKB_KEY_Alt_L:
+                        case XKB_KEY_Alt_R:
+                                io.KeyAlt = false;
+                                break;
+                        }
+
                         break;
                 }
 
@@ -259,6 +300,7 @@ void XCBWindow::PollEvents()
                 //Send input to application or whatever
                 free(event);
         }
+        auto& io = ImGui::GetIO();
         if (scrolls != 0)
                 Events::GetList<MouseScrollEvent>().DispatchEvent(scrolls);
 }

@@ -556,29 +556,24 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                                 //         srb->GetVariableByName(SHADER_TYPE_PIXEL, "Properties")->Set(material_pair.first->m_pShader->m_PropertiesBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
                                 for (const std::string& buffer_name : material_pair.first->m_pShader->m_MutableBuffersVertex)
                                 {
-                                        LD_LOG_INFO("{}", buffer_name);
                                         auto buff = data->m_BufferMap.find(buffer_name);
                                         if (buff != data->m_BufferMap.end())
                                                 srb->GetVariableByName(SHADER_TYPE_VERTEX, buff->first.c_str())->Set(buff->second->GetDefaultView(Diligent::BUFFER_VIEW_SHADER_RESOURCE));
                                 }
                                 for (const std::string& buffer_name : material_pair.first->m_pShader->m_MutableBuffersPixel)
                                 {
-                                        LD_LOG_INFO("{}", buffer_name);
                                         auto buff = data->m_BufferMap.find(buffer_name);
                                         if (buff != data->m_BufferMap.end())
                                                 srb->GetVariableByName(SHADER_TYPE_PIXEL, buff->first.c_str())->Set(buff->second->GetDefaultView(Diligent::BUFFER_VIEW_SHADER_RESOURCE));
                                 }
-                                //for (const std::string& texture_name : material_pair.first->m_pShader->m_PropertiesBufferDescription.TexturesVertexShader
                                 for (const std::string& texture_name : material_pair.first->m_pShader->m_ProvidedTexturesVertex)
                                 {
-                                        LD_LOG_INFO("{}", texture_name);
                                         auto tex = m_TextureMap.find(texture_name);
                                         if (tex != m_TextureMap.end())
                                                 srb->GetVariableByName(SHADER_TYPE_VERTEX, tex->first.c_str())->Set(tex->second->GetTexture()->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
                                 }
                                 for (const std::string& texture_name : material_pair.first->m_pShader->m_ProvidedTexturesPixel)
                                 {
-                                        LD_LOG_INFO("{}", texture_name);
                                         auto tex = m_TextureMap.find(texture_name);
                                         if (tex != m_TextureMap.end())
                                                 srb->GetVariableByName(SHADER_TYPE_PIXEL, tex->first.c_str())->Set(tex->second->GetTexture()->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));

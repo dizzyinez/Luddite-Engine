@@ -1,9 +1,10 @@
 #pragma once
 #include "Luddite/Core/pch.hpp"
-#include "flecs.h"
-#include "flecs/addons/cpp/flecs.hpp"
+#include "Luddite/ECS/Reflection.hpp"
+
 namespace Luddite
 {
+//Pipelines
 struct InputPipeline {};
 struct OnInput {};
 struct PostInput {};
@@ -26,6 +27,16 @@ struct PostSimulate {};
 struct Pipeline
 {
         //flecs::pipeline
+};
+
+//Heirarchies
+struct Scene {};
+struct Prefabs {};
+
+//Meta
+struct ReflectionData
+{
+        void (*ImGuiDraw)(void* data);
 };
 
 struct Components
@@ -78,6 +89,11 @@ struct Components
                         .add(pre_simulate)
                         .add(on_simulate)
                         .add(post_simulate));
+
+                w.id<Scene>().entity();
+                w.id<Prefabs>().entity();
+
+                w.component<ReflectionData>();
         }
 };
 }

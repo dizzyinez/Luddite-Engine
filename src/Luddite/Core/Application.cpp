@@ -16,7 +16,7 @@ Application::~Application()
 void Application::Run()
 {
         LD_VERIFY(m_pMainWindow, "Main window was never created! Call the CreateMainWindow function in the app's constructor");
-        //ImGui::SetCurrentContext(m_pMainWindow->GetImGuiContext());
+        ImGui::SetCurrentContext(m_pMainWindow->GetImGuiContext());
 
         Assets::Initialize();
         Renderer::Initialize();
@@ -43,27 +43,7 @@ void Application::Run()
                 frame_count++;
                 std::chrono::high_resolution_clock::time_point loop_start = std::chrono::high_resolution_clock::now();
 
-                // if (m_SystemTable.pRuntimeObjectSystem->GetIsCompiledComplete())
-                // {
-                //         m_SystemTable.pRuntimeObjectSystem->LoadCompiledModule();
-                // }
-
-                // if (!m_SystemTable.pRuntimeObjectSystem->GetIsCompiling())
-                // {
-                //         m_SystemTable.pRuntimeObjectSystem->GetFileChangeNotifier()->Update(delta_time);
-                // }
-
-                // if (m_SystemTable.pGameInstanceI)
-                // m_SystemTable.pGameInstanceI->Initialize();
-
-
-                //TEMP
-
                 //event handling
-                auto MainWindowRenderTarget = m_pMainWindow->GetRenderTarget();
-                Renderer::BindRenderTarget(MainWindowRenderTarget);
-                Renderer::ClearRenderTarget(MainWindowRenderTarget);
-
                 Events::Clear();
                 m_pMainWindow->PollEvents();
                 m_pMainWindow->HandleEvents();
@@ -82,15 +62,18 @@ void Application::Run()
                 Assets::RefreshAssets();
 
                 //render
+                auto MainWindowRenderTarget = m_pMainWindow->GetRenderTarget();
+                Renderer::BindRenderTarget(MainWindowRenderTarget);
+                Renderer::ClearRenderTarget(MainWindowRenderTarget);
                 OnRender(lerp_alpha);
 
 
                 ////imgui render
-                //Renderer::BindRenderTarget(MainWindowRenderTarget);
-                //m_pMainWindow->ImGuiNewFrame();
+                Renderer::BindRenderTarget(MainWindowRenderTarget);
+                m_pMainWindow->ImGuiNewFrame();
                 //ImGuizmo::BeginFrame();
-                //OnImGuiRender(lerp_alpha);
-                //m_pMainWindow->GetImGuiImpl()->Render(Renderer::m_pImmediateContext);
+                OnImGuiRender(lerp_alpha);
+                m_pMainWindow->GetImGuiImpl()->Render(Renderer::m_pImmediateContext);
 
                 {
                         LD_PROFILE_SCOPE("Swapping Window Buffers");

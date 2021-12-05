@@ -41,6 +41,7 @@ void Window::HandleEvents()
 void Window::ImGuiSetup()
 {
         ImGuiIO& io = ImGui::GetIO();
+        io.IniFilename = "imgui.ini";
         io.FontDefault = io.Fonts->AddFontFromFileTTF("Assets/Fonts/NunitoSans/NunitoSans-Regular.ttf", 16.0f); //[0]
         io.Fonts->AddFontFromFileTTF("Assets/Fonts/NunitoSans/NunitoSans-Bold.ttf", 16.0f); //[1]
         ImGuiSetDefaultColors();
