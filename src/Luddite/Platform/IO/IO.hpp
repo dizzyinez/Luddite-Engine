@@ -24,12 +24,12 @@ enum class ModifierBits : uint16_t
 };
 struct IO
 {
-        struct Keyboard
-        {
-        };
-        struct Mouse
-        {
-        };
+        //struct Keyboard
+        //{
+        //};
+        //struct Mouse
+        //{
+        //};
         static constexpr uint32_t GetKeyCode(Keys key)
         {
                 switch (key)
@@ -269,8 +269,11 @@ struct IO
                 case Keys::F34: return 116;
 
                 case Keys::F35: return 117;
+
+                default: return 118;
                 }
         };
+        static inline constexpr uint32_t GetNumKeys() {return 119;}
         static constexpr uint16_t GetModBit(Keys key)
         {
                 switch (key)

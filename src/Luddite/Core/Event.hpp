@@ -73,4 +73,12 @@ struct MouseScrollEvent : public Event<MouseScrollEvent>
         MouseScrollEvent(int16_t scrolls_) : scrolls{scrolls_} {}
         int16_t scrolls;
 };
+
+struct MouseMotionEvent : public Event<MouseMotionEvent>
+{
+        MouseMotionEvent(int16_t x_, int16_t y_, uint16_t button_mask_) : x{x_}, y{y_}, button_mask{button_mask_} {}
+        int16_t x;
+        int16_t y;
+        uint16_t button_mask;
+};
 }

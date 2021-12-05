@@ -1,3 +1,4 @@
+#include "Luddite/Core/Event.hpp"
 #include "Luddite/Core/pch.hpp"
 #include "xkbcommon/xkbcommon-keysyms.h"
 #include <xcb/xcb.h>
@@ -295,9 +296,16 @@ void XCBWindow::PollEvents()
                 {
                         const auto* mouse_release = reinterpret_cast<const xcb_button_release_event_t*>(event);
                         Events::GetList<MouseButtonReleaseEvent>().DispatchEvent(mouse_release->detail);
+                        break;
+                }
+
+                case XCB_MOTION_NOTIFY:
+                {
+                        const auto* motion_notify = reinterpret_cast<const xcb_motion_notify_event_t*>(event);
+                        Events::GetList<MouseMotionEvent>().DispatchEvent(motion_notify->event_x, motion_notify->event_y, motion_notify->state);
+                        break;
                 }
                 }
-                //Send input to application or whatever
                 free(event);
         }
         auto& io = ImGui::GetIO();
@@ -310,9 +318,6 @@ void XCBWindow::SetTitle(const std::string& title)
         const char* title_pointer = title.data();
         xcb_change_property(info.connection, XCB_PROP_MODE_REPLACE, info.window, XCB_ATOM_WM_NAME, XCB_ATOM_STRING,
                 8, title.size(), title.data());
-        // const char* title_pointer = "GAMING";
-        // xcb_change_property(info.connection, XCB_PROP_MODE_REPLACE, info.window, XCB_ATOM_WM_NAME, XCB_ATOM_STRING,
-        //         8, strlen(title_pointer), title_pointer);
 }
 
 XCBWindow::~XCBWindow()

@@ -13,7 +13,7 @@ void EditorLayer::Initialize()
 {
         m_World.import<Luddite::Components>();
         m_World.import<Graphics::Systems>();
-        m_World.import<Physics::Systems>();
+        m_World.import<Physics::Components>();
         m_Ctx.world = &m_World;
         AddPanel<ViewportPanel>();
         AddPanel<HeirarchyPanel>();

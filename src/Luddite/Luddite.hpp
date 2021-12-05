@@ -16,8 +16,10 @@
 
 //ECS
 #include "Luddite/ECS/Modules/LudditeBase.hpp"
+#include "Luddite/ECS/Modules/Input.hpp"
 #include "Luddite/ECS/Modules/Transform3D.hpp"
 #include "Luddite/ECS/Modules/Graphics.hpp"
+#include "Luddite/ECS/Modules/Physics.hpp"
 
 //Layers
 #include "Luddite/Layers/EditorLayer.hpp"
