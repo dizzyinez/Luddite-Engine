@@ -12,7 +12,7 @@ void MaterialLibrary::Initialize()
 Material* MaterialLibrary::LoadFromFile(const std::filesystem::path& path)
 {
         Material* mat = new Material();
-        mat->m_pShader = Assets::GetShaderLibrary().GetAssetSynchronous(14332508749617699857ULL);
+        mat->m_pShader = Assets::GetShaderLibrary().GetAssetSynchronous(14186098222151931474ULL);
         mat->m_Name = path.filename().generic_string();
         mat->m_Properties = mat->m_pShader->m_PropertiesBufferDescription.CreateData(mat->m_Name);
         mat->m_pShader.getCounter()->SetReloadFunction(mat, [](void* caller, Shader* prev, Shader* curr) {

@@ -34,7 +34,7 @@ void EditorLayer::Initialize()
                 e.add<Transform3D::Scale>();
                 e.set<Physics::LinearVelocity>({glm::vec3(1.00, 0, 0)});
                 e.set<Physics::LinearDamping>({glm::vec3(0.50, 0, 0)});
-                e.set<Graphics::Model>({Luddite::Assets::GetBasicModelLibrary().GetAsset(2897965407838247087ULL)});
+                e.set<Graphics::Model>({Luddite::Assets::GetBasicModelLibrary().GetAsset(4049191577729022337ULL)});
         }
         {
                 auto e = m_World.entity("Light").child_of(m_World.id<Luddite::Scene>().entity());
