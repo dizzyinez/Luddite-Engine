@@ -256,6 +256,7 @@ void XCBWindow::PollEvents()
                         const auto* key_release = reinterpret_cast<const xcb_key_release_event_t*>(event);
                         xkb_keycode_t keycode = key_release->detail;
                         xkb_keysym_t keysym = xkb_state_key_get_one_sym(kb_info.state, keycode);
+                        LD_LOG_INFO("KEY RELEASED: {}", keycode);
                         Events::GetList<KeyReleaseEvent>().DispatchEvent(keysym);
 
                         auto& io = ImGui::GetIO();

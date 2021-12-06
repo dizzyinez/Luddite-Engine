@@ -45,17 +45,17 @@ struct Systems
                 .term<KeyboardState>().inout(flecs::Out).singleton()
                 .iter([](flecs::iter it){
                                 auto ks = it.term<KeyboardState>(1);
-                                std::fill(ks->KeyPressed.begin(), ks->KeyPressed.end(), false);
                                 std::fill(ks->KeyReleased.begin(), ks->KeyReleased.end(), false);
-                                for (auto e : Luddite::EventList<Luddite::KeyPressEvent>())
+                                std::fill(ks->KeyPressed.begin(), ks->KeyPressed.end(), false);
+                                for (auto e : Luddite::Events::GetList<Luddite::KeyReleaseEvent>())
                                 {
-                                        ks->KeyPressed[static_cast<uint32_t>(e.key_code)] = true;
-                                        ks->KeyDown[static_cast<uint32_t>(e.key_code)] = true;
+                                        ks->KeyReleased[Luddite::IO::GetKeyCode(e.key_code)] = true;
+                                        ks->KeyDown[Luddite::IO::GetKeyCode(e.key_code)] = false;
                                 }
-                                for (auto e : Luddite::EventList<Luddite::KeyReleaseEvent>())
+                                for (auto e : Luddite::Events::GetList<Luddite::KeyPressEvent>())
                                 {
-                                        ks->KeyReleased[static_cast<uint32_t>(e.key_code)] = true;
-                                        ks->KeyDown[static_cast<uint32_t>(e.key_code)] = false;
+                                        ks->KeyPressed[Luddite::IO::GetKeyCode(e.key_code)] = true;
+                                        ks->KeyDown[Luddite::IO::GetKeyCode(e.key_code)] = true;
                                 }
                         });
                 w.system<>("Update Mouse State")
@@ -63,20 +63,20 @@ struct Systems
                 .term<MouseState>().inout(flecs::Out).singleton()
                 .iter([](flecs::iter it){
                                 auto ms = it.term<MouseState>(1);
-                                std::fill(ms->ButtonPressed.begin(), ms->ButtonPressed.end(), false);
                                 std::fill(ms->ButtonReleased.begin(), ms->ButtonReleased.end(), false);
-                                for (auto e : Luddite::EventList<Luddite::MouseButtonPressEvent>())
-                                {
-                                        ms->ButtonPressed[static_cast<uint32_t>(e.button)] = true;
-                                        ms->ButtonDown[static_cast<uint32_t>(e.button)] = true;
-                                }
-                                for (auto e : Luddite::EventList<Luddite::MouseButtonReleaseEvent>())
+                                std::fill(ms->ButtonPressed.begin(), ms->ButtonPressed.end(), false);
+                                for (auto e : Luddite::Events::GetList<Luddite::MouseButtonReleaseEvent>())
                                 {
                                         ms->ButtonReleased[static_cast<uint32_t>(e.button)] = true;
                                         ms->ButtonDown[static_cast<uint32_t>(e.button)] = false;
                                 }
+                                for (auto e : Luddite::Events::GetList<Luddite::MouseButtonPressEvent>())
+                                {
+                                        ms->ButtonPressed[static_cast<uint32_t>(e.button)] = true;
+                                        ms->ButtonDown[static_cast<uint32_t>(e.button)] = true;
+                                }
                                 ms->Delta = glm::vec2{0.f, 0.f};
-                                for (auto e : Luddite::EventList<Luddite::MouseMotionEvent>())
+                                for (auto e : Luddite::Events::GetList<Luddite::MouseMotionEvent>())
                                 {
                                         glm::vec2 new_pos{e.x, e.y};
                                         ms->Delta += new_pos - ms->Position;
