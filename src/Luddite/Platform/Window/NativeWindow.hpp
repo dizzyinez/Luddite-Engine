@@ -2,6 +2,8 @@
 #include "Luddite/Core/pch.hpp"
 #include "Luddite/Core/Core.hpp"
 
+#include "Luddite/Platform/Window/GLFWWindow.hpp"
+
 #ifdef LD_PLATFORM_LINUX
 #include "Luddite/Platform/Window/XCBWindow.hpp"
 #include "Luddite/Platform/Window/GLXWindow.hpp"

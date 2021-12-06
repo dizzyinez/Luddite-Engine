@@ -97,8 +97,9 @@ void Application::Run()
 void Application::CreateMainWindow(const std::string& Name, int width, int height, int min_width, int min_height)
 {
         //TEMP
-        NativeVulkanWindow::InitNativeEngineFactory();
-        m_pMainWindow = std::make_shared<NativeVulkanWindow>(Name, width, height, min_width, min_height);
+        //NativeVulkanWindow::InitNativeEngineFactory();
+        //m_pMainWindow = std::make_shared<NativeVulkanWindow>(Name, width, height, min_width, min_height);
+        m_pMainWindow = std::make_shared<GLFWWindow>(Name, width, height, min_width, min_height);
 
         // m_pMainWindow = std::make_shared<NativeOpenGLWindow>(Name, width, height, min_width, min_height);
 

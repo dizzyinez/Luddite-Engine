@@ -19,6 +19,8 @@ set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/assimp)
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw)
+
 set(DILIGENT_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(DILIGENT_BUILD_FX OFF CACHE BOOL "" FORCE)
 set(DILIGENT_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
@@ -29,7 +31,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentTools)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/yaml-cpp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/flecs)
-
 
 set(BUILD_CPU_DEMOS OFF CACHE BOOL "" FORCE)
 set(BUILD_ENET OFF CACHE BOOL "" FORCE)
@@ -88,6 +89,7 @@ set(LUDDITE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src "${CMAKE_CURRENT_SOURCE_DIR}
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libxkbcommon/include"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/bullet3/src"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/yaml-cpp/include"
+"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw/include"
 )
 target_include_directories(Luddite-Engine PUBLIC ${LUDDITE_INCLUDE} 
 #"ThirdParty/imgui"
@@ -132,6 +134,7 @@ if (WIN32)
     )
 endif()
 target_link_libraries(Luddite-Engine ${DILIGENT_LIBS} ${PLATFORM_LIBS} 
+glfw
 spdlog 
 yaml-cpp
 Bullet3Dynamics Bullet3Collision Bullet3Geometry BulletInverseDynamics BulletSoftBody BulletCollision BulletDynamics LinearMath Bullet3Common

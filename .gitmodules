@@ -38,3 +38,6 @@
 [submodule "ThirdParty/flecs"]
 	path = ThirdParty/flecs
 	url = https://github.com/SanderMertens/flecs
+[submodule "ThirdParty/glfw"]
+	path = ThirdParty/glfw
+	url = https://github.com/glfw/glfw.git
