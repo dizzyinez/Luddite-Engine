@@ -49,13 +49,13 @@ struct Systems
                                 std::fill(ks->KeyPressed.begin(), ks->KeyPressed.end(), false);
                                 for (auto e : Luddite::Events::GetList<Luddite::KeyReleaseEvent>())
                                 {
-                                        ks->KeyReleased[Luddite::IO::GetKeyCode(e.key_code)] = true;
-                                        ks->KeyDown[Luddite::IO::GetKeyCode(e.key_code)] = false;
+                                        ks->KeyReleased[Luddite::IO::GetKeyCode(e.key)] = true;
+                                        ks->KeyDown[Luddite::IO::GetKeyCode(e.key)] = false;
                                 }
                                 for (auto e : Luddite::Events::GetList<Luddite::KeyPressEvent>())
                                 {
-                                        ks->KeyPressed[Luddite::IO::GetKeyCode(e.key_code)] = true;
-                                        ks->KeyDown[Luddite::IO::GetKeyCode(e.key_code)] = true;
+                                        ks->KeyPressed[Luddite::IO::GetKeyCode(e.key)] = true;
+                                        ks->KeyDown[Luddite::IO::GetKeyCode(e.key)] = true;
                                 }
                         });
                 w.system<>("Update Mouse State")

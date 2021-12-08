@@ -44,16 +44,24 @@ struct WindowSizeEvent : public Event<WindowSizeEvent>
 
 struct KeyPressEvent : public Event<KeyPressEvent>
 {
-        KeyPressEvent(uint32_t key_code_) : key_code(static_cast<Luddite::Keys>(key_code_)) {}
-        KeyPressEvent(Luddite::Keys key_code_) : key_code{key_code_} {}
-        Luddite::Keys key_code;
+        KeyPressEvent(int key_, int scan_code_) : key(static_cast<Luddite::Keys>(key_)), scan_code{scan_code_} {}
+        KeyPressEvent(Luddite::Keys key_, int scan_code_) : key{key_}, scan_code{scan_code_} {}
+        Luddite::Keys key;
+        int scan_code;
 };
 
 struct KeyReleaseEvent : public Event<KeyReleaseEvent>
 {
-        KeyReleaseEvent(uint32_t key_code_) : key_code(static_cast<Luddite::Keys>(key_code_)) {}
-        KeyReleaseEvent(Luddite::Keys key_code_) : key_code{key_code_} {}
-        Luddite::Keys key_code;
+        KeyReleaseEvent(int key_, int scan_code_) : key(static_cast<Luddite::Keys>(key_)), scan_code{scan_code_} {}
+        KeyReleaseEvent(Luddite::Keys key_, int scan_code_) : key{key_}, scan_code{scan_code_} {}
+        Luddite::Keys key;
+        int scan_code;
+};
+
+struct CharEvent : public Event<CharEvent>
+{
+        CharEvent(unsigned char character_) : character{character_} {}
+        unsigned char character;
 };
 
 struct MouseButtonPressEvent : public Event<MouseButtonPressEvent>
@@ -76,9 +84,8 @@ struct MouseScrollEvent : public Event<MouseScrollEvent>
 
 struct MouseMotionEvent : public Event<MouseMotionEvent>
 {
-        MouseMotionEvent(int16_t x_, int16_t y_, uint16_t button_mask_) : x{x_}, y{y_}, button_mask{button_mask_} {}
-        int16_t x;
-        int16_t y;
-        uint16_t button_mask;
+        MouseMotionEvent(float x_, float y_) : x{x_}, y{y_} {}
+        float x;
+        float y;
 };
 }

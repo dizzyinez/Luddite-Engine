@@ -90,6 +90,11 @@ GLFWWindow::GLFWWindow(const std::string& title, int width, int height, int min_
         //set callbacks
         glfwSetWindowUserPointer(m_Window, this);
         glfwSetFramebufferSizeCallback(m_Window, GLFW_ResizeCallback);
+        glfwSetKeyCallback(m_Window, GLFW_KeyCallback);
+        glfwSetMouseButtonCallback(m_Window, GLFW_MouseButtonCallback);
+        glfwSetCursorPosCallback(m_Window, GLFW_CursorPosCallback);
+        glfwSetCharCallback(m_Window, GLFW_CharCallback);
+        glfwSetScrollCallback(m_Window, GLFW_ScrollCallback);
 
 
 
@@ -119,6 +124,34 @@ GLFWWindow::GLFWWindow(const std::string& title, int width, int height, int min_
                 SCDesc.Height
                 ));
 
+        auto& io = ImGui::GetIO();
+        io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
+        io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
+        io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
+        io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
+        io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
+        io.KeyMap[ImGuiKey_PageUp] = GLFW_KEY_PAGE_UP;
+        io.KeyMap[ImGuiKey_PageDown] = GLFW_KEY_PAGE_DOWN;
+        io.KeyMap[ImGuiKey_Home] = GLFW_KEY_HOME;
+        io.KeyMap[ImGuiKey_End] = GLFW_KEY_END;
+        io.KeyMap[ImGuiKey_Insert] = GLFW_KEY_INSERT;
+        io.KeyMap[ImGuiKey_Delete] = GLFW_KEY_DELETE;
+        io.KeyMap[ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE;
+        io.KeyMap[ImGuiKey_Space] = GLFW_KEY_SPACE;
+        io.KeyMap[ImGuiKey_Enter] = GLFW_KEY_ENTER;
+        io.KeyMap[ImGuiKey_Escape] = GLFW_KEY_ESCAPE;
+        io.KeyMap[ImGuiKey_KeyPadEnter] = GLFW_KEY_KP_ENTER;
+        io.KeyMap[ImGuiKey_A] = GLFW_KEY_A;
+        io.KeyMap[ImGuiKey_C] = GLFW_KEY_C;
+        io.KeyMap[ImGuiKey_V] = GLFW_KEY_V;
+        io.KeyMap[ImGuiKey_X] = GLFW_KEY_X;
+        io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
+        io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
+
+        io.SetClipboardTextFn = ImGui_ImplGlfw_SetClipboardText;
+        io.GetClipboardTextFn = ImGui_ImplGlfw_GetClipboardText;
+        io.ClipboardUserData = m_Window;
+
         ImGuiSetup();
         m_pImGuiImpl->CreateDeviceObjects();
 
@@ -141,8 +174,100 @@ void GLFWWindow::PollEvents()
 void GLFWWindow::GLFW_ResizeCallback(GLFWwindow* wnd, int w, int h)
 {
         auto* pSelf = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(wnd));
-        pSelf->OnWindowResize(w, h);
         auto& io = ImGui::GetIO();
+        pSelf->OnWindowResize(w, h);
         io.DisplaySize = ImVec2(w, h);
+}
+void GLFWWindow::GLFW_KeyCallback(GLFWwindow* wnd, int key, int scancode, int action, int mods)
+{
+        auto* pSelf = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(wnd));
+        auto& io = ImGui::GetIO();
+        if (key >= 0 && key < IM_ARRAYSIZE(io.KeysDown))
+        {
+                switch (action)
+                {
+                case GLFW_PRESS:
+                        io.KeysDown[key] = true;
+                        break;
+
+                case GLFW_RELEASE:
+                        io.KeysDown[key] = false;
+                        break;
+                }
+        }
+
+        io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+        io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+        io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
+#ifdef LD_PLATFORM_WINDOWS
+        io.KeySuper = false;
+#else
+        io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+#endif
+        switch (action)
+        {
+        case GLFW_PRESS:
+                Events::GetList<KeyPressEvent>().DispatchEvent(key, scancode);
+                break;
+
+        case GLFW_RELEASE:
+                Events::GetList<KeyReleaseEvent>().DispatchEvent(key, scancode);
+                break;
+        }
+}
+void GLFWWindow::GLFW_MouseButtonCallback(GLFWwindow* wnd, int button, int action, int mods)
+{
+        auto* pSelf = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(wnd));
+        auto& io = ImGui::GetIO();
+        bool is_pressed = action == GLFW_PRESS;
+        switch (button)
+        {
+        case GLFW_MOUSE_BUTTON_LEFT: io.MouseDown[0] = is_pressed; break;
+
+        case GLFW_MOUSE_BUTTON_RIGHT: io.MouseDown[1] = is_pressed; break;
+
+        case GLFW_MOUSE_BUTTON_MIDDLE: io.MouseDown[2] = is_pressed; break;
+
+        case GLFW_MOUSE_BUTTON_4: io.MouseDown[3] = is_pressed; break;
+
+        case GLFW_MOUSE_BUTTON_5: io.MouseDown[4] = is_pressed; break;
+        }
+        if (is_pressed)
+                Events::GetList<MouseButtonPressEvent>().DispatchEvent(button);
+        else
+                Events::GetList<MouseButtonReleaseEvent>().DispatchEvent(button);
+}
+void GLFWWindow::GLFW_CursorPosCallback(GLFWwindow* wnd, double xpos, double ypos)
+{
+        auto* pSelf = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(wnd));
+        auto& io = ImGui::GetIO();
+        io.MousePos = ImVec2(static_cast<float>(xpos), static_cast<float>(ypos));
+        Events::GetList<MouseMotionEvent>().DispatchEvent(xpos, ypos);
+}
+void GLFWWindow::GLFW_CharCallback(GLFWwindow* wnd, unsigned int c)
+{
+        auto* pSelf = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(wnd));
+        auto& io = ImGui::GetIO();
+        io.AddInputCharacter(c);
+        Events::GetList<CharEvent>().DispatchEvent(c);
+}
+
+void GLFWWindow::GLFW_ScrollCallback(GLFWwindow* wnd, double xoffset, double yoffset)
+{
+        auto* pSelf = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(wnd));
+        auto& io = ImGui::GetIO();
+        io.MouseWheelH = xoffset;
+        io.MouseWheel = yoffset;
+        Events::GetList<MouseScrollEvent>().DispatchEvent(yoffset);
+}
+
+const char* GLFWWindow::ImGui_ImplGlfw_GetClipboardText(void* user_data)
+{
+        return glfwGetClipboardString((GLFWwindow*)user_data);
+}
+
+void GLFWWindow::ImGui_ImplGlfw_SetClipboardText(void* user_data, const char* text)
+{
+        glfwSetClipboardString((GLFWwindow*)user_data, text);
 }
 }

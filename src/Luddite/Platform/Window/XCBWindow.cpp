@@ -227,7 +227,7 @@ void XCBWindow::PollEvents()
                         const auto* key_press = reinterpret_cast<const xcb_key_press_event_t*>(event);
                         xkb_keycode_t keycode = key_press->detail;
                         xkb_keysym_t keysym = xkb_state_key_get_one_sym(kb_info.state, keycode);
-                        Events::GetList<KeyPressEvent>().DispatchEvent(keysym);
+                        Events::GetList<KeyPressEvent>().DispatchEvent(keysym, keycode);
 
                         auto& io = ImGui::GetIO();
                         switch (keysym)
@@ -257,7 +257,7 @@ void XCBWindow::PollEvents()
                         xkb_keycode_t keycode = key_release->detail;
                         xkb_keysym_t keysym = xkb_state_key_get_one_sym(kb_info.state, keycode);
                         LD_LOG_INFO("KEY RELEASED: {}", keycode);
-                        Events::GetList<KeyReleaseEvent>().DispatchEvent(keysym);
+                        Events::GetList<KeyReleaseEvent>().DispatchEvent(keysym, keycode);
 
                         auto& io = ImGui::GetIO();
                         switch (keysym)
@@ -303,7 +303,7 @@ void XCBWindow::PollEvents()
                 case XCB_MOTION_NOTIFY:
                 {
                         const auto* motion_notify = reinterpret_cast<const xcb_motion_notify_event_t*>(event);
-                        Events::GetList<MouseMotionEvent>().DispatchEvent(motion_notify->event_x, motion_notify->event_y, motion_notify->state);
+                        Events::GetList<MouseMotionEvent>().DispatchEvent(motion_notify->event_x, motion_notify->event_y);
                         break;
                 }
                 }

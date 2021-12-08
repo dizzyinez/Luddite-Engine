@@ -22,292 +22,290 @@ enum class ModifierBits : uint16_t
         HyperLeft = 1 << 12,
         HyperRight = 1 << 13,
 };
-struct IO
+namespace IO
 {
-        //struct Keyboard
-        //{
-        //};
-        //struct Mouse
-        //{
-        //};
-        static constexpr uint32_t GetKeyCode(Keys key)
+static constexpr int GetKeyCode(Keys key)
+{
+        switch (key)
         {
-                switch (key)
-                {
-                case Keys::A: return 0;
+        case Keys::SPACE: return 0; break;
 
-                case Keys::B: return 1;
+        case Keys::APOSTROPHE: return 1; break;
 
-                case Keys::C: return 2;
+        case Keys::COMMA: return 2; break;
 
-                case Keys::D: return 3;
+        case Keys::MINUS: return 3; break;
 
-                case Keys::E: return 4;
+        case Keys::PERIOD: return 4; break;
 
-                case Keys::F: return 5;
+        case Keys::SLASH: return 5; break;
 
-                case Keys::G: return 6;
+        case Keys::ZERO: return 6; break;
 
-                case Keys::H: return 7;
+        case Keys::ONE: return 7; break;
 
-                case Keys::I: return 8;
+        case Keys::TWO: return 8; break;
 
-                case Keys::J: return 9;
+        case Keys::THREE: return 9; break;
 
-                case Keys::K: return 10;
+        case Keys::FOUR: return 10; break;
 
-                case Keys::L: return 11;
+        case Keys::FIVE: return 11; break;
 
-                case Keys::M: return 12;
+        case Keys::SIX: return 12; break;
 
-                case Keys::N: return 13;
+        case Keys::SEVEN: return 13; break;
 
-                case Keys::O: return 14;
+        case Keys::EIGHT: return 14; break;
 
-                case Keys::P: return 15;
+        case Keys::NINE: return 15; break;
 
-                case Keys::Q: return 16;
+        case Keys::SEMICOLON: return 16; break;
 
-                case Keys::R: return 17;
+        case Keys::EQUAL: return 17; break;
 
-                case Keys::S: return 18;
+        case Keys::A: return 18; break;
 
-                case Keys::T: return 19;
+        case Keys::B: return 19; break;
 
-                case Keys::U: return 20;
+        case Keys::C: return 20; break;
 
-                case Keys::V: return 21;
+        case Keys::D: return 21; break;
 
-                case Keys::W: return 22;
+        case Keys::E: return 22; break;
 
-                case Keys::X: return 23;
+        case Keys::F: return 23; break;
 
-                case Keys::Y: return 24;
+        case Keys::G: return 24; break;
 
-                case Keys::Z: return 25;
+        case Keys::H: return 25; break;
 
-                case Keys::Zero: return 26;
+        case Keys::I: return 26; break;
 
-                case Keys::One: return 27;
+        case Keys::J: return 27; break;
 
-                case Keys::Two: return 28;
+        case Keys::K: return 28; break;
 
-                case Keys::Three: return 29;
+        case Keys::L: return 29; break;
 
-                case Keys::Four: return 30;
+        case Keys::M: return 30; break;
 
-                case Keys::Five: return 31;
+        case Keys::N: return 31; break;
 
-                case Keys::Six: return 32;
+        case Keys::O: return 32; break;
 
-                case Keys::Seven: return 33;
+        case Keys::P: return 33; break;
 
-                case Keys::Eight: return 34;
+        case Keys::Q: return 34; break;
 
-                case Keys::Nine: return 35;
+        case Keys::R: return 35; break;
 
-                case Keys::Space: return 36;
+        case Keys::S: return 36; break;
 
-                case Keys::Exclamation: return 37;
+        case Keys::T: return 37; break;
 
-                case Keys::Quotedbl: return 38;
+        case Keys::U: return 38; break;
 
-                case Keys::Numbersign: return 39;
+        case Keys::V: return 39; break;
 
-                case Keys::Dollar: return 40;
+        case Keys::W: return 40; break;
 
-                case Keys::Percent: return 41;
+        case Keys::X: return 41; break;
 
-                case Keys::Ampersand: return 42;
+        case Keys::Y: return 42; break;
 
-                case Keys::Apostrophe: return 43;
+        case Keys::Z: return 43; break;
 
-                case Keys::ParenthesisLeft: return 44;
+        case Keys::LEFT_BRACKET: return 44; break;
 
-                case Keys::ParenthesisRight: return 45;
+        case Keys::BACKSLASH: return 45; break;
 
-                case Keys::Asterisk: return 46;
+        case Keys::RIGHT_BRACKET: return 46; break;
 
-                case Keys::Plus: return 47;
+        case Keys::GRAVE_ACCENT: return 47; break;
 
-                case Keys::Comma: return 48;
+        case Keys::WORLD_1: return 48; break;
 
-                case Keys::Minus: return 49;
+        case Keys::WORLD_2: return 49; break;
 
-                case Keys::Period: return 50;
+        case Keys::ESCAPE: return 50; break;
 
-                case Keys::Slash: return 51;
+        case Keys::ENTER: return 51; break;
 
-                case Keys::Colon: return 52;
+        case Keys::TAB: return 52; break;
 
-                case Keys::Semicolon: return 53;
+        case Keys::BACKSPACE: return 53; break;
 
-                case Keys::Less: return 54;
+        case Keys::INSERT: return 54; break;
 
-                case Keys::Equal: return 55;
+        case Keys::DELETE: return 55; break;
 
-                case Keys::Greater: return 56;
+        case Keys::RIGHT: return 56; break;
 
-                case Keys::QuestionMark: return 57;
+        case Keys::LEFT: return 57; break;
 
-                case Keys::At: return 58;
+        case Keys::DOWN: return 58; break;
 
-                case Keys::BracketLeft: return 59;
+        case Keys::UP: return 59; break;
 
-                case Keys::BracketRight: return 60;
+        case Keys::PAGE_UP: return 60; break;
 
-                case Keys::Backslash: return 61;
+        case Keys::PAGE_DOWN: return 61; break;
 
-                case Keys::Asciicircum: return 62;
+        case Keys::HOME: return 62; break;
 
-                case Keys::Underscore: return 63;
+        case Keys::END: return 63; break;
 
-                case Keys::Grave: return 64;
+        case Keys::CAPS_LOCK: return 64; break;
 
-                case Keys::BraceLeft: return 65;
+        case Keys::SCROLL_LOCK: return 65; break;
 
-                case Keys::BraceRight: return 66;
+        case Keys::NUM_LOCK: return 66; break;
 
-                case Keys::Bar: return 67;
+        case Keys::PRINT_SCREEN: return 67; break;
 
-                case Keys::Asciitilde: return 68;
+        case Keys::PAUSE: return 68; break;
 
-                case Keys::ShiftLeft: return 69;
+        case Keys::F1: return 69; break;
 
-                case Keys::ShiftRight: return 70;
+        case Keys::F2: return 70; break;
 
-                case Keys::ControlLeft: return 71;
+        case Keys::F3: return 71; break;
 
-                case Keys::ControlRight: return 72;
+        case Keys::F4: return 72; break;
 
-                case Keys::CapsLock: return 73;
+        case Keys::F5: return 73; break;
 
-                case Keys::ShiftLock: return 74;
+        case Keys::F6: return 74; break;
 
-                case Keys::MetaLeft: return 75;
+        case Keys::F7: return 75; break;
 
-                case Keys::MetaRight: return 76;
+        case Keys::F8: return 76; break;
 
-                case Keys::AltLeft: return 77;
+        case Keys::F9: return 77; break;
 
-                case Keys::AltRight: return 78;
+        case Keys::F10: return 78; break;
 
-                case Keys::SuperLeft: return 79;
+        case Keys::F11: return 79; break;
 
-                case Keys::SuperRight: return 80;
+        case Keys::F12: return 80; break;
 
-                case Keys::HyperLeft: return 81;
+        case Keys::F13: return 81; break;
 
-                case Keys::HyperRight: return 82;
+        case Keys::F14: return 82; break;
 
-                case Keys::F1: return 83;
+        case Keys::F15: return 83; break;
 
-                case Keys::F2: return 84;
+        case Keys::F16: return 84; break;
 
-                case Keys::F3: return 85;
+        case Keys::F17: return 85; break;
 
-                case Keys::F4: return 86;
+        case Keys::F18: return 86; break;
 
-                case Keys::F5: return 87;
+        case Keys::F19: return 87; break;
 
-                case Keys::F6: return 88;
+        case Keys::F20: return 88; break;
 
-                case Keys::F7: return 89;
+        case Keys::F21: return 89; break;
 
-                case Keys::F8: return 90;
+        case Keys::F22: return 90; break;
 
-                case Keys::F9: return 91;
+        case Keys::F23: return 91; break;
 
-                case Keys::F10: return 92;
+        case Keys::F24: return 92; break;
 
-                case Keys::F11: return 93;
+        case Keys::F25: return 93; break;
 
-                case Keys::F12: return 94;
+        case Keys::KP_0: return 94; break;
 
-                case Keys::F13: return 95;
+        case Keys::KP_1: return 95; break;
 
-                case Keys::F14: return 96;
+        case Keys::KP_2: return 96; break;
 
-                case Keys::F15: return 97;
+        case Keys::KP_3: return 97; break;
 
-                case Keys::F16: return 98;
+        case Keys::KP_4: return 98; break;
 
-                case Keys::F17: return 99;
+        case Keys::KP_5: return 99; break;
 
-                case Keys::F18: return 100;
+        case Keys::KP_6: return 100; break;
 
-                case Keys::F19: return 101;
+        case Keys::KP_7: return 101; break;
 
-                case Keys::F20: return 102;
+        case Keys::KP_8: return 102; break;
 
-                case Keys::F21: return 103;
+        case Keys::KP_9: return 103; break;
 
-                case Keys::F22: return 104;
+        case Keys::KP_DECIMAL: return 104; break;
 
-                case Keys::F23: return 105;
+        case Keys::KP_DIVIDE: return 105; break;
 
-                case Keys::F24: return 106;
+        case Keys::KP_MULTIPLY: return 106; break;
 
-                case Keys::F25: return 107;
+        case Keys::KP_SUBTRACT: return 107; break;
 
-                case Keys::F26: return 108;
+        case Keys::KP_ADD: return 108; break;
 
-                case Keys::F27: return 109;
+        case Keys::KP_ENTER: return 109; break;
 
-                case Keys::F28: return 110;
+        case Keys::KP_EQUAL: return 110; break;
 
-                case Keys::F29: return 111;
+        case Keys::LEFT_SHIFT: return 111; break;
 
-                case Keys::F30: return 112;
+        case Keys::LEFT_CONTROL: return 112; break;
 
-                case Keys::F31: return 113;
+        case Keys::LEFT_ALT: return 113; break;
 
-                case Keys::F32: return 114;
+        case Keys::LEFT_SUPER: return 114; break;
 
-                case Keys::F33: return 115;
+        case Keys::RIGHT_SHIFT: return 115; break;
 
-                case Keys::F34: return 116;
+        case Keys::RIGHT_CONTROL: return 116; break;
 
-                case Keys::F35: return 117;
+        case Keys::RIGHT_ALT: return 117; break;
 
-                default: return 118;
-                }
-        };
-        static inline constexpr uint32_t GetNumKeys() {return 119;}
-        static constexpr uint16_t GetModBit(Keys key)
+        case Keys::RIGHT_SUPER: return 118; break;
+
+        case Keys::MENU: return 119; break;
+
+        case Keys::UNKNOWN: return 120; break;
+        }
+};
+static inline constexpr uint32_t GetNumKeys() {return 121;}
+static constexpr uint16_t GetModBit(Keys key)
+{
+        switch (key)
         {
-                switch (key)
-                {
-                case Keys::ShiftLeft: return static_cast<uint16_t>(ModifierBits::ShiftLeft);
+        case Keys::LEFT_SHIFT: return static_cast<uint16_t>(ModifierBits::ShiftLeft);
 
-                case Keys::ShiftRight: return static_cast<uint16_t>(ModifierBits::ShiftRight);
+        case Keys::RIGHT_SHIFT: return static_cast<uint16_t>(ModifierBits::ShiftRight);
 
-                case Keys::ControlLeft: return static_cast<uint16_t>(ModifierBits::ControlLeft);
+        case Keys::LEFT_CONTROL: return static_cast<uint16_t>(ModifierBits::ControlLeft);
 
-                case Keys::ControlRight: return static_cast<uint16_t>(ModifierBits::ControlRight);
+        case Keys::RIGHT_CONTROL: return static_cast<uint16_t>(ModifierBits::ControlRight);
 
-                case Keys::CapsLock: return static_cast<uint16_t>(ModifierBits::CapsLock);
+        case Keys::CAPS_LOCK: return static_cast<uint16_t>(ModifierBits::CapsLock);
 
-                case Keys::ShiftLock: return static_cast<uint16_t>(ModifierBits::ShiftLock);
+        //case Keys::SHIFT_LOCK: return static_cast<uint16_t>(ModifierBits::ShiftLock);
 
-                case Keys::MetaLeft: return static_cast<uint16_t>(ModifierBits::MetaLeft);
+        //case Keys::MetaLeft: return static_cast<uint16_t>(ModifierBits::MetaLeft);
 
-                case Keys::MetaRight: return static_cast<uint16_t>(ModifierBits::MetaRight);
+        //case Keys::MetaRight: return static_cast<uint16_t>(ModifierBits::MetaRight);
 
-                case Keys::AltLeft: return static_cast<uint16_t>(ModifierBits::AltLeft);
+        case Keys::LEFT_ALT: return static_cast<uint16_t>(ModifierBits::AltLeft);
 
-                case Keys::AltRight: return static_cast<uint16_t>(ModifierBits::AltRight);
+        case Keys::RIGHT_ALT: return static_cast<uint16_t>(ModifierBits::AltRight);
 
-                case Keys::SuperLeft: return static_cast<uint16_t>(ModifierBits::SuperLeft);
+        case Keys::LEFT_SUPER: return static_cast<uint16_t>(ModifierBits::SuperLeft);
 
-                case Keys::SuperRight: return static_cast<uint16_t>(ModifierBits::SuperRight);
+        case Keys::RIGHT_SUPER: return static_cast<uint16_t>(ModifierBits::SuperRight);
 
-                case Keys::HyperLeft: return static_cast<uint16_t>(ModifierBits::HyperLeft);
+        //case Keys::HyperLeft: return static_cast<uint16_t>(ModifierBits::HyperLeft);
 
-                case Keys::HyperRight: return static_cast<uint16_t>(ModifierBits::HyperRight);
+        //case Keys::HyperRight: return static_cast<uint16_t>(ModifierBits::HyperRight);
 
-                default: return 0;
-                }
-        };
+        default: return 0;
+        }
+};
 };
 }
