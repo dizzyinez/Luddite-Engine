@@ -20,6 +20,7 @@ class LUDDITE_API GLFWWindow : public Window
         static void GLFW_CursorPosCallback(GLFWwindow* wnd, double xpos, double ypos);
         static void GLFW_CharCallback(GLFWwindow* wnd, unsigned int c);
         static void GLFW_ScrollCallback(GLFWwindow* wnd, double xoffset, double yoffset);
+        static void GLFW_WindowCloseCallback(GLFWwindow* wnd);
         static const char* ImGui_ImplGlfw_GetClipboardText(void* user_data);
         static void ImGui_ImplGlfw_SetClipboardText(void* user_data, const char* text);
 };

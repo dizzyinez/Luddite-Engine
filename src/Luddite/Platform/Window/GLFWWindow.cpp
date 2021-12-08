@@ -95,6 +95,7 @@ GLFWWindow::GLFWWindow(const std::string& title, int width, int height, int min_
         glfwSetCursorPosCallback(m_Window, GLFW_CursorPosCallback);
         glfwSetCharCallback(m_Window, GLFW_CharCallback);
         glfwSetScrollCallback(m_Window, GLFW_ScrollCallback);
+        glfwSetWindowCloseCallback(m_Window, GLFW_WindowCloseCallback);
 
 
 
@@ -269,5 +270,10 @@ const char* GLFWWindow::ImGui_ImplGlfw_GetClipboardText(void* user_data)
 void GLFWWindow::ImGui_ImplGlfw_SetClipboardText(void* user_data, const char* text)
 {
         glfwSetClipboardString((GLFWwindow*)user_data, text);
+}
+void GLFWWindow::GLFW_WindowCloseCallback(GLFWwindow* wnd)
+{
+        auto* pSelf = static_cast<GLFWWindow*>(glfwGetWindowUserPointer(wnd));
+        pSelf->Quit = true;
 }
 }
