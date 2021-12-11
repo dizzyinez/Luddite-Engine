@@ -20,6 +20,7 @@
 #include "Luddite/ECS/Modules/Transform3D.hpp"
 #include "Luddite/ECS/Modules/Graphics.hpp"
 #include "Luddite/ECS/Modules/Physics.hpp"
+#include "Luddite/ECS/Modules/Box2D.hpp"
 
 //Layers
 #include "Luddite/Layers/EditorLayer.hpp"

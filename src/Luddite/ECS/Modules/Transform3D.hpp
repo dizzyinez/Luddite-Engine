@@ -32,7 +32,6 @@ struct Components
 {
         Components(flecs::world& w)
         {
-                w.import<Luddite::Components>();
                 w.module<Components>();
                 LD_COMPONENT_REGISTER(Translation, "Translation", w);
                 LD_COMPONENT_REGISTER(Scale, "Scale", w);
@@ -47,6 +46,7 @@ struct Systems
 {
         Systems(flecs::world& w)
         {
+                w.import<Luddite::Components>();
                 w.import<Components>();
                 w.module<Systems>();
         }

@@ -33,7 +33,6 @@ LD_COMPONENT_DEFINE(CircleCollider,
 struct Components
 {
         Components(flecs::world &w) {
-                w.import<Transform3D::Components>();
                 w.module<Components>();
                 LD_COMPONENT_REGISTER(LinearVelocity, "Linear Velocity", w);
                 LD_COMPONENT_REGISTER(AngularVelocity, "Angular Velocity", w);
@@ -47,6 +46,11 @@ struct Systems
 {
         Systems(flecs::world &w)
         {
+                w.import<Luddite::Components>();
+                w.import<Transform3D::Components>();
+                w.import<Components>();
+                w.module<Systems>();
+                w.import<Transform3D::Components>();
                 w.import<Components>();
                 w.module<Systems>();
 

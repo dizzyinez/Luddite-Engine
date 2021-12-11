@@ -53,47 +53,54 @@ struct Components
                 auto on_update = w.component<OnUpdate         >();
                 auto post_update = w.component<PostUpdate     >();
 
-                //w.component<RenderPipeline>();
-                auto pre_render = w.component<PreRender       >();
-                auto on_render = w.component<OnRender         >();
-                auto post_render = w.component<PostRender     >();
-
                 //w.component<SimulationPipeline                >();
                 auto pre_simulate = w.component<PreSimulate   >();
                 auto on_simulate = w.component<OnSimulate     >();
                 auto post_simulate = w.component<PostSimulate >();
 
-                w.component<InputPipeline>("InputPipeline")
-                .emplace<flecs::pipeline>(
-                        w.pipeline("Input Pipeline")
-                        .add(on_input)
-                        .add(post_input));
+                //w.component<SimulationPipeline                >();
+                auto pre_render = w.component<PreRender   >();
+                auto on_render = w.component<OnRender     >();
+                auto post_render = w.component<PostRender >();
 
-                w.component<UpdatePipeline>("UpdatePipeline")
-                .emplace<flecs::pipeline>(
-                        w.pipeline("Update Pipeline")
-                        .add(pre_update)
-                        .add(on_update)
-                        .add(post_update));
+                flecs::pipeline(w, w.id<InputPipeline>().entity())
+                .add(on_input)
+                .add(post_input);
 
-                w.component<RenderPipeline>("RenderPipeline")
-                .emplace<flecs::pipeline>(
-                        w.pipeline("Render Pipeline")
-                        .add(pre_render)
-                        .add(on_render)
-                        .add(post_render));
+                flecs::pipeline(w, w.id<UpdatePipeline>().entity())
+                .add(pre_update)
+                .add(on_update)
+                .add(post_update);
 
-                w.component<SimulationPipeline>("SimulationPipeline")
-                .emplace<flecs::pipeline>(
-                        w.pipeline("Simulation Pipeline")
-                        .add(pre_simulate)
-                        .add(on_simulate)
-                        .add(post_simulate));
+                flecs::pipeline(w, w.id<SimulationPipeline>().entity())
+                .add(pre_simulate)
+                .add(on_simulate)
+                .add(post_simulate);
+
+                flecs::pipeline(w, w.id<RenderPipeline>().entity())
+                .add(pre_render)
+                .add(on_render)
+                .add(post_render);
 
                 w.id<Scene>().entity();
                 w.id<Prefabs>().entity();
 
                 w.component<ReflectionData>();
+        }
+};
+
+struct Systems
+{
+        Systems(flecs::world& w)
+        {
+                w.system<>("Input Pipeline Dummy System")
+                .kind(w.id<OnInput>()).iter([](flecs::iter it){});
+                w.system<>("Update Pipeline Dummy System")
+                .kind(w.id<OnUpdate>()).iter([](flecs::iter it){});
+                w.system<>("Simulate Pipeline Dummy System")
+                .kind(w.id<OnSimulate>()).iter([](flecs::iter it){});
+                w.system<>("Render Pipeline Dummy System")
+                .kind(w.id<OnRender>()).iter([](flecs::iter it){});
         }
 };
 }

@@ -41,6 +41,10 @@ set(BUILD_EXTRAS OFF CACHE BOOL "" FORCE)
 set(BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/bullet3)
 
+set(BOX2D_BUILD_UNIT_TESTS OFF CACHE BOOL "" FORCE)
+set(BOX2D_BUILD_TESTBED OFF CACHE BOOL "" FORCE)
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/box2d)
+
 set (ENGINE_COMPILE_DEFINES LD_BUILD_LIB)
 if (LINUX)
     set(PLATFORM_DEFINE LD_PLATFORM_LINUX)
@@ -88,6 +92,7 @@ set(LUDDITE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src "${CMAKE_CURRENT_SOURCE_DIR}
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/ImGuizmo/"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/libxkbcommon/include"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/bullet3/src"
+"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/box2d/include"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/yaml-cpp/include"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw/include"
 )
@@ -138,6 +143,7 @@ glfw
 spdlog 
 yaml-cpp
 Bullet3Dynamics Bullet3Collision Bullet3Geometry BulletInverseDynamics BulletSoftBody BulletCollision BulletDynamics LinearMath Bullet3Common
+box2d
 assimp
 flecs
 )

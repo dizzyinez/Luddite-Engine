@@ -117,7 +117,7 @@ struct Systems
                                 Luddite::Renderer::BeginScene();
                         });
 
-                w.system<const Transform3D::Translation, const Transform3D::Rotation, const Transform3D::Scale, const Model>()
+                w.system<const Transform3D::Translation, const Transform3D::Rotation, const Transform3D::Scale, const Model>("Submit Meshes")
                 .kind(w.id<Luddite::OnRender>())
                 .each([](flecs::entity e, const Transform3D::Translation& t, const Transform3D::Rotation& r, const Transform3D::Scale& s, const Model& m){
                                 glm::mat4 node_transforms[m.ModelHandle->m_Nodes.size()];
@@ -140,7 +140,7 @@ struct Systems
                                 }
                         });
 
-                w.system<const Transform3D::Translation, const PointLight>()
+                w.system<const Transform3D::Translation, const PointLight>("Submit Point Lights")
                 .kind(w.id<Luddite::OnRender>())
                 .each([](flecs::entity e, const Transform3D::Translation& t, const PointLight& l){
                                 Luddite::PointLightCPU light;
@@ -151,7 +151,7 @@ struct Systems
                                 Luddite::Renderer::SubmitPointLight(light);
                         });
 
-                w.system<const Transform3D::Translation, const Transform3D::Rotation, const SpotLight>()
+                w.system<const Transform3D::Translation, const Transform3D::Rotation, const SpotLight>("Submit Spot Light")
                 .kind(w.id<Luddite::OnRender>())
                 .each([](flecs::entity e, const Transform3D::Translation& t, const Transform3D::Rotation& r, const SpotLight& l){
                                 Luddite::SpotLightCPU light;
@@ -164,7 +164,7 @@ struct Systems
                                 Luddite::Renderer::SubmitSpotLight(light);
                         });
 
-                w.system<const Transform3D::Rotation, const DirectionalLight>()
+                w.system<const Transform3D::Rotation, const DirectionalLight>("Submit Directional Lights")
                 .kind(w.id<Luddite::OnRender>())
                 .each([](flecs::entity e, const Transform3D::Rotation& r, const DirectionalLight& l){
                                 Luddite::DirectionalLightCPU light;
