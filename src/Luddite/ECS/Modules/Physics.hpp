@@ -34,11 +34,11 @@ struct Components
 {
         Components(flecs::world &w) {
                 w.module<Components>();
-                LD_COMPONENT_REGISTER(LinearVelocity, "Linear Velocity", w);
-                LD_COMPONENT_REGISTER(AngularVelocity, "Angular Velocity", w);
-                LD_COMPONENT_REGISTER(LinearDamping, "Linear Damping", w);
-                LD_COMPONENT_REGISTER(AngularDamping, "Angular Damping", w);
-                LD_COMPONENT_REGISTER(CircleCollider, "Circle Collider", w);
+                LD_COMPONENT_REGISTER(LinearVelocity, w);
+                LD_COMPONENT_REGISTER(AngularVelocity, w);
+                LD_COMPONENT_REGISTER(LinearDamping, w);
+                LD_COMPONENT_REGISTER(AngularDamping, w);
+                LD_COMPONENT_REGISTER(CircleCollider, w);
         }
 };
 

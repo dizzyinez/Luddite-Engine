@@ -10,6 +10,7 @@ class LUDDITE_API Layer
         public:
         flecs::world& GetWorld() {return m_World;}
         virtual ~Layer() {}
+        inline void InitLayer() {Initialize(); initialized = true;}
         protected:
         friend class LayerStack;
         virtual void Initialize() {}

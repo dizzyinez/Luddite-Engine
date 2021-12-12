@@ -93,6 +93,8 @@ struct Systems
 {
         Systems(flecs::world& w)
         {
+                w.import<Luddite::Components>();
+                w.module<Systems>();
                 w.system<>("Input Pipeline Dummy System")
                 .kind(w.id<OnInput>()).iter([](flecs::iter it){});
                 w.system<>("Update Pipeline Dummy System")

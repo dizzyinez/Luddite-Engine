@@ -29,7 +29,7 @@ struct Components
         Components(flecs::world& w)
         {
                 w.module<Components>();
-                LD_COMPONENT_REGISTER(KeyboardState, "Keyboard State", w);
+                LD_COMPONENT_REGISTER(KeyboardState, w);
                 w.set<KeyboardState>({});
         }
 };

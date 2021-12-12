@@ -94,6 +94,7 @@ void Application::Run()
         }
         LD_LOG_INFO("Exiting Main Window");
 }
+
 void Application::CreateMainWindow(const std::string& Name, int width, int height, int min_width, int min_height)
 {
         //TEMP

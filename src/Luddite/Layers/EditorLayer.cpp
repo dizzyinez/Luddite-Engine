@@ -2,6 +2,7 @@
 #include "Luddite/Core/Profiler.hpp"
 #include "Luddite/ECS/Modules/Graphics.hpp"
 #include "Luddite/ECS/Modules/Physics.hpp"
+#include "Luddite/ECS/Modules/Input.hpp"
 #include "Luddite/Layers/Editor/ViewportPanel.hpp"
 #include "Luddite/Layers/Editor/HeirarchyPanel.hpp"
 #include "Luddite/Layers/Editor/ComponentsPanel.hpp"
@@ -11,9 +12,10 @@ namespace Luddite
 {
 void EditorLayer::Initialize()
 {
-        m_World.import<Luddite::Components>();
+        m_World.import<Luddite::Systems>();
+        m_World.import<Input::Systems>();
+        m_World.import<Transform3D::Components>();
         m_World.import<Graphics::Systems>();
-        m_World.import<Physics::Components>();
         m_Ctx.world = &m_World;
         AddPanel<ViewportPanel>();
         AddPanel<HeirarchyPanel>();
@@ -111,5 +113,15 @@ void EditorLayer::RenderDockSpace()
         }
 
         ImGui::End();
+}
+void EditorLayer::AttachToLayer(std::shared_ptr<Layer> layer)
+{
+        LD_LOG_INFO("Editor Layer has attached to {}", (void*)layer.get());
+        m_pAttachedLayer = layer;
+        m_Ctx.world = &layer->GetWorld();
+}
+void EditorLayer::DetachLayer()
+{
+        m_pAttachedLayer = nullptr;
 }
 }

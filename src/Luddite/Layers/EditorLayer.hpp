@@ -16,6 +16,8 @@ class LUDDITE_API EditorLayer : public Layer
         inline void AddPanel(std::shared_ptr<Panel> panel) {m_Panels.emplace_back(panel);}
         template <typename P>
         inline void AddPanel() {m_Panels.emplace_back(std::make_shared<P>());}
+        void AttachToLayer(std::shared_ptr<Layer> layer);
+        void DetachLayer();
         protected:
         virtual void Initialize() override;
         virtual void HandleEvents() override;
@@ -28,5 +30,6 @@ class LUDDITE_API EditorLayer : public Layer
         EditorContext m_Ctx;
         private:
         void RenderDockSpace();
+        std::shared_ptr<Layer> m_pAttachedLayer;
 };
 }

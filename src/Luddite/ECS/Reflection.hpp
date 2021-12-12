@@ -53,8 +53,8 @@
                         } \
                 }; \
         };
-#define LD_COMPONENT_REGISTER(Name, StringName, w) \
-        w.component<Name>(StringName) \
+#define LD_COMPONENT_REGISTER(Name, w) \
+        w.component<Name>() \
         .set<Luddite::ReflectionData>({[](void* data){ \
                                                Name::Meta::apply(*reinterpret_cast<Name*>(data), [](const auto& type_info, auto& value){ \
                                 type_info.IMGuiElement(value); \

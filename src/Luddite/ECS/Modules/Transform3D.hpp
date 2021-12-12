@@ -33,9 +33,13 @@ struct Components
         Components(flecs::world& w)
         {
                 w.module<Components>();
-                LD_COMPONENT_REGISTER(Translation, "Translation", w);
-                LD_COMPONENT_REGISTER(Scale, "Scale", w);
-                LD_COMPONENT_REGISTER(Rotation, "Rotation", w);
+                //w.component<Translation>();
+                //w.component<Translation>("Translation");
+                //w.component<Scale>("Scale");
+                //w.component<Rotation>("Rotation");
+                LD_COMPONENT_REGISTER(Translation, w);
+                LD_COMPONENT_REGISTER(Scale, w);
+                LD_COMPONENT_REGISTER(Rotation, w);
 
                 //w.id<Luddite::Scene>().entity().add<Translation>();
                 //w.id<Luddite::Scene>().entity().add<Rotation>();

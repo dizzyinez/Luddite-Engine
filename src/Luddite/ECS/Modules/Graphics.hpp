@@ -76,15 +76,15 @@ struct Components
         Components(flecs::world& w)
         {
                 w.module<Components>();
-                w.component<MainWindow>("Main Window");
+                w.component<MainWindow>();
                 w.set<MainWindow>({});
-                w.component<RenderToMainWindow>("Render To Main Window");
-                LD_COMPONENT_REGISTER(Camera, "Camera", w);
-                w.component<RenderTarget>("Render Target");
-                w.component<PointLight>("Point Light");
-                w.component<SpotLight>("Spot Light");
-                w.component<DirectionalLight>("Directional Light");
-                w.component<Model>("Model");
+                w.component<RenderToMainWindow>();
+                LD_COMPONENT_REGISTER(Camera, w);
+                w.component<RenderTarget>();
+                w.component<PointLight>();
+                w.component<SpotLight>();
+                w.component<DirectionalLight>();
+                w.component<Model>();
                 //w.id<MainWindow>().entity().add<RenderTarget>();
         }
 };

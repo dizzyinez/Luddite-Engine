@@ -40,4 +40,12 @@ LD_COMPONENT_DEFINE(PhysicsMaterial,
         ((float)Restitution, (0.f)),
         ((float)RestitutionThreshold, (0.5f))
         )
+//LD_COMPONENT_DEFINE(LinearVelocity,
+//        (),
+//        ((glm::vec3)Velocity, ({0.f, 0.f, 0.f}))
+//        );
+//LD_COMPONENT_DEFINE(AngularVelocity,
+//        (),
+//        ((float)Velocity, ({}))
+//        );
 }

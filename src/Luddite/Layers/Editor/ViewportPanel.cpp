@@ -55,6 +55,6 @@ void Luddite::ViewportPanel::OnRender(EditorContext& ctx)
                 return;
         CheckForResize();
         ctx.world->set<Graphics::MainWindow>({m_RenderTexture.GetRenderTarget()});
-        ctx.world->set_pipeline(*ctx.world->id<Luddite::RenderPipeline>().entity().get<flecs::pipeline>());
+        ecs_set_pipeline(*ctx.world, ctx.world->id<Luddite::RenderPipeline>());
         ctx.world->progress();
 }
