@@ -3,6 +3,7 @@
 #include "Luddite/ECS/Modules/Graphics.hpp"
 #include "Luddite/ECS/Modules/Physics.hpp"
 #include "Luddite/ECS/Modules/Input.hpp"
+#include "Luddite/ECS/Modules/Box2D.hpp"
 #include "Luddite/Layers/Editor/ViewportPanel.hpp"
 #include "Luddite/Layers/Editor/HeirarchyPanel.hpp"
 #include "Luddite/Layers/Editor/ComponentsPanel.hpp"
@@ -14,8 +15,10 @@ void EditorLayer::Initialize()
 {
         m_World.import<Luddite::Systems>();
         m_World.import<Input::Systems>();
-        m_World.import<Transform3D::Components>();
+        m_World.import<Transform3D::Systems>();
         m_World.import<Graphics::Systems>();
+        m_World.import<Box2D::Systems>();
+
         m_Ctx.world = &m_World;
         AddPanel<ViewportPanel>();
         AddPanel<HeirarchyPanel>();
