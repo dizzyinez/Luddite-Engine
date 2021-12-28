@@ -26,8 +26,8 @@ void Application::Run()
         // std::chrono::microseconds min_render_time(1000000 / 300); //300 max fps
         std::chrono::microseconds min_render_time(0); //unlimited fps
 
-        std::chrono::microseconds update_accululator(0);
-        std::chrono::microseconds render_accululator(0);
+        std::chrono::microseconds update_accululator(min_update_time);
+        std::chrono::microseconds render_accululator(min_render_time);
         // m_pMainWindow->m_Vsync = true;
 
         Initialize();
@@ -48,12 +48,16 @@ void Application::Run()
                 m_pMainWindow->PollEvents();
                 m_pMainWindow->HandleEvents();
                 OnUpdate(delta_time);
-                while (update_accululator > min_update_time)
+                int update_count = 0;
+                while (update_accululator >= min_update_time && update_count < 10)
                 {
                         //update
                         update_accululator -= min_update_time;
                         OnFixedUpdate(fixed_dt);
+                        update_count++;
                 }
+                if (update_count > 1)
+                        LD_LOG_WARN("Falling Behind! Had to run {} Fixed updates in 1 frame!", update_count);
 
                 //TEMP
                 float lerp_alpha = 1.0f;

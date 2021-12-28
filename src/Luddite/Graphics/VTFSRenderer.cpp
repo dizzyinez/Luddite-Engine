@@ -174,6 +174,11 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
 
         m_ClusterCBAttributes.MapBuffer(m_ClusterCBData, m_ClusterCB);
         m_BasicModelCameraCBAttributes.MapBuffer(m_BasicModelCameraCBData, m_BasicModelCameraCB);
+        {
+                MapHelper<glm::mat4> pBones{Renderer::GetContext(), m_BoneTransformsCB, MAP_WRITE, MAP_FLAG_DISCARD};
+        }
+        const void* pLastBoneTransformMapKey = nullptr;
+        uint32_t LastNumBones = 0;
 
         //Set Render Targets
         {
@@ -192,14 +197,31 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                 Renderer::GetContext()->CommitShaderResources(data->OpaqueDepthSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                 for (auto material_pair : render_scene.m_Meshes)
                 {
-                        for (auto mesh_pair : material_pair.second)
+                        for (auto mesh_entry : material_pair.second)
                         {
-                                auto& mesh = mesh_pair.first;
+                                auto& mesh = mesh_entry.mesh;
                                 Uint32 offset = 0;
                                 IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
                                 Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
                                 Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-                                auto& transform = mesh_pair.second;
+                                auto& transform = mesh_entry.transform;
+
+                                if (mesh_entry.bones_matrices_key != nullptr)
+                                {
+                                        if (mesh_entry.bones_matrices_key != pLastBoneTransformMapKey)
+                                        {
+                                                const auto& bt = render_scene.m_BoneTransforms.at(mesh_entry.bones_matrices_key);
+                                                MapHelper<glm::mat4> pBones{Renderer::GetContext(), m_BoneTransformsCB, MAP_WRITE, MAP_FLAG_DISCARD};
+                                                memcpy(pBones, bt.data(), bt.size() * sizeof(glm::mat4));
+                                                pLastBoneTransformMapKey = mesh_entry.bones_matrices_key;
+                                                LastNumBones = bt.size();
+                                                m_BasicModelCameraCBAttributes.SetUInt(m_BasicModelCameraCBData, "BoneCount", bt.size());
+                                        }
+                                        else
+                                                m_BasicModelCameraCBAttributes.SetUInt(m_BasicModelCameraCBData, "BoneCount", LastNumBones);
+                                }
+                                else
+                                        m_BasicModelCameraCBAttributes.SetUInt(m_BasicModelCameraCBData, "BoneCount", 0);
 
                                 m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelViewProjection", view_projection * transform);
                                 m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelView", view * transform);
@@ -223,14 +245,31 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                 Renderer::GetContext()->CommitShaderResources(data->ClusterSamplesSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                 for (auto material_pair : render_scene.m_Meshes)
                 {
-                        for (auto mesh_pair : material_pair.second)
+                        for (auto mesh_entry : material_pair.second)
                         {
-                                auto& mesh = mesh_pair.first;
+                                auto& mesh = mesh_entry.mesh;
                                 Uint32 offset = 0;
                                 IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
                                 Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
                                 Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-                                auto& transform = mesh_pair.second;
+                                auto& transform = mesh_entry.transform;
+
+                                if (mesh_entry.bones_matrices_key != nullptr)
+                                {
+                                        if (mesh_entry.bones_matrices_key != pLastBoneTransformMapKey)
+                                        {
+                                                const auto& bt = render_scene.m_BoneTransforms.at(mesh_entry.bones_matrices_key);
+                                                MapHelper<glm::mat4> pBones{Renderer::GetContext(), m_BoneTransformsCB, MAP_WRITE, MAP_FLAG_DISCARD};
+                                                memcpy(pBones, bt.data(), bt.size() * sizeof(glm::mat4));
+                                                pLastBoneTransformMapKey = mesh_entry.bones_matrices_key;
+                                                LastNumBones = bt.size();
+                                                m_BasicModelCameraCBAttributes.SetUInt(m_BasicModelCameraCBData, "BoneCount", bt.size());
+                                        }
+                                        else
+                                                m_BasicModelCameraCBAttributes.SetUInt(m_BasicModelCameraCBData, "BoneCount", LastNumBones);
+                                }
+                                else
+                                        m_BasicModelCameraCBAttributes.SetUInt(m_BasicModelCameraCBData, "BoneCount", 0);
 
                                 m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelViewProjection", view_projection * transform);
                                 m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelView", view * transform);
@@ -584,14 +623,31 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                                 srb = it->second;
                         Renderer::GetContext()->CommitShaderResources(srb, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                         material_pair.first->m_pShader->m_PropertiesBufferDescription.MapBuffer(material_pair.first->m_Properties, material_pair.first->m_pShader->m_PropertiesBuffer);
-                        for (auto mesh_pair : material_pair.second)
+                        for (auto mesh_entry : material_pair.second)
                         {
-                                auto& mesh = mesh_pair.first;
+                                auto& mesh = mesh_entry.mesh;
                                 Uint32 offset = 0;
                                 IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
                                 Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
                                 Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
-                                auto& transform = mesh_pair.second;
+                                auto& transform = mesh_entry.transform;
+
+                                if (mesh_entry.bones_matrices_key != nullptr)
+                                {
+                                        if (mesh_entry.bones_matrices_key != pLastBoneTransformMapKey)
+                                        {
+                                                const auto& bt = render_scene.m_BoneTransforms.at(mesh_entry.bones_matrices_key);
+                                                MapHelper<glm::mat4> pBones{Renderer::GetContext(), m_BoneTransformsCB, MAP_WRITE, MAP_FLAG_DISCARD};
+                                                memcpy(pBones, bt.data(), bt.size() * sizeof(glm::mat4));
+                                                pLastBoneTransformMapKey = mesh_entry.bones_matrices_key;
+                                                LastNumBones = bt.size();
+                                                m_BasicModelCameraCBAttributes.SetUInt(m_BasicModelCameraCBData, "BoneCount", bt.size());
+                                        }
+                                        else
+                                                m_BasicModelCameraCBAttributes.SetUInt(m_BasicModelCameraCBData, "BoneCount", LastNumBones);
+                                }
+                                else
+                                        m_BasicModelCameraCBAttributes.SetUInt(m_BasicModelCameraCBData, "BoneCount", 0);
 
                                 m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelViewProjection", view_projection * transform);
                                 m_BasicModelCameraCBAttributes.SetMat4(m_BasicModelCameraCBData, "ModelView", view * transform);
@@ -827,8 +883,8 @@ VTFSRenderer::PerRenderTargetData VTFSRenderer::CreateRenderTargetData(const Ren
 
 
 
-        m_pBasicMeshOpaqueLightingPSO->CreateShaderResourceBinding(&data.BasicMeshOpaqueLightingSRB, true);
-        data.BasicMeshOpaqueLightingSRB->GetVariableByName(SHADER_TYPE_PIXEL, "PointLights")->Set(m_pPointLightsBuffer->GetBuffer()->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
+        //m_pBasicMeshOpaqueLightingPSO->CreateShaderResourceBinding(&data.BasicMeshOpaqueLightingSRB, true);
+        //data.BasicMeshOpaqueLightingSRB->GetVariableByName(SHADER_TYPE_PIXEL, "PointLights")->Set(m_pPointLightsBuffer->GetBuffer()->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
         // data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_PIXEL, "SpotLights")->Set(m_pSpotLightsBuffer->GetBuffer()->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
 
@@ -933,7 +989,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         data.m_BufferMap["PointLightGrid"] = data.PointLightGridBuffer;
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightGrid")->Set(data.PointLightGridBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightGrid")->Set(data.PointLightGridBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
-        data.BasicMeshOpaqueLightingSRB->GetVariableByName(SHADER_TYPE_PIXEL, "PointLightGrid")->Set(data.PointLightGridBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
+        //data.BasicMeshOpaqueLightingSRB->GetVariableByName(SHADER_TYPE_PIXEL, "PointLightGrid")->Set(data.PointLightGridBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
         BuffDesc.Name = "Spot Light Grid";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.SpotLightGridBuffer);
@@ -949,7 +1005,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         data.AssignLightsToClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightIndexList")->Set(data.PointLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightIndexList")->Set(data.PointLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWPointLightIndexList")->Set(data.PointLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
-        data.BasicMeshOpaqueLightingSRB->GetVariableByName(SHADER_TYPE_PIXEL, "PointLightIndexList")->Set(data.PointLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
+        //data.BasicMeshOpaqueLightingSRB->GetVariableByName(SHADER_TYPE_PIXEL, "PointLightIndexList")->Set(data.PointLightIndexListBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
         BuffDesc.Name = "Spot Light Index List";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.SpotLightIndexListBuffer);
@@ -1714,14 +1770,14 @@ void VTFSRenderer::CreateDrawPSOs()
                 ShaderCI.FilePath = "VTFS/BasicMeshClusterSamples.psh";
                 Renderer::GetDevice()->CreateShader(ShaderCI, &pBasicMeshClusterSamplesPS);
         }
-        RefCntAutoPtr<IShader> pBasicMeshOpaqueLightingPS;
-        {
-                ShaderCI.Desc.ShaderType = SHADER_TYPE_PIXEL;
-                ShaderCI.EntryPoint = "main";
-                ShaderCI.Desc.Name = "Basic Mesh Opaque Lighting PS";
-                ShaderCI.FilePath = "VTFS/BasicMeshOpaqueLighting.psh";
-                Renderer::GetDevice()->CreateShader(ShaderCI, &pBasicMeshOpaqueLightingPS);
-        }
+        //RefCntAutoPtr<IShader> pBasicMeshOpaqueLightingPS;
+        //{
+        //        ShaderCI.Desc.ShaderType = SHADER_TYPE_PIXEL;
+        //        ShaderCI.EntryPoint = "main";
+        //        ShaderCI.Desc.Name = "Basic Mesh Opaque Lighting PS";
+        //        ShaderCI.FilePath = "VTFS/BasicMeshOpaqueLighting.psh";
+        //        Renderer::GetDevice()->CreateShader(ShaderCI, &pBasicMeshOpaqueLightingPS);
+        //}
 
         {
                 PSODesc.Name = "Basic Model Opaque Depth PSO";
@@ -1730,7 +1786,8 @@ void VTFSRenderer::CreateDrawPSOs()
                 PSOCreateInfo.GraphicsPipeline.RTVFormats[0] = TEX_FORMAT_R32_FLOAT;
                 ShaderResourceVariableDesc Vars[] =
                 {
-                        {SHADER_TYPE_VERTEX, "_BasicModelCameraCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC}
+                        {SHADER_TYPE_VERTEX, "_BasicModelCameraCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
+                        {SHADER_TYPE_VERTEX, "_BoneTransformsCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC}
                 };
                 PSODesc.ResourceLayout.Variables = Vars;
                 PSODesc.ResourceLayout.NumVariables = _countof(Vars);
@@ -1741,16 +1798,21 @@ void VTFSRenderer::CreateDrawPSOs()
                 m_BasicModelCameraCBAttributes.AddMat4("ModelViewProjection");
                 m_BasicModelCameraCBAttributes.AddMat4("ModelView");
                 m_BasicModelCameraCBAttributes.AddMat4("Model");
+                m_BasicModelCameraCBAttributes.AddUInt("BoneCount");
                 m_BasicModelCameraCBData = m_BasicModelCameraCBAttributes.CreateData("Basic Model Camera CB Data");
 
                 CreateUniformBuffer(Renderer::GetDevice(), m_BasicModelCameraCBAttributes.GetSize(), "_BasicModelCameraCB", &m_BasicModelCameraCB);
+                CreateUniformBuffer(Renderer::GetDevice(), static_cast<Uint32>(sizeof(glm::mat4) * MAX_BONES), "Bone Transforms", &m_BoneTransformsCB);
                 StateTransitionDesc Barriers[] =
                 {
-                        {m_BasicModelCameraCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
+                        {m_BasicModelCameraCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true},
+                        {m_BoneTransformsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
                 };
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
                 m_pOpaqueDepthPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "_BasicModelCameraCB")->Set(m_BasicModelCameraCB);
+                m_pOpaqueDepthPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "_BoneTransformsCB")->Set(m_BoneTransformsCB);
                 Assets::GetShaderLibrary().static_buffers["_BasicModelCameraCB"] = m_BasicModelCameraCB;
+                Assets::GetShaderLibrary().static_buffers["_BoneTransformsCB"] = m_BoneTransformsCB;
         }
         {
                 PSODesc.Name = "Cluster Samples PSO";
@@ -1764,6 +1826,7 @@ void VTFSRenderer::CreateDrawPSOs()
                 ShaderResourceVariableDesc Vars[] =
                 {
                         {SHADER_TYPE_VERTEX, "_BasicModelCameraCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
+                        {SHADER_TYPE_VERTEX, "_BoneTransformsCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
                         {SHADER_TYPE_PIXEL, "_ClusterCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
                         {SHADER_TYPE_PIXEL, "RWClusterFlags", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE}
                 };
@@ -1775,36 +1838,37 @@ void VTFSRenderer::CreateDrawPSOs()
                 // PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = True;
                 PSOCreateInfo.GraphicsPipeline.NumRenderTargets = 1;
                 m_pClusterSamplesPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "_BasicModelCameraCB")->Set(m_BasicModelCameraCB);
+                m_pClusterSamplesPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "_BoneTransformsCB")->Set(m_BoneTransformsCB);
                 m_pClusterSamplesPSO->GetStaticVariableByName(SHADER_TYPE_PIXEL, "_ClusterCB")->Set(m_ClusterCB);
                 // PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthEnable = True;
         }
-        {
-                PSODesc.Name = "Basic Mesh Opaque Lighting PSO";
-                PSOCreateInfo.pVS = pBasicMeshVS;
-                PSOCreateInfo.pPS = pBasicMeshOpaqueLightingPS;
-                PSOCreateInfo.GraphicsPipeline.NumRenderTargets = 1;
-                PSOCreateInfo.GraphicsPipeline.RTVFormats[0] = Renderer::GetDefaultRTVFormat();
-                // PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = True;
-                ShaderResourceVariableDesc Vars[] =
-                {
-                        {SHADER_TYPE_VERTEX, "_BasicModelCameraCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
-                        {SHADER_TYPE_PIXEL, "_ClusterCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
-                        {SHADER_TYPE_PIXEL, "_CameraCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
-                        {SHADER_TYPE_PIXEL, "PointLightGrid", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
-                        {SHADER_TYPE_PIXEL, "PointLightIndexList", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
-                        {SHADER_TYPE_PIXEL, "PointLights", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
-                };
-                PSODesc.ResourceLayout.Variables = Vars;
-                PSODesc.ResourceLayout.NumVariables = _countof(Vars);
+        //{
+        //        PSODesc.Name = "Basic Mesh Opaque Lighting PSO";
+        //        PSOCreateInfo.pVS = pBasicMeshVS;
+        //        PSOCreateInfo.pPS = pBasicMeshOpaqueLightingPS;
+        //        PSOCreateInfo.GraphicsPipeline.NumRenderTargets = 1;
+        //        PSOCreateInfo.GraphicsPipeline.RTVFormats[0] = Renderer::GetDefaultRTVFormat();
+        //        // PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = True;
+        //        ShaderResourceVariableDesc Vars[] =
+        //        {
+        //                {SHADER_TYPE_VERTEX, "_BasicModelCameraCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
+        //                {SHADER_TYPE_PIXEL, "_ClusterCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
+        //                {SHADER_TYPE_PIXEL, "_CameraCB", SHADER_RESOURCE_VARIABLE_TYPE_STATIC},
+        //                {SHADER_TYPE_PIXEL, "PointLightGrid", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
+        //                {SHADER_TYPE_PIXEL, "PointLightIndexList", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
+        //                {SHADER_TYPE_PIXEL, "PointLights", SHADER_RESOURCE_VARIABLE_TYPE_MUTABLE},
+        //        };
+        //        PSODesc.ResourceLayout.Variables = Vars;
+        //        PSODesc.ResourceLayout.NumVariables = _countof(Vars);
 
-                Renderer::GetDevice()->CreateGraphicsPipelineState(PSOCreateInfo, &m_pBasicMeshOpaqueLightingPSO);
-                LD_VERIFY(m_pBasicMeshOpaqueLightingPSO, "Failed to create {}", PSODesc.Name);
-                PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = True;
-                PSOCreateInfo.GraphicsPipeline.NumRenderTargets = 1;
-                m_pBasicMeshOpaqueLightingPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "_BasicModelCameraCB")->Set(m_BasicModelCameraCB);
-                m_pBasicMeshOpaqueLightingPSO->GetStaticVariableByName(SHADER_TYPE_PIXEL, "_ClusterCB")->Set(m_ClusterCB);
-                m_pBasicMeshOpaqueLightingPSO->GetStaticVariableByName(SHADER_TYPE_PIXEL, "_CameraCB")->Set(m_CameraCB);
-        }
+        //        Renderer::GetDevice()->CreateGraphicsPipelineState(PSOCreateInfo, &m_pBasicMeshOpaqueLightingPSO);
+        //        LD_VERIFY(m_pBasicMeshOpaqueLightingPSO, "Failed to create {}", PSODesc.Name);
+        //        PSOCreateInfo.GraphicsPipeline.DepthStencilDesc.DepthWriteEnable = True;
+        //        PSOCreateInfo.GraphicsPipeline.NumRenderTargets = 1;
+        //        m_pBasicMeshOpaqueLightingPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "_BasicModelCameraCB")->Set(m_BasicModelCameraCB);
+        //        m_pBasicMeshOpaqueLightingPSO->GetStaticVariableByName(SHADER_TYPE_PIXEL, "_ClusterCB")->Set(m_ClusterCB);
+        //        m_pBasicMeshOpaqueLightingPSO->GetStaticVariableByName(SHADER_TYPE_PIXEL, "_CameraCB")->Set(m_CameraCB);
+        //}
 }
 
 void VTFSRenderer::CreateWholeScreenPSOs()

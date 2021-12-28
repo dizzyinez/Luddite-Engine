@@ -78,6 +78,7 @@ void Renderer::BeginScene()
 {
         std::lock_guard<std::mutex> lock{m_Mutex};
         m_RenderScene.m_Meshes.clear();
+        m_RenderScene.m_BoneTransforms.clear();
         m_RenderScene.m_PointLights.clear();
         m_RenderScene.m_SpotLights.clear();
         m_RenderScene.m_DirectionalLights.clear();
@@ -88,10 +89,14 @@ void Renderer::BeginScene()
         // }
 }
 
-void Renderer::SubmitMesh(Mesh* mesh, const glm::mat4& transform, Handle<Material> material)
+void Renderer::SubmitMesh(Mesh* mesh, const glm::mat4& transform, Handle<Material> material, const std::vector<glm::mat4>* bone_matrices)
 {
         std::lock_guard<std::mutex> lock{m_Mutex};
-        m_RenderScene.m_Meshes[material].push_back(std::make_pair(mesh, transform));
+        if (bone_matrices != nullptr && m_RenderScene.m_BoneTransforms.find(bone_matrices) == m_RenderScene.m_BoneTransforms.end())
+        {
+                m_RenderScene.m_BoneTransforms[bone_matrices] = std::vector(*bone_matrices);
+        }
+        m_RenderScene.m_Meshes[material].push_back({mesh, transform, bone_matrices});
 }
 
 void Renderer::SubmitPointLight(const PointLightCPU& point_light)

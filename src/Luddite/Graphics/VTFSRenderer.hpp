@@ -145,6 +145,7 @@ class LUDDITE_API VTFSRenderer
         ShaderBufferDescription m_BasicModelCameraCBAttributes;
         ShaderBufferData m_BasicModelCameraCBData;
         Diligent::RefCntAutoPtr<Diligent::IBuffer> m_BasicModelCameraCB;
+        Diligent::RefCntAutoPtr<Diligent::IBuffer> m_BoneTransformsCB;
 
         //Cluster Samples
         Diligent::RefCntAutoPtr<Diligent::IPipelineState> m_pClusterSamplesPSO;
@@ -265,6 +266,7 @@ class LUDDITE_API VTFSRenderer
         static constexpr uint32_t MAX_POINT_LIGHTS = 5000;
         static constexpr uint32_t MAX_SPOT_LIGHTS = 5000;
         static constexpr uint32_t MAX_DIRECTIONAL_LIGHTS = 100;
+        static constexpr uint32_t MAX_BONES = 128;
 
         #ifdef LD_PLATFORM_DESKTOP
         static constexpr Diligent::TEXTURE_FORMAT DepthBufferFormat = Diligent::TEX_FORMAT_D32_FLOAT;

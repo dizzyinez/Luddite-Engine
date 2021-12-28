@@ -7,7 +7,7 @@ namespace Box2D
 Components::Components(flecs::world& w)
 {
         w.module<Components>();
-        w.component<PhysicsWorld>("Physics World");
+        w.component<PhysicsWorld>();
         w.component<RigidBody>();
         LD_COMPONENT_REGISTER(BoxCollider, w);
         LD_COMPONENT_REGISTER(PhysicsMaterial, w);

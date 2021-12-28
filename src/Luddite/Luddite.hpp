@@ -28,3 +28,6 @@
 //Graphics
 #include "Luddite/Graphics/Color.hpp"
 #include "Luddite/Graphics/Texture.hpp"
+
+//Utilities
+#include "Luddite/Utilities/ImportModelECS.hpp"

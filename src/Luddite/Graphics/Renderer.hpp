@@ -20,9 +20,17 @@ constexpr float DefaultClearColor[4] = {0.f, 0.f, 0.f, 0.f};
 
 namespace Luddite
 {
+struct MeshEntry
+{
+        Mesh* mesh;
+        glm::mat4 transform;
+        const void* bones_matrices_key;
+};
+
 struct RenderScene
 {
-        std::unordered_map<Handle<Material>, std::vector<std::pair<Mesh*, glm::mat4> > > m_Meshes;
+        std::unordered_map<Handle<Material>, std::vector<MeshEntry> > m_Meshes;
+        std::unordered_map<const void*, std::vector<glm::mat4> > m_BoneTransforms;
         std::vector<PointLightCPU> m_PointLights;
         std::vector<SpotLightCPU> m_SpotLights;
         std::vector<DirectionalLightCPU> m_DirectionalLights;
@@ -34,7 +42,7 @@ class LUDDITE_API Renderer
         public:
         static void Initialize();
         static void BeginScene();
-        static void SubmitMesh(Mesh* mesh, const glm::mat4& transform, Handle<Material> material);
+        static void SubmitMesh(Mesh* mesh, const glm::mat4& transform, Handle<Material> material, const std::vector<glm::mat4>* bone_matrices);
         static void SubmitPointLight(const PointLightCPU& point_light);
         static void SubmitSpotLight(const SpotLightCPU& spot_light);
         static void SubmitDirectionalLight(const DirectionalLightCPU& directional_light);

@@ -24,6 +24,7 @@ struct BasicModelCameraData
     float4x4 ModelViewProjection;
     float4x4 ModelView;
     float4x4 Model;
+    uint NumBones;
 };
 
 cbuffer _BasicModelCameraCB : register(b1)
@@ -100,6 +101,15 @@ cbuffer _BVHParamsCB : register(b7)
 {
     BVHParamsData BVHParamsCB;
 };
+
+#ifndef MAX_BONE_COUNT
+#define MAX_BONE_COUNT 128
+#endif
+cbuffer _BoneTransformsCB : register(b8)
+{
+    float4x4 BoneTransforms[MAX_BONE_COUNT];
+};
+
 StructuredBuffer<PointLight> PointLights : register(t0);
 StructuredBuffer<SpotLight> SpotLights : register(t1);
 StructuredBuffer<DirectionalLight> DirectionalLights : register(t2);
