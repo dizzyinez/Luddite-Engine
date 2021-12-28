@@ -3,6 +3,7 @@
 #include "Luddite/ECS/Modules/Graphics.hpp"
 #include "Luddite/ECS/Modules/Physics.hpp"
 #include "Luddite/ECS/Modules/Input.hpp"
+#include "Luddite/ECS/Modules/Models.hpp"
 #include "Luddite/ECS/Modules/Box2D.hpp"
 #include "Luddite/Layers/Editor/ViewportPanel.hpp"
 #include "Luddite/Layers/Editor/HeirarchyPanel.hpp"
@@ -16,6 +17,7 @@ void EditorLayer::Initialize()
         m_World.import<Luddite::Systems>();
         m_World.import<Input::Systems>();
         m_World.import<Transform3D::Systems>();
+        m_World.import<Models::Systems>();
         m_World.import<Graphics::Systems>();
         m_World.import<Box2D::Systems>();
 
@@ -39,7 +41,7 @@ void EditorLayer::Initialize()
                 e.add<Transform3D::Scale>();
                 e.set<Physics::LinearVelocity>({glm::vec3(1.00, 0, 0)});
                 e.set<Physics::LinearDamping>({glm::vec3(0.50, 0, 0)});
-                e.set<Graphics::Model>({Luddite::Assets::GetBasicModelLibrary().GetAsset(4049191577729022337ULL)});
+                e.set<Models::Model>({Luddite::Assets::GetBasicModelLibrary().GetAsset(4049191577729022337ULL)});
         }
         {
                 auto e = m_World.entity("Light").child_of(m_World.id<Luddite::Scene>().entity());

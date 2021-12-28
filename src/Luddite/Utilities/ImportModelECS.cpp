@@ -2,6 +2,7 @@
 #include "Luddite/ECS/Modules/LudditeBase.hpp"
 #include "Luddite/ECS/Modules/Transform3D.hpp"
 #include "Luddite/ECS/Modules/Graphics.hpp"
+#include "Luddite/ECS/Modules/Models.hpp"
 
 namespace Luddite::Utils
 {
@@ -29,32 +30,32 @@ flecs::entity ImportModelECS(Handle<Model> model, flecs::world& w, flecs::entity
                         .set<Transform3D::LocalTranslation>({{node.m_Pos}})
                         .set<Transform3D::LocalRotation>({{node.m_Rot}})
                         .set<Transform3D::LocalScale>({{node.m_Scale}})
-                        //.set<Graphics::Model>({Luddite::Assets::GetBasicModelLibrary().GetAsset(4049191577729022337ULL)})
+                        //.set<Modles::Model>({Luddite::Assets::GetBasicModelLibrary().GetAsset(4049191577729022337ULL)})
                         );
                 if (is_root)
                 {
                         LD_VERIFY(i == 0, "Root node of model \"{}\" is not at index 0!", model->m_Name);
-                        entities[i].set<Graphics::Model>({model});
+                        entities[i].set<Models::Model>({model});
                         if (model->m_Bones.size() > 0)
                         {
-                                entities[i].set<Graphics::BoneTransforms>({std::vector<glm::mat4>(model->m_Bones.size())});
-                                entities[i].set<Graphics::NodeTransforms>({std::vector<glm::mat4>(model->m_Nodes.size())});
+                                entities[i].set<Models::BoneTransforms>({std::vector<glm::mat4>(model->m_Bones.size())});
+                                entities[i].set<Models::NodeTransforms>({std::vector<glm::mat4>(model->m_Nodes.size())});
                         }
-                        entities[i].add<Graphics::AnimationStack>();
+                        entities[i].add<Models::AnimationStack>();
                 }
                 else
                 {
-                        entities[i].set<Graphics::ModelNodeID>({i});
-                        //entities[i].add<Graphics::ChildOfRootNode>(entities[0]);
+                        entities[i].set<Models::ModelNodeID>({i});
+                        //entities[i].add<Models::ChildOfRootNode>(entities[0]);
                 }
         }
 
         //for (const auto& bone : model->m_Bones)
         for (unsigned int i = 0; i < model->m_Bones.size(); i++)
         {
-                //entities[model->m_Bones[i].m_NodeID].set<Graphics::ModelBoneID>({i});
+                //entities[model->m_Bones[i].m_NodeID].set<Models::ModelBoneID>({i});
         }
-        //entities[0].set<Graphics::RootNode>({entities});
+        //entities[0].set<Models::RootNode>({entities});
         return entities[0];
 }
 }
