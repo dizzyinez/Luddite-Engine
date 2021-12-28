@@ -307,7 +307,7 @@ struct LUDDITE_API AssetLibrary
         AssetRefCounter<T> m_PlaceHolderAssetRefCounter;
 
         std::filesystem::path m_AssetBaseDir;
-        std::vector<std::wstring> m_Extensions;
+        std::unordered_set<std::wstring> m_Extensions;
 
 
         private:

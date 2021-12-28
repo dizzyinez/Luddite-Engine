@@ -7,7 +7,7 @@ namespace Luddite
 void MaterialLibrary::Initialize()
 {
         m_AssetBaseDir = "./Assets/Materials/";
-        m_Extensions.push_back(L".ldmaterial");
+        m_Extensions.emplace(L".ldmaterial");
 }
 Material* MaterialLibrary::LoadFromFile(const std::filesystem::path& path)
 {

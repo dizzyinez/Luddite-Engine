@@ -14,7 +14,7 @@ using namespace Diligent;
 namespace Luddite {
 void ShaderLibrary::Initialize() {
         m_AssetBaseDir = "./Assets/Shaders/";
-        m_Extensions.push_back(L".ldshader");
+        m_Extensions.emplace(L".ldshader");
         // TODO: set default shader :)
 }
 

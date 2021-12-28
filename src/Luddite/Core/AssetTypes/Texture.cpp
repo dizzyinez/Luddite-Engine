@@ -20,10 +20,10 @@ void Texture::TransitionToShaderResource()
 void TextureLibrary::Initialize()
 {
         m_AssetBaseDir = "./Assets/Textures/";
-        m_Extensions.push_back(L".png");
-        m_Extensions.push_back(L".jpg");
-        m_Extensions.push_back(L".dds");
-        m_Extensions.push_back(L".tiff");
+        m_Extensions.emplace(L".png");
+        m_Extensions.emplace(L".jpg");
+        m_Extensions.emplace(L".dds");
+        m_Extensions.emplace(L".tiff");
 }
 
 Texture* TextureLibrary::LoadFromFile(const std::filesystem::path& path)
