@@ -195,7 +195,7 @@ struct LUDDITE_API AssetLibrary
                                 std::wstring extension = path.path().extension().wstring();
                                 //convert extension to lowercase
                                 std::transform(extension.begin(), extension.end(), extension.begin(), std::towlower);
-                                if (std::find(m_Extensions.begin(), m_Extensions.end(), extension) != m_Extensions.end())
+                                if (m_Extensions.contains(extension))
                                 {
                                         std::filesystem::path rel_path = std::filesystem::relative(path, m_AssetBaseDir);
                                         static std::hash<std::string> hasher;
