@@ -24,6 +24,11 @@ struct RenderTarget
         Luddite::RenderTarget RenderTarget;
 };
 
+struct Material
+{
+        Luddite::Handle<Luddite::Material> Material;
+};
+
 //LD_COMPONENT_DEFINE
 
 LD_COMPONENT_DEFINE(Camera,
@@ -77,6 +82,7 @@ struct Components
                 w.component<RenderToMainWindow>();
                 LD_COMPONENT_REGISTER(Camera, w);
                 w.component<RenderTarget>();
+                w.component<Material>();
                 w.component<PointLight>();
                 w.component<SpotLight>();
                 w.component<DirectionalLight>();
@@ -115,31 +121,34 @@ struct Systems
                                 Luddite::Renderer::BeginScene();
                         });
 
-                w.system<const Transform3D::TransformMatrix, const Models::Model, const Models::NodeTransforms, const Models::BoneTransforms, const RenderModelDirectly>("Submit Model Directly")
+                w.system<const Transform3D::TransformMatrix, const Models::Model, const Models::NodeTransforms, const Models::BoneTransforms, const RenderModelDirectly, const Graphics::Material>("Submit Model Directly")
                 .arg(4).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnRender>())
-                .iter([](flecs::iter it, const Transform3D::TransformMatrix* tm, const Models::Model* m, const Models::NodeTransforms* nt, const Models::BoneTransforms* bt, const RenderModelDirectly* dummy){
+                .iter([](flecs::iter it, const Transform3D::TransformMatrix* tm, const Models::Model* m, const Models::NodeTransforms* nt, const Models::BoneTransforms* bt, const RenderModelDirectly* dummy, const Graphics::Material* mat){
                                 for (auto i : it)
                                 {
                                         for (auto& pair : m[i].ModelHandle->m_MeshNodePairs)
                                         {
                                                 auto& mesh = m[i].ModelHandle->m_Meshes[pair.m_MeshIndex];
-                                                Luddite::Renderer::SubmitMesh(&mesh, tm[i].Transform * nt[i].NodeTransforms.at(pair.m_NodeIndex), m[i].ModelHandle->m_Materials[mesh.m_MaterialIndex],
+                                                Luddite::Renderer::SubmitMesh(&mesh, tm[i].Transform * nt[i].NodeTransforms.at(pair.m_NodeIndex),
+                                                        (mat && mat[i].Material.valid()) ? mat[i].Material : m[i].ModelHandle->m_Materials[mesh.m_MaterialIndex],
                                                         bt ? &bt[i].BoneTransforms : nullptr
                                                         );
                                         }
                                 }
                         });
 
-                w.system<const Models::MeshIndex, const Models::ModelNodeID, const Transform3D::TransformMatrix, const Models::Model, const Models::BoneTransforms>("Submit Meshes")
+                w.system<const Models::MeshIndex, const Models::ModelNodeID, const Transform3D::TransformMatrix, const Models::Model, const Models::BoneTransforms, const Graphics::Material>("Submit Meshes")
                 .arg(4).set(flecs::Parent)
                 .arg(5).set(flecs::Parent).oper(flecs::Optional)
+                .arg(6).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnRender>())
-                .iter([](flecs::iter it, const Models::MeshIndex* mi, const Models::ModelNodeID* node_id, const Transform3D::TransformMatrix* tm, const Models::Model* m, const Models::BoneTransforms* bt){
+                .iter([](flecs::iter it, const Models::MeshIndex* mi, const Models::ModelNodeID* node_id, const Transform3D::TransformMatrix* tm, const Models::Model* m, const Models::BoneTransforms* bt, const Graphics::Material* mat){
                                 for (auto i : it)
                                 {
                                         auto& mesh = m[i].ModelHandle->m_Meshes[mi[i].MeshIndex];
-                                        Luddite::Renderer::SubmitMesh(&mesh, tm[i].Transform, m[i].ModelHandle->m_Materials[mesh.m_MaterialIndex],
+                                        Luddite::Renderer::SubmitMesh(&mesh, tm[i].Transform,
+                                                (mat && mat[i].Material.valid()) ? mat[i].Material : m[i].ModelHandle->m_Materials[mesh.m_MaterialIndex],
                                                 bt ? &bt[i].BoneTransforms : nullptr
                                                 );
                                 }

@@ -135,9 +135,18 @@ Systems::Systems(flecs::world& w)
                         for (auto i : it)
                         {
                                 const auto& pos = rb[i].m_pRuntimeBody->GetPosition();
-                                t[i].Translation.x = pos.x;
-                                t[i].Translation.y = pos.y;
-                                r[i].Rotation.z = rb[i].m_pRuntimeBody->GetAngle();
+                                if (pos.x != t[i].Translation.x || pos.y != t[i].Translation.y)
+                                {
+                                        t[i].Translation.x = pos.x;
+                                        t[i].Translation.y = pos.y;
+                                        it.entity(i).modified<Transform3D::Translation>();
+                                }
+                                const auto& angle = rb[i].m_pRuntimeBody->GetAngle();
+                                if (angle != r[i].Rotation.z)
+                                {
+                                        r[i].Rotation.z = angle;
+                                        it.entity(i).modified<Transform3D::Rotation>();
+                                }
                         }
                 });
 
@@ -149,8 +158,12 @@ Systems::Systems(flecs::world& w)
                         for (auto i : it)
                         {
                                 const auto& vel = rb[i].m_pRuntimeBody->GetLinearVelocity();
-                                v[i].Velocity.x = vel.x;
-                                v[i].Velocity.y = vel.y;
+                                if (vel.x != v[i].Velocity.x || vel.y != v[i].Velocity.y)
+                                {
+                                        v[i].Velocity.x = vel.x;
+                                        v[i].Velocity.y = vel.y;
+                                        it.entity(i).modified<Physics::LinearVelocity>();
+                                }
                         }
                 });
 
@@ -161,7 +174,12 @@ Systems::Systems(flecs::world& w)
                         auto v = it.term<Physics::AngularVelocity>(2);
                         for (auto i : it)
                         {
-                                v[i].Velocity.z = rb[i].m_pRuntimeBody->GetAngularVelocity();
+                                const auto& vel = rb[i].m_pRuntimeBody->GetAngularVelocity();
+                                if (v[i].Velocity.z != vel)
+                                {
+                                        v[i].Velocity.z = rb[i].m_pRuntimeBody->GetAngularVelocity();
+                                        it.entity(i).modified<Physics::AngularVelocity>();
+                                }
                         }
                 });
 }
