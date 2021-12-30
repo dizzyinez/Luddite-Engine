@@ -25,6 +25,7 @@
 #include <stack>
 
 #include "flecs.h"
+#include "yaml-cpp/yaml.h"
 
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/glm.hpp"

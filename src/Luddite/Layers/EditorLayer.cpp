@@ -27,9 +27,9 @@ void EditorLayer::Initialize()
         AddPanel<HeirarchyPanel>();
         AddPanel<ComponentsPanel>();
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 80; i++)
         {
-                auto e = Luddite::Utils::ImportModelECS(Luddite::Assets::GetBasicModelLibrary().GetAssetSynchronous(6227762709795488259ULL), m_World, m_World.id<Luddite::Scene>().entity())
+                auto e = Luddite::Utils::ImportModelECS(Luddite::Assets::GetBasicModelLibrary().GetAssetSynchronous(6227762709795488259ULL), m_World, m_World.id<Luddite::Scene>().entity(), true)
                          .set<Transform3D::LocalRotation>({{glm::radians(90.), 0, glm::radians(180.)}})
                          //.set<Transform3D::LocalRotation>({{0, 0, glm::radians(180.)}})
                 ;

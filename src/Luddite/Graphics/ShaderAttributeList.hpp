@@ -106,8 +106,8 @@ struct LUDDITE_API ShaderBufferDescription
         inline void AddTexturePixelShader(const std::string& name) {TexturesPixelShader.emplace_back(name);}
         void SetTextureVertexShader(ShaderBufferData& data, const std::string& name, Handle<Texture> texture);
         void SetTexturePixelShader(ShaderBufferData& data, const std::string& name, Handle<Texture> texture);
-        Handle<Texture> GetTextureVertexShader(ShaderBufferData& data, const std::string& name);
-        Handle<Texture> GetTexturePixelShader(ShaderBufferData& data, const std::string& name);
+        Handle<Texture> GetTextureVertexShader(ShaderBufferData& data, const std::string& name) const;
+        Handle<Texture> GetTexturePixelShader(ShaderBufferData& data, const std::string& name) const;
 
         #define VALUE_TYPE_DECLARATION(Name, Type, Default) inline void Add ## Name(const std::string& name) \
         { \
@@ -155,8 +155,9 @@ struct LUDDITE_API ShaderBufferDescription
                 return m_Size;
         }
         void MapBuffer(ShaderBufferData & data, Diligent::RefCntAutoPtr<Diligent::IBuffer> buffer) const;
-        void MapTextures(ShaderBufferData& data, Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb);
+        void MapTextures(ShaderBufferData& data, Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb) const;
         void SetDefaultAttribs(ShaderBufferData& data) const;
+        void SetAttribsFromYaml(ShaderBufferData& data, const YAML::Node& yaml) const;
 
         ShaderBufferData CreateData(const std::string& name) const;
         private:

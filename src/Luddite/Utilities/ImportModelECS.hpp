@@ -4,5 +4,5 @@
 
 namespace Luddite::Utils
 {
-flecs::entity ImportModelECS(Handle<Model> model, flecs::world& w, flecs::entity parent, bool render_directly = true);
+flecs::entity ImportModelECS(Handle<Model> model, flecs::world& w, flecs::entity parent, bool separate_meshes = false);
 }

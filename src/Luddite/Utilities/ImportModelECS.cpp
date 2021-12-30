@@ -9,10 +9,11 @@ namespace Luddite::Utils
 void ImportMesh(Mesh& mesh, flecs::world& w)
 {
 }
-flecs::entity ImportModelECS(Handle<Model> model, flecs::world& w, flecs::entity parent, bool render_directly)
+flecs::entity ImportModelECS(Handle<Model> model, flecs::world& w, flecs::entity parent, bool separate_meshes)
 {
         auto& root_node = model->m_Nodes[0];
         auto root = w.entity(root_node.m_Name.c_str())
+                    .child_of(parent)
                     .set<Transform3D::Translation>({{root_node.m_Pos}})
                     .set<Transform3D::Rotation>({{root_node.m_Rot}})
                     .set<Transform3D::Scale>({{root_node.m_Scale}})
@@ -22,7 +23,7 @@ flecs::entity ImportModelECS(Handle<Model> model, flecs::world& w, flecs::entity
                     .add<Transform3D::TransformMatrix>()
                     .add<Models::AnimationStack>();
         ;
-        if (render_directly)
+        if (!separate_meshes)
                 root.add<Graphics::RenderModelDirectly>();
         else
         {

@@ -2,6 +2,8 @@
 #include "GraphicsTypes.h"
 #include "Luddite/Core/Asset.hpp"
 #include "Luddite/Graphics/Renderer.hpp"
+#include "Luddite/Utilities/YamlParsers.hpp"
+
 namespace Luddite
 {
 void ShaderBufferDescription::MapBuffer(ShaderBufferData& data, Diligent::RefCntAutoPtr<Diligent::IBuffer> buffer) const
@@ -39,7 +41,7 @@ void ShaderBufferDescription::SetTexturePixelShader(ShaderBufferData& data, cons
 }
 
 
-Handle<Texture> ShaderBufferDescription::GetTextureVertexShader(ShaderBufferData& data, const std::string& name)
+Handle<Texture> ShaderBufferDescription::GetTextureVertexShader(ShaderBufferData& data, const std::string& name) const
 {
         auto it = std::find(TexturesVertexShader.begin(), TexturesVertexShader.end(), name);
         if (it == TexturesVertexShader.end())
@@ -48,7 +50,7 @@ Handle<Texture> ShaderBufferDescription::GetTextureVertexShader(ShaderBufferData
         return data.TexturesVertexShader[index];
 }
 
-Handle<Texture> ShaderBufferDescription::GetTexturePixelShader(ShaderBufferData& data, const std::string& name)
+Handle<Texture> ShaderBufferDescription::GetTexturePixelShader(ShaderBufferData& data, const std::string& name) const
 {
         auto it = std::find(TexturesPixelShader.begin(), TexturesPixelShader.end(), name);
         if (it == TexturesPixelShader.end())
@@ -57,7 +59,7 @@ Handle<Texture> ShaderBufferDescription::GetTexturePixelShader(ShaderBufferData&
         return data.TexturesPixelShader[index];
 }
 
-void ShaderBufferDescription::MapTextures(ShaderBufferData& data, Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb)
+void ShaderBufferDescription::MapTextures(ShaderBufferData& data, Diligent::RefCntAutoPtr<Diligent::IShaderResourceBinding> srb) const
 {
         for (auto& tex_name : TexturesVertexShader)
         {
@@ -118,10 +120,32 @@ void ShaderBufferDescription::SetDefaultAttribs(ShaderBufferData& data) const
                 switch (pair.second.type)
                 {
                 #define VALUE_TYPE_DECLARATION(Name, Type, Default) \
-case ShaderBufferDescription::ValueType::Name: \
-        Set ## Name(data, name, Default); \
-        break;
-                        VALUE_TYPES_DECLARE
+        case ShaderBufferDescription::ValueType::Name: \
+                Set ## Name(data, name, Default); \
+                break;
+                VALUE_TYPES_DECLARE
+                #undef VALUE_TYPE_DECLARATION
+                }
+        }
+}
+void ShaderBufferDescription::SetAttribsFromYaml(ShaderBufferData& data, const YAML::Node& yaml) const
+{
+        for (const auto& pair : Attributes)
+        {
+                const auto& name = pair.first;
+                if (!yaml[name])
+                        continue;
+                switch (pair.second.type)
+                {
+                #define VALUE_TYPE_DECLARATION(Name, Type, Default) \
+        case ShaderBufferDescription::ValueType::Name: \
+                { \
+                        Type t; \
+                        yaml[name] >> t; \
+                        Set ## Name(data, name, t); \
+                } \
+                break;
+                VALUE_TYPES_DECLARE
                 #undef VALUE_TYPE_DECLARATION
                 }
         }

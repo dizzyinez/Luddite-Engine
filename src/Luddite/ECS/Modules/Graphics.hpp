@@ -123,6 +123,7 @@ struct Systems
 
                 w.system<const Transform3D::TransformMatrix, const Models::Model, const Models::NodeTransforms, const Models::BoneTransforms, const RenderModelDirectly, const Graphics::Material>("Submit Model Directly")
                 .arg(4).oper(flecs::Optional)
+                .arg(6).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnRender>())
                 .iter([](flecs::iter it, const Transform3D::TransformMatrix* tm, const Models::Model* m, const Models::NodeTransforms* nt, const Models::BoneTransforms* bt, const RenderModelDirectly* dummy, const Graphics::Material* mat){
                                 for (auto i : it)
