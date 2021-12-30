@@ -54,8 +54,10 @@ struct LUDDITE_API AssetLibrary
                         return Handle<T>(&m_PlaceHolderAssetRefCounter);
                 }
 
+                //need to reload
                 if (!it->second.m_pAssetRefCounter->valid() || it->second.m_pAssetRefCounter->get() == m_PlaceHolderAssetRefCounter.get())
                 {
+                        LD_LOG_INFO("test");
                         T* p;
                         auto it_future = m_LoadFutures.find(id);
                         if (it_future == m_LoadFutures.end())

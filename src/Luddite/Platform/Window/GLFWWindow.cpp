@@ -108,6 +108,7 @@ GLFWWindow::GLFWWindow(const std::string& title, int width, int height, int min_
         auto* pFactoryVk = Diligent::GetEngineFactoryVk();
         Renderer::GetEngineFactory() = pFactoryVk;
         Diligent::EngineVkCreateInfo EngineCI;
+        EngineCI.DynamicHeapSize = 16 << 20;
         pFactoryVk->CreateDeviceAndContextsVk(EngineCI, &Renderer::GetDevice(), &Renderer::GetContext());
         {
                 Diligent::SwapChainDesc SCDesc;

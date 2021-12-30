@@ -150,7 +150,7 @@ struct LUDDITE_API ShaderBufferDescription
         VALUE_TYPES_DECLARE
         #undef VALUE_TYPE_DECLARATION
 
-        std::size_t GetSize() const
+        inline std::size_t GetSize() const
         {
                 return m_Size;
         }

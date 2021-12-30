@@ -8,6 +8,7 @@
 #include "Luddite/Layers/Editor/ViewportPanel.hpp"
 #include "Luddite/Layers/Editor/HeirarchyPanel.hpp"
 #include "Luddite/Layers/Editor/ComponentsPanel.hpp"
+#include "Luddite/Utilities/ImportModelECS.hpp"
 #include "imgui.h"
 
 namespace Luddite
@@ -26,6 +27,14 @@ void EditorLayer::Initialize()
         AddPanel<HeirarchyPanel>();
         AddPanel<ComponentsPanel>();
 
+        for (int i = 0; i < 10; i++)
+        {
+                auto e = Luddite::Utils::ImportModelECS(Luddite::Assets::GetBasicModelLibrary().GetAssetSynchronous(6227762709795488259ULL), m_World, m_World.id<Luddite::Scene>().entity())
+                         .set<Transform3D::LocalRotation>({{glm::radians(90.), 0, glm::radians(180.)}})
+                         //.set<Transform3D::LocalRotation>({{0, 0, glm::radians(180.)}})
+                ;
+                e.get_mut<Models::AnimationStack>()->PlayAnimation(0, -1);
+        }
         {
                 auto e = m_World.entity("Camera").child_of(m_World.id<Luddite::Scene>().entity());
                 e.set<Transform3D::Translation>({glm::vec3(0, 20, -10)});
@@ -57,11 +66,15 @@ void EditorLayer::HandleEvents()
 }
 void EditorLayer::Update(double delta_time)
 {
+        ecs_set_pipeline(m_World, m_World.id<Luddite::UpdatePipeline>());
+        m_World.progress(delta_time);
         for (auto& panel : m_Panels)
                 panel->Update(m_Ctx);
 }
 void EditorLayer::FixedUpdate(double delta_time)
 {
+        ecs_set_pipeline(m_World, m_World.id<Luddite::SimulationPipeline>());
+        m_World.progress(delta_time);
         for (auto& panel : m_Panels)
                 panel->FixedUpdate(m_Ctx);
 }

@@ -22,6 +22,10 @@ struct NodeTransforms
 {
         std::vector<glm::mat4> NodeTransforms; //Within frame, initially set as local, then replaced with model space
 };
+struct MeshIndex
+{
+        unsigned int MeshIndex;
+};
 #ifndef LD_MAX_ANIMATIONS
 #define LD_MAX_ANIMATIONS 4
 #endif
@@ -247,13 +251,13 @@ struct Systems
                                 }
                         });
 
-                w.system<const CopyNodeLocalTransformToParent, NodeTransforms, const ModelNodeID, const Transform3D::LocalTranslation, const Transform3D::LocalRotation, const Transform3D::LocalScale>("Copy Node Model Space Transforms To Parent's NodeTransforms")
+                w.system<const CopyNodeModelTransformToParent, NodeTransforms, const ModelNodeID, const Transform3D::LocalTranslation, const Transform3D::LocalRotation, const Transform3D::LocalScale>("Copy Node Model Space Transforms To Parent's NodeTransforms")
                 .arg(2).set(flecs::Parent)
                 .arg(4).oper(flecs::Optional)
                 .arg(5).oper(flecs::Optional)
                 .arg(6).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnSimulate>())
-                .iter([](flecs::iter it, const CopyNodeLocalTransformToParent* dummy_for_tag, NodeTransforms* nt, const ModelNodeID* node_id, const Transform3D::LocalTranslation* lt, const Transform3D::LocalRotation* lr, const Transform3D::LocalScale* ls){
+                .iter([](flecs::iter it, const CopyNodeModelTransformToParent* dummy_for_tag, NodeTransforms* nt, const ModelNodeID* node_id, const Transform3D::LocalTranslation* lt, const Transform3D::LocalRotation* lr, const Transform3D::LocalScale* ls){
                                 for (auto i : it)
                                 {
                                         glm::mat4 mat = glm::identity<glm::mat4>();
@@ -267,13 +271,13 @@ struct Systems
                                 }
                         });
 
-                w.system<const CopyNodeLocalTransformFromParent, const NodeTransforms, const ModelNodeID, Transform3D::LocalTranslation, Transform3D::LocalRotation, Transform3D::LocalScale>("Copy Node Model Space Transforms From Parent's NodeTransforms")
+                w.system<const CopyNodeModelTransformFromParent, const NodeTransforms, const ModelNodeID, Transform3D::LocalTranslation, Transform3D::LocalRotation, Transform3D::LocalScale>("Copy Node Model Space Transforms From Parent's NodeTransforms")
                 .arg(2).set(flecs::Parent)
                 .arg(4).oper(flecs::Optional)
                 .arg(5).oper(flecs::Optional)
                 .arg(6).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnSimulate>())
-                .iter([](flecs::iter it, const CopyNodeLocalTransformFromParent* dummy_for_tag, const NodeTransforms* nt, const ModelNodeID* node_id, Transform3D::LocalTranslation* lt, Transform3D::LocalRotation* lr, Transform3D::LocalScale* ls){
+                .iter([](flecs::iter it, const CopyNodeModelTransformFromParent* dummy_for_tag, const NodeTransforms* nt, const ModelNodeID* node_id, Transform3D::LocalTranslation* lt, Transform3D::LocalRotation* lr, Transform3D::LocalScale* ls){
                                 glm::vec3 scale;
                                 glm::quat rotation;
                                 glm::vec3 translation;
@@ -290,6 +294,7 @@ struct Systems
                                                 ls[i].Scale = scale;
                                 }
                         });
+
                 w.system<BoneTransforms, const NodeTransforms, const Model, const Transform3D::Translation, const Transform3D::Rotation, const Transform3D::Scale>("Calculate Bone Transform Matricies")
                 .arg(4).oper(flecs::Optional)
                 .arg(5).oper(flecs::Optional)

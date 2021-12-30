@@ -49,6 +49,10 @@ LD_COMPONENT_DEFINE(LocalScale,
         ),
         ((glm::vec3)Scale, ({1.f, 1.f, 1.f}))
         )
+LD_COMPONENT_DEFINE(TransformMatrix,
+        (),
+        ((glm::mat4)Transform, ({}))
+        )
 
 struct SetLocalTransform
 {
@@ -72,6 +76,7 @@ struct Components
                 LD_COMPONENT_REGISTER(LocalRotation, w);
                 LD_COMPONENT_REGISTER(Scale, w);
                 LD_COMPONENT_REGISTER(LocalScale, w);
+                LD_COMPONENT_REGISTER(TransformMatrix, w);
 
                 //w.id<Luddite::Scene>().entity().add<Translation>();
                 //w.id<Luddite::Scene>().entity().add<Rotation>();
@@ -177,6 +182,24 @@ struct Systems
                                         {
                                                 s[i].Scale *= s_p->Scale;
                                         }
+                                }
+                        });
+
+                w.system<TransformMatrix, const Translation, const Rotation, const Scale>()
+                .arg(2).oper(flecs::Optional)
+                .arg(3).oper(flecs::Optional)
+                .arg(4).oper(flecs::Optional)
+                .kind(w.id<Luddite::PostSimulate>())
+                .iter([](flecs::iter it, TransformMatrix* tm, const Translation* t, const Rotation* r, const Scale* s){
+                                for (auto i : it)
+                                {
+                                        tm[i].Transform = glm::identity<glm::mat4>();
+                                        if (t)
+                                                tm[i].Transform *= t[i].GetMatrix();
+                                        if (r)
+                                                tm[i].Transform *= r[i].GetMatrix();
+                                        if (s)
+                                                tm[i].Transform *= s[i].GetMatrix();
                                 }
                         });
         }

@@ -65,6 +65,7 @@ struct DirectionalLight
         float Intensity = 1.f;
 };
 
+struct RenderModelDirectly {};
 
 struct Components
 {
@@ -79,6 +80,7 @@ struct Components
                 w.component<PointLight>();
                 w.component<SpotLight>();
                 w.component<DirectionalLight>();
+                w.component<RenderModelDirectly>();
                 //w.id<MainWindow>().entity().add<RenderTarget>();
         }
 };
@@ -113,32 +115,33 @@ struct Systems
                                 Luddite::Renderer::BeginScene();
                         });
 
-                w.system<const Transform3D::Translation, const Transform3D::Rotation, const Transform3D::Scale, const Models::Model, const Models::BoneTransforms>("Submit Meshes")
-                .arg(5).oper(flecs::Optional)
+                w.system<const Transform3D::TransformMatrix, const Models::Model, const Models::NodeTransforms, const Models::BoneTransforms, const RenderModelDirectly>("Submit Model Directly")
+                .arg(4).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnRender>())
-                .iter([](flecs::iter it, const Transform3D::Translation* t, const Transform3D::Rotation* r, const Transform3D::Scale* s, const Models::Model* m, const Models::BoneTransforms* bt){
+                .iter([](flecs::iter it, const Transform3D::TransformMatrix* tm, const Models::Model* m, const Models::NodeTransforms* nt, const Models::BoneTransforms* bt, const RenderModelDirectly* dummy){
                                 for (auto i : it)
                                 {
-                                        glm::mat4 node_transforms[m[i].ModelHandle->m_Nodes.size()];
-                                        int idx = 0;
-                                        for (auto& node : m[i].ModelHandle->m_Nodes)
-                                        {
-                                                LD_VERIFY(node.m_ParentNodeID < idx, "Order of meshes in model {} are not in the right order!", m[i].ModelHandle->m_Name);
-                                                if (node.m_ParentNodeID == -1)
-                                                        //if (true)
-                                                        node_transforms[idx] = node.m_Transform;
-                                                else
-                                                        //node_transforms[idx] = node.m_Transform * node_transforms[node.m_ParentNodeID];
-                                                        node_transforms[idx] = node_transforms[node.m_ParentNodeID] * node.m_Transform;
-                                                idx++;
-                                        }
                                         for (auto& pair : m[i].ModelHandle->m_MeshNodePairs)
                                         {
                                                 auto& mesh = m[i].ModelHandle->m_Meshes[pair.m_MeshIndex];
-                                                Luddite::Renderer::SubmitMesh(&mesh, t[i].GetMatrix() * r[i].GetMatrix() * s[i].GetMatrix() * node_transforms[pair.m_NodeIndex], m[i].ModelHandle->m_Materials[mesh.m_MaterialIndex],
+                                                Luddite::Renderer::SubmitMesh(&mesh, tm[i].Transform * nt[i].NodeTransforms.at(pair.m_NodeIndex), m[i].ModelHandle->m_Materials[mesh.m_MaterialIndex],
                                                         bt ? &bt[i].BoneTransforms : nullptr
                                                         );
                                         }
+                                }
+                        });
+
+                w.system<const Models::MeshIndex, const Models::ModelNodeID, const Transform3D::TransformMatrix, const Models::Model, const Models::BoneTransforms>("Submit Meshes")
+                .arg(4).set(flecs::Parent)
+                .arg(5).set(flecs::Parent).oper(flecs::Optional)
+                .kind(w.id<Luddite::OnRender>())
+                .iter([](flecs::iter it, const Models::MeshIndex* mi, const Models::ModelNodeID* node_id, const Transform3D::TransformMatrix* tm, const Models::Model* m, const Models::BoneTransforms* bt){
+                                for (auto i : it)
+                                {
+                                        auto& mesh = m[i].ModelHandle->m_Meshes[mi[i].MeshIndex];
+                                        Luddite::Renderer::SubmitMesh(&mesh, tm[i].Transform, m[i].ModelHandle->m_Materials[mesh.m_MaterialIndex],
+                                                bt ? &bt[i].BoneTransforms : nullptr
+                                                );
                                 }
                         });
 
