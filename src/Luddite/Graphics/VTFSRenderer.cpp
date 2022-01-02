@@ -92,7 +92,7 @@ void VTFSRenderer::Initialize(Diligent::TEXTURE_FORMAT RTVFormat)
 
 void ClearBufferUInt(IBuffer* buffer)
 {
-        auto size = buffer->GetDesc().uiSizeInBytes;
+        auto size = buffer->GetDesc().Size;
         char bytes[size];
         memset(bytes, 0, size);
         Renderer::GetContext()->UpdateBuffer(buffer, 0, size, bytes, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
@@ -100,7 +100,7 @@ void ClearBufferUInt(IBuffer* buffer)
 
 void ClearBufferUInt(IBuffer* buffer, uint32_t value)
 {
-        uint32_t size = buffer->GetDesc().uiSizeInBytes;
+        uint32_t size = buffer->GetDesc().Size;
         uint32_t size_in_uint32s = size / sizeof(uint32_t);
         uint32_t bytes[size_in_uint32s];
         std::fill(bytes, bytes + size_in_uint32s, value);
@@ -109,7 +109,7 @@ void ClearBufferUInt(IBuffer* buffer, uint32_t value)
 
 void ClearBufferFloat(IBuffer* buffer)
 {
-        uint32_t size = buffer->GetDesc().uiSizeInBytes;
+        uint32_t size = buffer->GetDesc().Size;
         uint32_t size_in_floats = size / sizeof(float);
         float bytes[size_in_floats];
         std::fill(bytes, bytes + size_in_floats, 0.0f);
@@ -157,18 +157,25 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
 
         // Transition Resources
         {
-                StateTransitionDesc Barriers[] =
-                {
-                        {data->ClusterFlagsBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
-                        {data->UniqueClustersBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
-                        {data->UniqueClustersCounterBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
-                        {data->PointLightIndexCounterBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
-                        {data->SpotLightIndexCounterBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
-                        {data->PointLightGridBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
-                        {m_pMergePathPartitionsBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
-                        {m_pPointLightBVHBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true},
-                        {m_pSpotLightBVHBuffer, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_UNORDERED_ACCESS, true}
-                };
+                StateTransitionDesc Barriers[9];
+                Barriers[0].pResource = data->ClusterFlagsBuffer;
+                Barriers[1].pResource = data->UniqueClustersBuffer;
+                Barriers[2].pResource = data->UniqueClustersCounterBuffer;
+                Barriers[3].pResource = data->PointLightIndexCounterBuffer;
+                Barriers[4].pResource = data->SpotLightIndexCounterBuffer;
+                Barriers[5].pResource = data->PointLightGridBuffer;
+                Barriers[6].pResource = m_pMergePathPartitionsBuffer;
+                Barriers[7].pResource = m_pPointLightBVHBuffer;
+                Barriers[8].pResource = m_pSpotLightBVHBuffer;
+                Barriers[0].NewState = RESOURCE_STATE_UNORDERED_ACCESS;
+                Barriers[1].NewState = RESOURCE_STATE_UNORDERED_ACCESS;
+                Barriers[2].NewState = RESOURCE_STATE_UNORDERED_ACCESS;
+                Barriers[3].NewState = RESOURCE_STATE_UNORDERED_ACCESS;
+                Barriers[4].NewState = RESOURCE_STATE_UNORDERED_ACCESS;
+                Barriers[5].NewState = RESOURCE_STATE_UNORDERED_ACCESS;
+                Barriers[6].NewState = RESOURCE_STATE_UNORDERED_ACCESS;
+                Barriers[7].NewState = RESOURCE_STATE_UNORDERED_ACCESS;
+                Barriers[8].NewState = RESOURCE_STATE_UNORDERED_ACCESS;
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
         }
 
@@ -200,7 +207,7 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                         for (auto mesh_entry : material_pair.second)
                         {
                                 auto& mesh = mesh_entry.mesh;
-                                Uint32 offset = 0;
+                                Uint64 offset = 0;
                                 IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
                                 Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
                                 Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
@@ -248,7 +255,7 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                         for (auto mesh_entry : material_pair.second)
                         {
                                 auto& mesh = mesh_entry.mesh;
-                                Uint32 offset = 0;
+                                Uint64 offset = 0;
                                 IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
                                 Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
                                 Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
@@ -287,11 +294,8 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
 
         //Resource Transition Barriers
         {
-                StateTransitionDesc Barriers[] =
-                {
-                        {data->ClusterFlagsBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true}
-                };
-                Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
+                StateTransitionDesc Barrier(data->ClusterFlagsBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE);
+                Renderer::GetContext()->TransitionResourceStates(1, &Barrier);
         }
 
         uint32_t max_clusters = data->cluster_dimensions.x * data->cluster_dimensions.y * data->cluster_dimensions.z;
@@ -430,8 +434,8 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                                 Renderer::GetContext()->CommitShaderResources(data->RadixSortPointLightsSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                                 Renderer::GetContext()->DispatchCompute(DispatchAttribs);
 
-                                Renderer::GetContext()->CopyBuffer(m_pPointLightMortonCodes_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pPointLightMortonCodesBuffer, 0, m_pPointLightMortonCodesBuffer->GetDesc().uiSizeInBytes, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                                Renderer::GetContext()->CopyBuffer(m_pPointLightIndicies_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pPointLightIndiciesBuffer, 0, m_pPointLightIndiciesBuffer->GetDesc().uiSizeInBytes, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                Renderer::GetContext()->CopyBuffer(m_pPointLightMortonCodes_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pPointLightMortonCodesBuffer, 0, m_pPointLightMortonCodesBuffer->GetDesc().Size, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                Renderer::GetContext()->CopyBuffer(m_pPointLightIndicies_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pPointLightIndiciesBuffer, 0, m_pPointLightIndiciesBuffer->GetDesc().Size, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                         }
                         //Radix Sort (Spot Lights)
                         if (num_spot_lights > 0)
@@ -446,8 +450,8 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                                 Renderer::GetContext()->CommitShaderResources(data->RadixSortSpotLightsSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                                 Renderer::GetContext()->DispatchCompute(DispatchAttribs);
 
-                                Renderer::GetContext()->CopyBuffer(m_pSpotLightMortonCodes_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pSpotLightMortonCodesBuffer, 0, m_pPointLightMortonCodesBuffer->GetDesc().uiSizeInBytes, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                                Renderer::GetContext()->CopyBuffer(m_pSpotLightIndicies_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pSpotLightIndiciesBuffer, 0, m_pPointLightIndiciesBuffer->GetDesc().uiSizeInBytes, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                Renderer::GetContext()->CopyBuffer(m_pSpotLightMortonCodes_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pSpotLightMortonCodesBuffer, 0, m_pPointLightMortonCodesBuffer->GetDesc().Size, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                Renderer::GetContext()->CopyBuffer(m_pSpotLightIndicies_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pSpotLightIndiciesBuffer, 0, m_pPointLightIndiciesBuffer->GetDesc().Size, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                         }
                 }
                 //Merge Sort
@@ -458,8 +462,8 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                                 if (MergeSort(data->MergePathPartitionsPointLightsSRB, data->MergePathPartitionsPointLightsSwappedSRB, data->MergeSortPointLightsSRB,
                                         data->MergeSortPointLightsSwappedSRB, num_point_lights, chunk_size))
                                 {
-                                        Renderer::GetContext()->CopyBuffer(m_pPointLightMortonCodes_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pPointLightMortonCodesBuffer, 0, m_pPointLightMortonCodesBuffer->GetDesc().uiSizeInBytes, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                                        Renderer::GetContext()->CopyBuffer(m_pPointLightIndicies_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pPointLightIndiciesBuffer, 0, m_pPointLightIndiciesBuffer->GetDesc().uiSizeInBytes, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                        Renderer::GetContext()->CopyBuffer(m_pPointLightMortonCodes_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pPointLightMortonCodesBuffer, 0, m_pPointLightMortonCodesBuffer->GetDesc().Size, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                        Renderer::GetContext()->CopyBuffer(m_pPointLightIndicies_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pPointLightIndiciesBuffer, 0, m_pPointLightIndiciesBuffer->GetDesc().Size, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                                 }
                         }
                         //Merga Sort (Spot Lights)
@@ -468,8 +472,8 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                                 if (MergeSort(data->MergePathPartitionsSpotLightsSRB, data->MergePathPartitionsSpotLightsSwappedSRB, data->MergeSortSpotLightsSRB,
                                         data->MergeSortSpotLightsSwappedSRB, num_spot_lights, chunk_size))
                                 {
-                                        Renderer::GetContext()->CopyBuffer(m_pSpotLightMortonCodes_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pSpotLightMortonCodesBuffer, 0, m_pPointLightMortonCodesBuffer->GetDesc().uiSizeInBytes, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
-                                        Renderer::GetContext()->CopyBuffer(m_pSpotLightIndicies_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pSpotLightIndiciesBuffer, 0, m_pPointLightIndiciesBuffer->GetDesc().uiSizeInBytes, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                        Renderer::GetContext()->CopyBuffer(m_pSpotLightMortonCodes_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pSpotLightMortonCodesBuffer, 0, m_pPointLightMortonCodesBuffer->GetDesc().Size, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
+                                        Renderer::GetContext()->CopyBuffer(m_pSpotLightIndicies_OUTBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, m_pSpotLightIndiciesBuffer, 0, m_pPointLightIndiciesBuffer->GetDesc().Size, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
                                 }
                         }
                 }
@@ -519,11 +523,11 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
         }
         // Transition Resources
         {
-                StateTransitionDesc Barriers[] =
+                StateTransitionDesc Barriers[2] =
                 {
                         // {data->ClusterFlagsBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
-                        {data->UniqueClustersBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
-                        {data->UniqueClustersCounterBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
+                        {data->UniqueClustersBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE},
+                        {data->UniqueClustersCounterBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE},
                         // {data->PointLightIndexCounterBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
                         // {data->SpotLightIndexCounterBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
                         // {data->PointLightGridBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_SHADER_RESOURCE, true},
@@ -545,7 +549,7 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
         {
                 StateTransitionDesc Barriers[] =
                 {
-                        {data->AssignLightsToClustersArgumentBufferBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_INDIRECT_ARGUMENT, true},
+                        {data->AssignLightsToClustersArgumentBufferBuffer, RESOURCE_STATE_UNORDERED_ACCESS, RESOURCE_STATE_INDIRECT_ARGUMENT},
                 };
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
         }
@@ -553,6 +557,7 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
         {
                 m_LightCountsCBAttributes.MapBuffer(m_LightCountsCBData, m_LightCountsCB);
                 DispatchComputeIndirectAttribs DispatchIndirectAttribs;
+                DispatchIndirectAttribs.pAttribsBuffer = data->AssignLightsToClustersArgumentBufferBuffer;
                 //Optimized Method:
                 Renderer::GetContext()->SetPipelineState(m_pAssignLightsToClustersPSO);
                 Renderer::GetContext()->CommitShaderResources(data->AssignLightsToClustersSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
@@ -561,7 +566,7 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                 // Renderer::GetContext()->SetPipelineState(m_pAssignLightsToClustersBruteForcePSO);
                 // Renderer::GetContext()->CommitShaderResources(data->AssignLightsToClustersBruteForceSRB, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
 
-                Renderer::GetContext()->DispatchComputeIndirect(DispatchIndirectAttribs, data->AssignLightsToClustersArgumentBufferBuffer);
+                Renderer::GetContext()->DispatchComputeIndirect(DispatchIndirectAttribs);
         }
         //Set Render Targets
         {
@@ -605,6 +610,18 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                                         if (buff != data->m_BufferMap.end())
                                                 srb->GetVariableByName(SHADER_TYPE_PIXEL, buff->first.c_str())->Set(buff->second->GetDefaultView(Diligent::BUFFER_VIEW_SHADER_RESOURCE));
                                 }
+                                for (int i = 0; i < material_pair.first->m_pShader->m_PropertiesBufferDescription.TexturesVertexShader.size(); i++)
+                                {
+                                        const auto& name = material_pair.first->m_pShader->m_PropertiesBufferDescription.TexturesVertexShader[i];
+                                        if (material_pair.first->m_Properties.TexturesVertexShader[i].valid() && material_pair.first->m_Properties.TexturesVertexShader[i]->GetTexture())
+                                                srb->GetVariableByName(SHADER_TYPE_VERTEX, name.c_str())->Set(material_pair.first->m_Properties.TexturesVertexShader[i]->GetTexture()->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
+                                }
+                                for (int i = 0; i < material_pair.first->m_pShader->m_PropertiesBufferDescription.TexturesPixelShader.size(); i++)
+                                {
+                                        const auto& name = material_pair.first->m_pShader->m_PropertiesBufferDescription.TexturesPixelShader[i];
+                                        if (material_pair.first->m_Properties.TexturesPixelShader[i].valid() && material_pair.first->m_Properties.TexturesPixelShader[i]->GetTexture())
+                                                srb->GetVariableByName(SHADER_TYPE_PIXEL, name.c_str())->Set(material_pair.first->m_Properties.TexturesPixelShader[i]->GetTexture()->GetDefaultView(TEXTURE_VIEW_SHADER_RESOURCE));
+                                }
                                 for (const std::string& texture_name : material_pair.first->m_pShader->m_ProvidedTexturesVertex)
                                 {
                                         auto tex = m_TextureMap.find(texture_name);
@@ -626,7 +643,7 @@ void VTFSRenderer::Render(const RenderTarget& render_target, const Camera& camer
                         for (auto mesh_entry : material_pair.second)
                         {
                                 auto& mesh = mesh_entry.mesh;
-                                Uint32 offset = 0;
+                                Uint64 offset = 0;
                                 IBuffer* pBuffs[] = {mesh->m_pVertexBuffer};
                                 Renderer::GetContext()->SetVertexBuffers(0, 1, pBuffs, &offset, RESOURCE_STATE_TRANSITION_MODE_VERIFY, SET_VERTEX_BUFFERS_FLAG_RESET);
                                 Renderer::GetContext()->SetIndexBuffer(mesh->m_pIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_VERIFY);
@@ -958,7 +975,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         data.ComputeClusterGridSRB.Release();
 
         BuffDesc.ElementByteStride = sizeof(uint32_t);
-        BuffDesc.uiSizeInBytes = sizeof(uint32_t) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
+        BuffDesc.Size = sizeof(uint32_t) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Unique Clusters";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.UniqueClustersBuffer);
         data.m_BufferMap["UniqueClusters"] = data.UniqueClustersBuffer;
@@ -973,7 +990,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         data.FindUniqueClustersSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "ClusterFlags")->Set(data.ClusterFlagsBuffer->GetDefaultView(BUFFER_VIEW_SHADER_RESOURCE));
 
         BuffDesc.ElementByteStride = sizeof(AABB);
-        BuffDesc.uiSizeInBytes = sizeof(AABB) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
+        BuffDesc.Size = sizeof(AABB) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Cluster AABBs";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.ClusterAABBsBuffer);
         data.m_BufferMap["ClusterAABBs"] = data.ClusterAABBsBuffer;
@@ -983,7 +1000,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         //cluster colors buffer (for debug)?
 
         BuffDesc.ElementByteStride = sizeof(glm::uvec2);
-        BuffDesc.uiSizeInBytes = sizeof(glm::uvec2) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
+        BuffDesc.Size = sizeof(glm::uvec2) * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Point Light Grid";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.PointLightGridBuffer);
         data.m_BufferMap["PointLightGrid"] = data.PointLightGridBuffer;
@@ -998,7 +1015,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         data.AssignLightsToClustersBruteForceSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWSpotLightGrid")->Set(data.SpotLightGridBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
 
         BuffDesc.ElementByteStride = sizeof(uint32_t);
-        BuffDesc.uiSizeInBytes = sizeof(uint32_t) * AVERAGE_OVERLAPPING_LIGHTS_PER_CLUSTER * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
+        BuffDesc.Size = sizeof(uint32_t) * AVERAGE_OVERLAPPING_LIGHTS_PER_CLUSTER * cluster_dimensions.x * cluster_dimensions.y * cluster_dimensions.z;
         BuffDesc.Name = "Point Light Index List";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.PointLightIndexListBuffer);
         data.m_BufferMap["PointLightIndexList"] = data.PointLightIndexListBuffer;
@@ -1018,7 +1035,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         data.ComputeClusterGridSRB->GetVariableByName(SHADER_TYPE_COMPUTE, "RWClusterAABBs")->Set(data.ClusterAABBsBuffer->GetDefaultView(BUFFER_VIEW_UNORDERED_ACCESS));
 
         BuffDesc.ElementByteStride = sizeof(uint32_t);
-        BuffDesc.uiSizeInBytes = sizeof(uint32_t);
+        BuffDesc.Size = sizeof(uint32_t);
 
         BuffDesc.Name = "Point Light Index Counter Buffer";
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &data.PointLightIndexCounterBuffer);
@@ -1041,7 +1058,7 @@ void VTFSRenderer::ComputeClusterGrid(VTFSRenderer::PerRenderTargetData& data, c
         BuffDesc.BindFlags = BIND_UNORDERED_ACCESS | BIND_INDIRECT_DRAW_ARGS;
         BuffDesc.Mode = BUFFER_MODE_RAW;
         BuffDesc.Usage = USAGE_DEFAULT;
-        BuffDesc.uiSizeInBytes = sizeof(uint32_t) * 3;
+        BuffDesc.Size = sizeof(uint32_t) * 3;
         BuffDesc.Name = "Assign Lights to Clusters Argument Buffer";
 
         BufferData BuffData;
@@ -1160,23 +1177,23 @@ void VTFSRenderer::CreateLightBuffers()
         BuffDesc.Usage = USAGE_DEFAULT;
 
         BuffDesc.ElementByteStride = sizeof(AABB);
-        BuffDesc.uiSizeInBytes = sizeof(AABB) * 512;
+        BuffDesc.Size = sizeof(AABB) * 512;
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &m_pLightsAABBBuffer);
 
-        BuffDesc.uiSizeInBytes = sizeof(AABB) * GetNumNodes(MAX_POINT_LIGHTS);
+        BuffDesc.Size = sizeof(AABB) * GetNumNodes(MAX_POINT_LIGHTS);
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &m_pPointLightBVHBuffer);
 
-        BuffDesc.uiSizeInBytes = sizeof(AABB) * GetNumNodes(MAX_SPOT_LIGHTS);
+        BuffDesc.Size = sizeof(AABB) * GetNumNodes(MAX_SPOT_LIGHTS);
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &m_pSpotLightBVHBuffer);
 
         BuffDesc.ElementByteStride = sizeof(uint32_t);
-        BuffDesc.uiSizeInBytes = sizeof(uint32_t) * MAX_POINT_LIGHTS;
+        BuffDesc.Size = sizeof(uint32_t) * MAX_POINT_LIGHTS;
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &m_pPointLightIndiciesBuffer);
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &m_pPointLightIndicies_OUTBuffer);
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &m_pPointLightMortonCodesBuffer);
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &m_pPointLightMortonCodes_OUTBuffer);
 
-        BuffDesc.uiSizeInBytes = sizeof(uint32_t) * MAX_SPOT_LIGHTS;
+        BuffDesc.Size = sizeof(uint32_t) * MAX_SPOT_LIGHTS;
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &m_pSpotLightIndiciesBuffer);
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &m_pSpotLightIndicies_OUTBuffer);
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &m_pSpotLightMortonCodesBuffer);
@@ -1189,7 +1206,7 @@ void VTFSRenderer::CreateLightBuffers()
         uint32_t numMergePathPartitionsPerSortGroup = static_cast<uint32_t>(glm::ceil((float)(chunkSize * 2) / (float)(SORT_ELEMENTS_PER_THREAD * SORT_NUM_THREADS_PER_THREAD_GROUP))) + 1u;
         uint32_t maxMergePathPartitions = numMergePathPartitionsPerSortGroup * maxSortGroups;
 
-        BuffDesc.uiSizeInBytes = sizeof(uint32_t) * maxMergePathPartitions;
+        BuffDesc.Size = sizeof(uint32_t) * maxMergePathPartitions;
         Renderer::GetDevice()->CreateBuffer(BuffDesc, nullptr, &m_pMergePathPartitionsBuffer);
 }
 
@@ -1362,8 +1379,8 @@ void VTFSRenderer::CreateComputePSOs()
 
                 StateTransitionDesc Barriers[] =
                 {
-                        {m_ClusterCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true},
-                        {m_CameraCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
+                        {m_ClusterCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER},
+                        {m_CameraCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER}
                 };
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
 
@@ -1431,8 +1448,8 @@ void VTFSRenderer::CreateComputePSOs()
                 CreateUniformBuffer(Renderer::GetDevice(), m_UpdateLightsCBAttributes.GetSize(), "UpdateLightsCB", &m_UpdateLightsCB);
                 StateTransitionDesc Barriers[] =
                 {
-                        {m_UpdateLightsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true},
-                        {m_LightCountsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
+                        {m_UpdateLightsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER},
+                        {m_LightCountsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER}
                 };
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
                 m_pUpdateLightsPSO->GetStaticVariableByName(SHADER_TYPE_COMPUTE, "_LightCountsCB")->Set(m_LightCountsCB);
@@ -1463,7 +1480,7 @@ void VTFSRenderer::CreateComputePSOs()
                 CreateUniformBuffer(Renderer::GetDevice(), m_DispatchParamsCBAttributes.GetSize(), "_DispatchParamsCB", &m_DispatchParamsCB);
                 StateTransitionDesc Barriers[] =
                 {
-                        {m_DispatchParamsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
+                        {m_DispatchParamsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER}
                 };
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
                 m_pReduceLightsAABB1PSO->GetStaticVariableByName(SHADER_TYPE_COMPUTE, "_DispatchParamsCB")->Set(m_DispatchParamsCB);
@@ -1491,7 +1508,7 @@ void VTFSRenderer::CreateComputePSOs()
                 CreateUniformBuffer(Renderer::GetDevice(), m_DispatchParamsCBAttributes.GetSize(), "_ReductionParamsCB", &m_ReductionParamsCB);
                 StateTransitionDesc Barriers[] =
                 {
-                        {m_ReductionParamsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
+                        {m_ReductionParamsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER}
                 };
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
                 m_pReduceLightsAABB2PSO->GetStaticVariableByName(SHADER_TYPE_COMPUTE, "_DispatchParamsCB")->Set(m_DispatchParamsCB);
@@ -1545,7 +1562,7 @@ void VTFSRenderer::CreateComputePSOs()
                 CreateUniformBuffer(Renderer::GetDevice(), m_SortParamsCBAttributes.GetSize(), "_SortParamsCB", &m_SortParamsCB);
                 StateTransitionDesc Barriers[] =
                 {
-                        {m_SortParamsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
+                        {m_SortParamsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER}
                 };
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
                 m_pRadixSortPSO->GetStaticVariableByName(SHADER_TYPE_COMPUTE, "_SortParamsCB")->Set(m_SortParamsCB);
@@ -1621,7 +1638,7 @@ void VTFSRenderer::CreateComputePSOs()
                 CreateUniformBuffer(Renderer::GetDevice(), m_BVHParamsCBAttributes.GetSize(), "_BVHParamsCB", &m_BVHParamsCB);
                 StateTransitionDesc Barriers[] =
                 {
-                        {m_BVHParamsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
+                        {m_BVHParamsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER}
                 };
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
 
@@ -1805,8 +1822,8 @@ void VTFSRenderer::CreateDrawPSOs()
                 CreateUniformBuffer(Renderer::GetDevice(), static_cast<Uint32>(sizeof(glm::mat4) * MAX_BONES), "Bone Transforms", &m_BoneTransformsCB);
                 StateTransitionDesc Barriers[] =
                 {
-                        {m_BasicModelCameraCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true},
-                        {m_BoneTransformsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER, true}
+                        {m_BasicModelCameraCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER},
+                        {m_BoneTransformsCB, RESOURCE_STATE_UNKNOWN, RESOURCE_STATE_CONSTANT_BUFFER}
                 };
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);
                 m_pOpaqueDepthPSO->GetStaticVariableByName(SHADER_TYPE_VERTEX, "_BasicModelCameraCB")->Set(m_BasicModelCameraCB);

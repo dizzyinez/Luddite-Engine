@@ -284,9 +284,12 @@ Shader *ShaderLibrary::LoadFromFile(const std::filesystem::path &path) {
                 CreateUniformBuffer(Renderer::GetDevice(),
                         pShader->m_PropertiesBufferDescription.GetSize(),
                         "Properties", &pShader->m_PropertiesBuffer);
-                StateTransitionDesc Barriers[] = {{pShader->m_PropertiesBuffer,
-                        RESOURCE_STATE_UNKNOWN,
-                        RESOURCE_STATE_CONSTANT_BUFFER, true}};
+                StateTransitionDesc Barriers[1];
+                Barriers[0].pResource = pShader->m_PropertiesBuffer;
+                Barriers[0].NewState = RESOURCE_STATE_CONSTANT_BUFFER;
+                //= {{pShader->m_PropertiesBuffer,
+                //RESOURCE_STATE_UNKNOWN,
+                //RESOURCE_STATE_CONSTANT_BUFFER, true}};
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers),
                         Barriers);
                 if (pShader->vertex_shader_uses_properties)

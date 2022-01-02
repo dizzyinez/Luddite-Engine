@@ -114,6 +114,8 @@ struct Systems
                 .kind(w.id<Luddite::OnSimulate>())
                 //.iter([](flecs::iter it, RootNode* root, const Model* m, AnimationStack* as){
                 .iter([](flecs::iter it){
+                                ZoneScopedN("Progress Animations");
+                                //ZoneNamed(Progress, true);
                                 auto nt = it.term<NodeTransforms>(1);
                                 auto m = it.term<const Model>(2);
                                 auto as = it.term<AnimationStack>(3);
@@ -130,7 +132,6 @@ struct Systems
                                                 //bool dirty_scale = false;
                                                 float total_weight = 0.;
                                         };
-                                        //TODO: replace w/ c style array
                                         auto num_nodes = m[i].ModelHandle->m_Nodes.size();
                                         NodeData node_data[num_nodes];
 
@@ -170,6 +171,9 @@ struct Systems
                                                                         channel_node_data.scale = glm::vec3{1.};
                                                                         channel_node_data.rot = glm::identity<glm::quat>();
                                                                 }
+                                                                //channel_node_data.pos = channel.GetInterpolatedPosition(anim.Timer);
+                                                                //channel_node_data.rot = channel.GetInterpolatedRotation(anim.Timer);
+                                                                //channel_node_data.scale = channel.GetInterpolatedScale(anim.Timer);
 
                                                                 channel_node_data.pos += anim.Weight * channel.GetInterpolatedPosition(anim.Timer);
                                                                 //https://gamedev.stackexchange.com/questions/62354/method-for-interpolation-between-3-quaternions
@@ -201,6 +205,7 @@ struct Systems
                 .arg(6).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnSimulate>())
                 .iter([](flecs::iter it, const CopyNodeLocalTransformToParent* dummy_for_tag, NodeTransforms* nt, const ModelNodeID* node_id, const Transform3D::LocalTranslation* lt, const Transform3D::LocalRotation* lr, const Transform3D::LocalScale* ls){
+                                ZoneScopedN("Copy Node Local Transforms To Parent's NodeTransforms");
                                 for (auto i : it)
                                 {
                                         glm::mat4 mat = glm::identity<glm::mat4>();
@@ -221,6 +226,7 @@ struct Systems
                 .arg(6).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnSimulate>())
                 .iter([](flecs::iter it, const CopyNodeLocalTransformFromParent* dummy_for_tag, const NodeTransforms* nt, const ModelNodeID* node_id, Transform3D::LocalTranslation* lt, Transform3D::LocalRotation* lr, Transform3D::LocalScale* ls){
+                                ZoneScopedN("Copy Node Local Transforms From Parent's NodeTransforms");
                                 glm::vec3 scale;
                                 glm::quat rotation;
                                 glm::vec3 translation;
@@ -241,6 +247,7 @@ struct Systems
                 w.system<NodeTransforms, const Model>("Convert NodeTransforms to Model Space")
                 .kind(w.id<Luddite::OnSimulate>())
                 .iter([](flecs::iter it, NodeTransforms* nt, const Model* m){
+                                ZoneScopedN("Convert NodeTransforms to Model Space");
                                 for (auto i : it)
                                 {
                                         for (unsigned int n = 0; n < m[i].ModelHandle->m_Nodes.size(); n++)
@@ -258,6 +265,7 @@ struct Systems
                 .arg(6).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnSimulate>())
                 .iter([](flecs::iter it, const CopyNodeModelTransformToParent* dummy_for_tag, NodeTransforms* nt, const ModelNodeID* node_id, const Transform3D::LocalTranslation* lt, const Transform3D::LocalRotation* lr, const Transform3D::LocalScale* ls){
+                                ZoneScopedN("Copy Node Model Space Transforms To Parent's NodeTransforms");
                                 for (auto i : it)
                                 {
                                         glm::mat4 mat = glm::identity<glm::mat4>();
@@ -278,6 +286,7 @@ struct Systems
                 .arg(6).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnSimulate>())
                 .iter([](flecs::iter it, const CopyNodeModelTransformFromParent* dummy_for_tag, const NodeTransforms* nt, const ModelNodeID* node_id, Transform3D::LocalTranslation* lt, Transform3D::LocalRotation* lr, Transform3D::LocalScale* ls){
+                                ZoneScopedN("Copy Node Model Space Transforms From Parent's NodeTransforms");
                                 glm::vec3 scale;
                                 glm::quat rotation;
                                 glm::vec3 translation;
@@ -295,21 +304,13 @@ struct Systems
                                 }
                         });
 
-                w.system<BoneTransforms, const NodeTransforms, const Model, const Transform3D::Translation, const Transform3D::Rotation, const Transform3D::Scale>("Calculate Bone Transform Matricies")
-                .arg(4).oper(flecs::Optional)
-                .arg(5).oper(flecs::Optional)
-                .arg(6).oper(flecs::Optional)
+                w.system<BoneTransforms, const NodeTransforms, const Model, const Transform3D::TransformMatrix>("Calculate Bone Transform Matrices")
                 .kind(w.id<Luddite::PreRender>())
-                .iter([](flecs::iter it, BoneTransforms* bt, const NodeTransforms* nt, const Model* m, const Transform3D::Translation* t, const Transform3D::Rotation* r, const Transform3D::Scale* s){
+                .iter([](flecs::iter it, BoneTransforms* bt, const NodeTransforms* nt, const Model* m, const Transform3D::TransformMatrix* tm){
+                                ZoneScopedN("Calculate Bone Transform Matrices");
                                 for (auto i : it)
                                 {
-                                        glm::mat4 GlobalInverseTransform = glm::identity<glm::mat4>();
-                                        if (t)
-                                                GlobalInverseTransform *= t[i].GetMatrix();
-                                        if (r)
-                                                GlobalInverseTransform *= r[i].GetMatrix();
-                                        if (s)
-                                                GlobalInverseTransform *= s[i].GetMatrix();
+                                        glm::mat4 GlobalInverseTransform = tm[i].Transform;
                                         GlobalInverseTransform = glm::inverse(GlobalInverseTransform);
                                         GlobalInverseTransform = m[i].ModelHandle->m_GlobalInverseTransform;
                                         GlobalInverseTransform = glm::inverse(nt[i].NodeTransforms[0]);

@@ -22,6 +22,7 @@ void TextureLibrary::Initialize()
         m_AssetBaseDir = "./Assets/Textures/";
         m_Extensions.emplace(L".png");
         m_Extensions.emplace(L".jpg");
+        m_Extensions.emplace(L".jpeg");
         m_Extensions.emplace(L".dds");
         m_Extensions.emplace(L".tiff");
 }

@@ -1,6 +1,3 @@
-[submodule "ThirdParty/DiligentCore"]
-	path = ThirdParty/DiligentCore
-	url = https://github.com/Aquaticholic/DiligentCore
 [submodule "ThirdParty/DiligentFX"]
 	path = ThirdParty/DiligentFX
 	url = https://github.com/DiligentGraphics/DiligentFX
@@ -16,7 +13,7 @@
 	url = https://github.com/Aquaticholic/imgui
 [submodule "ThirdParty/DiligentTools"]
 	path = ThirdParty/DiligentTools
-	url = https://github.com/Aquaticholic/DiligentTools
+	url = https://github.com/DiligentGraphics/DiligentTools
 [submodule "ThirdParty/ImGuizmo"]
 	path = ThirdParty/ImGuizmo
 	url = https://github.com/Aquaticholic/ImGuizmo
@@ -44,3 +41,15 @@
 [submodule "ThirdParty/box2d"]
 	path = ThirdParty/box2d
 	url = https://github.com/erincatto/box2d
+[submodule "ThirdParty/tracy"]
+	path = ThirdParty/tracy
+	url = https://github.com/wolfpld/tracy
+[submodule "ThirdParty/DiligentCore"]
+	path = ThirdParty/DiligentCore
+	url = https://github.com/DiligentGraphics/DiligentCore
+[submodule "ThirdParty/DiligentTools/"]
+	path = ThirdParty/DiligentTools
+	url = https://github.com/DiligentGraphics/DiligentTools
+[submodule "ThirdParty/ThirdParty/DiligentTools"]
+	path = ThirdParty/ThirdParty/DiligentTools
+	url = https://github.com/DiligentGraphics/DiligentTools

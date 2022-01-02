@@ -44,7 +44,6 @@ class LUDDITE_API Window
         glm::mat4x4 GetAdjustedProjectionMatrix(float FOV, float NearPlane, float FarPlane) const;
         glm::mat4x4 GetSurfacePretransformMatrix(const glm::vec3& f3CameraViewAxis) const;
 
-        #ifdef LD_ENABLE_IMGUI
         void ImGuiSetup();
         void ImGuiSetDefaultColors();
         inline std::unique_ptr<Diligent::ImGuiImplDiligent>& GetImGuiImpl() {return m_pImGuiImpl;}
@@ -53,9 +52,7 @@ class LUDDITE_API Window
                 m_pImGuiImpl->NewFrame(m_WindowWidth, m_WindowHeight, m_pSwapChain->GetDesc().PreTransform);
         };
         ImGuiContext* GetImGuiContext();
-        #else
-        inline void ImGuiNewFrame() {};
-        #endif // LD_ENABLE_IMGUI
+
         protected:
         void OnWindowResize(int width, int height);
         int m_WindowWidth = 0;
@@ -64,9 +61,7 @@ class LUDDITE_API Window
         Diligent::RefCntAutoPtr<Diligent::ISwapChain> m_pSwapChain;
         bool Quit = false;
 
-        #ifdef LD_ENABLE_IMGUI
         std::unique_ptr<Diligent::ImGuiImplDiligent>  m_pImGuiImpl;
-        #endif // LD_ENABLE_IMGUI
 
         LayerStack m_LayerStack;
 };

@@ -5,7 +5,6 @@
 #include "Luddite/Graphics/DiligentInclude.hpp"
 #include "Luddite/Graphics/Texture.hpp"
 #include "Luddite/Graphics/QuadBatchRenderer.hpp"
-#include "Luddite/Graphics/PBRRenderer.hpp"
 #include "Luddite/Graphics/DefferedRenderer.hpp"
 #include "Luddite/Graphics/VTFSRenderer.hpp"
 #include "Luddite/Graphics/RenderTarget.hpp"
@@ -89,7 +88,6 @@ class LUDDITE_API Renderer
 
         static inline VTFSRenderer m_VTFSRenderer;
         static inline QuadBatchRenderer m_basic_quad_renderer;
-        static inline PBRRenderer m_PBRRenderer;
         // static inline ModelLoader m_ModelLoader;
 
         static inline RenderScene m_RenderScene;

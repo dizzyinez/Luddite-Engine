@@ -98,7 +98,7 @@ void QuadBatchRenderer::DrawBatch()
         }
 
         // Bind vertex, instance and index buffers
-        Uint32 offsets[] = {0, 0};
+        Uint64 offsets[] = {0, 0};
         IBuffer* pBuffs[] = {m_QuadVertexBuffer, m_InstanceBuffer};
         m_pImmediateContext->SetVertexBuffers(0, _countof(pBuffs), pBuffs, offsets, RESOURCE_STATE_TRANSITION_MODE_TRANSITION, SET_VERTEX_BUFFERS_FLAG_RESET);
         m_pImmediateContext->SetIndexBuffer(m_QuadIndexBuffer, 0, RESOURCE_STATE_TRANSITION_MODE_TRANSITION);
@@ -312,7 +312,7 @@ RefCntAutoPtr<IBuffer> QuadBatchRenderer::CreateVertexBuffer()
         VertBuffDesc.Name = "Quad vertex buffer";
         VertBuffDesc.Usage = USAGE_IMMUTABLE;
         VertBuffDesc.BindFlags = BIND_VERTEX_BUFFER;
-        VertBuffDesc.uiSizeInBytes = sizeof(QuadVerts);
+        VertBuffDesc.Size = sizeof(QuadVerts);
         BufferData VBData;
         VBData.pData = QuadVerts;
         VBData.DataSize = sizeof(QuadVerts);
@@ -336,7 +336,7 @@ RefCntAutoPtr<IBuffer> QuadBatchRenderer::CreateIndexBuffer()
         IndBuffDesc.Name = "Quad index buffer";
         IndBuffDesc.Usage = USAGE_IMMUTABLE;
         IndBuffDesc.BindFlags = BIND_INDEX_BUFFER;
-        IndBuffDesc.uiSizeInBytes = sizeof(Indices);
+        IndBuffDesc.Size = sizeof(Indices);
         BufferData IBData;
         IBData.pData = Indices;
         IBData.DataSize = sizeof(Indices);
@@ -353,7 +353,7 @@ void QuadBatchRenderer::CreateInstanceBuffer()
         // Use default usage as this buffer will only be updated when grid size changes
         InstBuffDesc.Usage = USAGE_DEFAULT; //TODO: CHANGE THIS
         InstBuffDesc.BindFlags = BIND_VERTEX_BUFFER;
-        InstBuffDesc.uiSizeInBytes = sizeof(InstanceData) * MaxInstances;
+        InstBuffDesc.Size = sizeof(InstanceData) * MaxInstances;
         m_pDevice->CreateBuffer(InstBuffDesc, nullptr, &m_InstanceBuffer);
 }
 }

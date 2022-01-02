@@ -1,5 +1,3 @@
-#include "Luddite/Graphics/ShaderAttributeList.hpp"
-#include "GraphicsTypes.h"
 #include "Luddite/Core/Asset.hpp"
 #include "Luddite/Graphics/Renderer.hpp"
 #include "Luddite/Utilities/YamlParsers.hpp"
@@ -130,6 +128,7 @@ void ShaderBufferDescription::SetDefaultAttribs(ShaderBufferData& data) const
 }
 void ShaderBufferDescription::SetAttribsFromYaml(ShaderBufferData& data, const YAML::Node& yaml) const
 {
+        LD_LOG_INFO("PIXEL SHADER TEXTURES{}", TexturesPixelShader.size());
         for (const auto& pair : Attributes)
         {
                 const auto& name = pair.first;
@@ -148,6 +147,22 @@ void ShaderBufferDescription::SetAttribsFromYaml(ShaderBufferData& data, const Y
                 VALUE_TYPES_DECLARE
                 #undef VALUE_TYPE_DECLARATION
                 }
+        }
+        for (std::size_t i = 0; i < TexturesVertexShader.size(); i++)
+        {
+                const auto& name = TexturesVertexShader[i];
+                LD_LOG_INFO("{}", name);
+                if (!yaml[name])
+                        continue;
+                data.TexturesVertexShader[i] = Luddite::Assets::GetTextureLibrary().GetAssetSynchronous(yaml[name].as<unsigned long long>());
+        }
+        for (std::size_t i = 0; i < TexturesPixelShader.size(); i++)
+        {
+                const auto& name = TexturesPixelShader[i];
+                LD_LOG_INFO("{}", name);
+                if (!yaml[name])
+                        continue;
+                data.TexturesPixelShader[i] = Luddite::Assets::GetTextureLibrary().GetAssetSynchronous(yaml[name].as<unsigned long long>());
         }
 }
 }

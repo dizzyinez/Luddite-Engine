@@ -20,7 +20,7 @@ class StreamingBuffer
                 BuffDesc.BindFlags = bind_flags;
                 BuffDesc.CPUAccessFlags = Diligent::CPU_ACCESS_WRITE;
                 BuffDesc.ElementByteStride = sizeof(T);
-                BuffDesc.uiSizeInBytes = max_quantity * sizeof(T);
+                BuffDesc.Size = max_quantity * sizeof(T);
                 pDevice->CreateBuffer(BuffDesc, nullptr, &m_pBuffer);
         }
         T* Allocate(Diligent::IDeviceContext* pCtx, uint32_t quantity)

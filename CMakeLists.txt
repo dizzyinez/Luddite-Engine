@@ -11,6 +11,17 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(LINUX)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 endif()
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message("Debug Configuration")
+    set (CONFIGURATION_DEFINE LD_DEBUG)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+        set(COMPILE_OPTIONS ${COMPILE_OPTIONS} /DEBUG)
+        set(LINK_OPTIONS ${LINK_OPTIONS} "/OPT:REF /OPT:ICF")
+    endif()
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+    message("Release Configuration")
+    set (CONFIGURATION_DEFINE LD_RELEASE)
+endif()
 
 # if(WIN32)
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_SILENCE_ALL_CXX17_DEPRECATION_WARNINGS")
@@ -21,14 +32,18 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/assimp)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glfw)
 
+set(DILIGENT_INSTALL_TOOLS OFF CACHE BOOL "" FORCE)
 set(DILIGENT_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(DILIGENT_BUILD_FX OFF CACHE BOOL "" FORCE)
+set(DILIGENT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(DILIGENT_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
 set(DILIGENT_NO_FORMAT_VALIDATION ON CACHE BOOL "" FORCE)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentCore)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentTools)
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog)
+#add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tracy)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/yaml-cpp)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/flecs)
 
@@ -57,25 +72,15 @@ endif()
 if (APPLE)
     set(PLATFORM_DEFINE LD_PLATFORM_MACOS)
 endif()
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message("Debug Configuration")
-    set (CONFIGURATION_DEFINE LD_DEBUG)
-    if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-        set(COMPILE_OPTIONS ${COMPILE_OPTIONS} /DEBUG)
-        set(LINK_OPTIONS ${LINK_OPTIONS} "/OPT:REF /OPT:ICF")
-    endif()
-elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
-    message("Release Configuration")
-    set (CONFIGURATION_DEFINE LD_RELEASE)
-endif()
 
 file(GLOB_RECURSE ENGINE_SOURCE "src/*.c" "src/*.cc" "src/*.cpp")
 file(GLOB_RECURSE ENGINE_HEADERS PARENT_SCOPE "src/*.h" "src/*.hpp")
 
 file(GLOB IMGUIZMO_SOURCE "ThirdParty/ImGuizmo/*.h" "ThirdParty/ImGuizmo/*.cpp")
+file(GLOB TRACY_SOURCE "ThirdParty/tracy/Tracy.hpp" "ThirdParty/tracy/TracyClient.cpp")
 
 
-add_library(Luddite-Engine SHARED ${ENGINE_SOURCE} ${ENGINE_HEADERS} ${IMGUIZMO_SOURCE})
+add_library(Luddite-Engine SHARED ${ENGINE_SOURCE} ${ENGINE_HEADERS} ${IMGUIZMO_SOURCE} ${TRACY_SOURCE})
 target_compile_options(Luddite-Engine PRIVATE -DUNICODE -DENGINE_DLL=0 ${COMPILE_OPTIONS})
 if(LINK_OPTIONS)
 set_target_properties(Luddite-Engine PROPERTIES LINK_FLAGS ${LINK_OPTIONS})
@@ -83,9 +88,11 @@ endif()
 # target_link_options(Luddite-Engine PRIVATE ${LINK_OPTIONS})
 target_compile_definitions(Luddite-Engine PRIVATE ${ENGINE_COMPILE_DEFINES} ${PLATFORM_DEFINE} ${CONFIGURATION_DEFINE})
 
-set(LUDDITE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentCore"
+set(LUDDITE_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src 
+"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentCore"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/DiligentTools"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/spdlog/include"
+"${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/tracy"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/flecs/include"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/glm"
 "${CMAKE_CURRENT_SOURCE_DIR}/ThirdParty/OBJ-Loader/Source"
@@ -141,6 +148,7 @@ endif()
 target_link_libraries(Luddite-Engine ${DILIGENT_LIBS} ${PLATFORM_LIBS} 
 glfw
 spdlog 
+#TracyClient
 yaml-cpp
 Bullet3Dynamics Bullet3Collision Bullet3Geometry BulletInverseDynamics BulletSoftBody BulletCollision BulletDynamics LinearMath Bullet3Common
 box2d

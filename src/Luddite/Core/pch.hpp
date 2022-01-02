@@ -27,6 +27,9 @@
 #include "flecs.h"
 #include "yaml-cpp/yaml.h"
 
+#define TRACY_ENABLE
+#include "Tracy.hpp"
+
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"

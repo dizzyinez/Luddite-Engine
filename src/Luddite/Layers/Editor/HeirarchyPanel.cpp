@@ -27,7 +27,7 @@ void Luddite::HeirarchyPanel::OnDraw(EditorContext& ctx)
 {
         if (!open)
                 return;
-        if (ImGui::Begin("Heirarchy", &open, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse /*| ImGuiWindowFlags_MenuBar*/))
+        if (ImGui::Begin("Heirarchy", &open, ImGuiWindowFlags_NoCollapse /*| ImGuiWindowFlags_MenuBar*/))
         {
                 DrawEntityTree(ctx, ctx.world->id<Luddite::Scene>().entity());
         }

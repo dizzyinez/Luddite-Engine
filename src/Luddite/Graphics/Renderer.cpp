@@ -136,7 +136,7 @@ void Renderer::TransitionRenderTextureToRenderTarget(RenderTexture& RenderTextur
 {
         Diligent::StateTransitionDesc Barriers[] =
         {
-                {RenderTexture.m_pTexture, Diligent::RESOURCE_STATE_UNKNOWN, Diligent::RESOURCE_STATE_RENDER_TARGET, true}
+                {RenderTexture.m_pTexture, Diligent::RESOURCE_STATE_UNKNOWN, Diligent::RESOURCE_STATE_RENDER_TARGET}
         };
         m_pImmediateContext->TransitionResourceStates(_countof(Barriers), Barriers);
 }
@@ -145,7 +145,7 @@ void Renderer::TransitionRenderTextureToShaderResource(RenderTexture& RenderText
 {
         Diligent::StateTransitionDesc Barriers[] =
         {
-                {RenderTexture.m_pTexture, Diligent::RESOURCE_STATE_UNKNOWN, Diligent::RESOURCE_STATE_SHADER_RESOURCE, true}
+                {RenderTexture.m_pTexture, Diligent::RESOURCE_STATE_UNKNOWN, Diligent::RESOURCE_STATE_SHADER_RESOURCE}
         };
         m_pImmediateContext->TransitionResourceStates(_countof(Barriers), Barriers);
 }
@@ -248,7 +248,7 @@ void Renderer::Draw(const RenderTarget& render_target, const Camera& camera)
 
         // Diligent::StateTransitionDesc Barriers[] = //
         // {
-        //         {m_pTexture, Diligent::RESOURCE_STATE_UNKNOWN, Diligent::RESOURCE_STATE_SHADER_RESOURCE, true}
+        //         {m_pTexture, Diligent::RESOURCE_STATE_UNKNOWN, Diligent::RESOURCE_STATE_SHADER_RESOURCE}
         // };
 
         // m_pImmediateContext->TransitionResourceStates(_countof(Barriers), Barriers);

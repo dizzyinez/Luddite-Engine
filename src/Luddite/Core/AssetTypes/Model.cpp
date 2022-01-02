@@ -119,14 +119,6 @@ void ModelLibrary::Initialize()
         m_Extensions.emplace(L".zgl");
 }
 
-void ProcessNode(aiNode* node, const aiScene* scene)
-{
-}
-
-void ProcessMesh()
-{
-}
-
 void AddNode(aiNode* node, int parent_node_id, unsigned int& node_id_counter, Model* model, std::unordered_map<std::string, unsigned int >& id_map) {
         glm::mat4 transform = AssimpGLMHelpers::ConvertMatrixToGLMFormat(node->mTransformation);
         glm::vec3 scale;
@@ -303,18 +295,18 @@ inline void LoadMeshes(const aiScene* scene, Model* model, std::unordered_map<st
 
                 //create vbo
                 VertBuffDesc.Name = mesh.m_Name.c_str();
-                VertBuffDesc.uiSizeInBytes = mesh.m_nVertices * sizeof(Vertex);
+                VertBuffDesc.Size = mesh.m_nVertices * sizeof(Vertex);
                 Diligent::BufferData VBData;
                 VBData.pData = reinterpret_cast<void*>(vertices);
-                VBData.DataSize = VertBuffDesc.uiSizeInBytes;
+                VBData.DataSize = VertBuffDesc.Size;
                 Renderer::GetDevice()->CreateBuffer(VertBuffDesc, &VBData, &mesh.m_pVertexBuffer);
 
                 //create ibo
                 IndBuffDesc.Name = mesh.m_Name.c_str();
-                IndBuffDesc.uiSizeInBytes = mesh.m_nIndicies * sizeof(uint32_t);
+                IndBuffDesc.Size = mesh.m_nIndicies * sizeof(uint32_t);
                 Diligent::BufferData IBData;
                 IBData.pData = reinterpret_cast<void*>(indices);
-                IBData.DataSize = IndBuffDesc.uiSizeInBytes;
+                IBData.DataSize = IndBuffDesc.Size;
                 Renderer::GetDevice()->CreateBuffer(IndBuffDesc, &IBData, &mesh.m_pIndexBuffer);
                 delete [] vertices;
                 delete [] indices;
@@ -333,12 +325,12 @@ Model* ModelLibrary::LoadFromFile(const std::filesystem::path& path)
                 importer.ReadFile(path.string(),
                         aiProcess_GenNormals |
                         aiProcess_GenBoundingBoxes |
-                        aiProcess_GenUVCoords |
+                        //aiProcess_GenUVCoords |
                         aiProcess_Triangulate |
                         aiProcess_JoinIdenticalVertices |
                         aiProcess_SortByPType |
                         aiProcess_MakeLeftHanded |
-                        //aiProcess_FlipUVs |
+                        aiProcess_FlipUVs |
                         aiProcess_LimitBoneWeights |
                         aiProcess_CalcTangentSpace
                         );
@@ -369,14 +361,14 @@ Model* ModelLibrary::LoadFromFile(const std::filesystem::path& path)
 
 void ModelLibrary::AfterLoadProcessing(Model* pModel)
 {
-        LD_PROFILE_FUNCTION();
+        LD_LOG_INFO("TEST");
         for (auto& mesh : pModel->m_Meshes)
         {
                 //transition resources
                 Diligent::StateTransitionDesc Barriers[] =
                 {
-                        {mesh.m_pVertexBuffer, Diligent::RESOURCE_STATE_UNKNOWN, Diligent::RESOURCE_STATE_VERTEX_BUFFER, true},
-                        {mesh.m_pIndexBuffer, Diligent::RESOURCE_STATE_UNKNOWN, Diligent::RESOURCE_STATE_INDEX_BUFFER, true}
+                        {mesh.m_pVertexBuffer, Diligent::RESOURCE_STATE_COPY_DEST, Diligent::RESOURCE_STATE_VERTEX_BUFFER, Diligent::STATE_TRANSITION_FLAG_UPDATE_STATE},
+                        {mesh.m_pIndexBuffer, Diligent::RESOURCE_STATE_COPY_DEST, Diligent::RESOURCE_STATE_INDEX_BUFFER, Diligent::STATE_TRANSITION_FLAG_UPDATE_STATE}
                 };
 
                 Renderer::GetContext()->TransitionResourceStates(_countof(Barriers), Barriers);

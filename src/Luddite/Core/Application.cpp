@@ -35,6 +35,7 @@ void Application::Run()
         double fixed_dt = std::chrono::duration_cast<std::chrono::duration<double> >(min_update_time).count();
         double delta_time = fixed_dt; //First frame will use fixed dt
         uint32_t frame_count = 0;
+        LD_LOG_INFO("TEST");
         while (!m_pMainWindow->ShouldQuit())
         {
                 std::stringstream ss;
@@ -47,7 +48,9 @@ void Application::Run()
                 Events::Clear();
                 m_pMainWindow->PollEvents();
                 m_pMainWindow->HandleEvents();
-                OnUpdate(delta_time);
+                {
+                        OnUpdate(delta_time);
+                }
                 int update_count = 0;
                 while (update_accululator >= min_update_time && update_count < 10)
                 {
@@ -69,14 +72,18 @@ void Application::Run()
                 auto MainWindowRenderTarget = m_pMainWindow->GetRenderTarget();
                 Renderer::BindRenderTarget(MainWindowRenderTarget);
                 Renderer::ClearRenderTarget(MainWindowRenderTarget);
-                OnRender(lerp_alpha);
+                {
+                        OnRender(lerp_alpha);
+                }
 
 
                 ////imgui render
                 Renderer::BindRenderTarget(MainWindowRenderTarget);
                 m_pMainWindow->ImGuiNewFrame();
                 //ImGuizmo::BeginFrame();
-                OnImGuiRender(lerp_alpha);
+                {
+                        OnImGuiRender(lerp_alpha);
+                }
                 m_pMainWindow->GetImGuiImpl()->Render(Renderer::m_pImmediateContext);
 
                 {
@@ -95,6 +102,7 @@ void Application::Run()
                 // LD_LOG_INFO("elapsed: {}", update_accululator.count());
                 // std::chrono::microseconds µs;
                 // LD_LOG_INFO("DT: {}", update_delta_time.count());
+                FrameMark;
         }
         LD_LOG_INFO("Exiting Main Window");
 }
