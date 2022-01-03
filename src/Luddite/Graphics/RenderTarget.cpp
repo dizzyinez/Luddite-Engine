@@ -78,9 +78,9 @@ glm::mat4 RenderTarget::GetProjectionMatrix(const Camera& camera) const
         return ProjectionMatrix;
 }
 
-glm::mat4 RenderTarget::GetViewMatrix(const Camera& camera) const
+glm::mat4 RenderTarget::GetViewMatrix(const Camera& camera, const glm::vec3& up) const
 {
-        glm::mat4 ViewMatrix = glm::lookAt(camera.Position, camera.Position + camera.ViewDirection, glm::vec3(0.f, 1.f, 0.f));
+        glm::mat4 ViewMatrix = glm::lookAt(camera.Position, camera.Position + camera.ViewDirection, up);
         if (Renderer::GetDevice()->GetDeviceInfo().IsGLDevice())
                 ViewMatrix = glm::scale(ViewMatrix, {-1.f, -1.f, 1.f});
 

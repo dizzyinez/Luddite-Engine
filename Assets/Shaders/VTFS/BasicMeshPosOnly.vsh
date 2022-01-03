@@ -29,9 +29,10 @@ void main(in  VSInput VSIn,
             VSIn.BoneWeights.y * BoneTransforms[VSIn.BoneIndices.y] + 
             VSIn.BoneWeights.z * BoneTransforms[VSIn.BoneIndices.z] + 
             VSIn.BoneWeights.w * BoneTransforms[VSIn.BoneIndices.w];
-        //local_pos = mul(local_pos, SkinMat);
         local_pos = mul(SkinMat, local_pos);
     }
-    PSIn.Pos = mul(BasicModelCameraCB.ModelViewProjection, local_pos);
-    PSIn.PosVS = mul(BasicModelCameraCB.ModelView, float4(VSIn.Pos, 1.0));
+    PSIn.Pos = LocalToClip(local_pos);
+    PSIn.PosVS = LocalToView(local_pos);
+    //PSIn.Pos = mul(BasicModelCameraCB.ModelViewProjection, local_pos);
+    //PSIn.PosVS = mul(BasicModelCameraCB.ModelView, float4(VSIn.Pos, 1.0));
 }

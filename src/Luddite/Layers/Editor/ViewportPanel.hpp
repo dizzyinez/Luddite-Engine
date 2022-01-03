@@ -7,6 +7,7 @@ class LUDDITE_API ViewportPanel : public Panel
         private:
         Luddite::RenderTexture m_RenderTexture;
         glm::ivec2 size = glm::ivec2(500, 500);
+        Luddite::Camera camera;
         //float m_CamPitch = 0.f;
         //float m_CamYaw = 0.f;
         //float m_CamZoom = 10.f;

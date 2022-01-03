@@ -236,11 +236,11 @@ struct Systems
                                 {
                                         glm::decompose(nt[i].NodeTransforms.at(node_id[i].NodeID), scale, rotation, translation, skew, perspective);
                                         if (lt)
-                                                lt[i].Translation = translation;
+                                                lt[i].LocalTranslation = translation;
                                         if (lr)
-                                                lr[i].Rotation = glm::eulerAngles(rotation);
+                                                lr[i].LocalRotation = glm::eulerAngles(rotation);
                                         if (ls)
-                                                ls[i].Scale = scale;
+                                                ls[i].LocalScale = scale;
                                 }
                         });
 
@@ -296,11 +296,11 @@ struct Systems
                                 {
                                         glm::decompose(nt[i].NodeTransforms.at(node_id[i].NodeID), scale, rotation, translation, skew, perspective);
                                         if (lt)
-                                                lt[i].Translation = translation;
+                                                lt[i].LocalTranslation = translation;
                                         if (lr)
-                                                lr[i].Rotation = glm::eulerAngles(rotation);
+                                                lr[i].LocalRotation = glm::eulerAngles(rotation);
                                         if (ls)
-                                                ls[i].Scale = scale;
+                                                ls[i].LocalScale = scale;
                                 }
                         });
 

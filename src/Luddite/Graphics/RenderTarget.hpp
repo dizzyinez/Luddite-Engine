@@ -17,7 +17,7 @@ struct LUDDITE_API RenderTarget
         Diligent::SURFACE_TRANSFORM PreTransform = Diligent::SURFACE_TRANSFORM_IDENTITY;
 
         glm::mat4 GetProjectionMatrix(const Camera& camera) const;
-        glm::mat4 GetViewMatrix(const Camera& camera) const;
+        glm::mat4 GetViewMatrix(const Camera& camera, const glm::vec3& up = glm::vec3{0., 0., 1.}) const;
 };
 struct LUDDITE_API RenderTexture
 {

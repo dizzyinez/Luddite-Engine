@@ -5,6 +5,7 @@
 #include "Luddite/ECS/Modules/Input.hpp"
 #include "Luddite/ECS/Modules/Models.hpp"
 #include "Luddite/ECS/Modules/Box2D.hpp"
+#include "Luddite/ECS/Modules/Editor.hpp"
 #include "Luddite/Layers/Editor/ViewportPanel.hpp"
 #include "Luddite/Layers/Editor/HeirarchyPanel.hpp"
 #include "Luddite/Layers/Editor/ComponentsPanel.hpp"
@@ -21,6 +22,7 @@ void EditorLayer::Initialize()
         m_World.import<Models::Systems>();
         m_World.import<Graphics::Systems>();
         m_World.import<Box2D::Systems>();
+        m_World.import<Editor::Components>();
 
         m_Ctx.world = &m_World;
         AddPanel<ViewportPanel>();
@@ -29,18 +31,29 @@ void EditorLayer::Initialize()
 
         //for (int i = 0; i < 80; i++)
         {
-                auto e = Luddite::Utils::ImportModelECS(Luddite::Assets::GetBasicModelLibrary().GetAssetSynchronous(8386934180578673657ULL), m_World, m_World.id<Luddite::Scene>().entity(), true)
-                         .set<Transform3D::Rotation>({{glm::radians(90.), 0, 0}})
-                         .set<Transform3D::Translation>({{1.6, 16.2, -8.4}})
+                auto e = Luddite::Utils::ImportModelECS(Luddite::Assets::GetBasicModelLibrary().GetAssetSynchronous(14036193367729790258ULL), m_World, m_World.id<Luddite::Scene>().entity(), true)
+                         .set<Transform3D::Rotation>({{glm::radians(180.), 0, 0}})
+                         .set<Transform3D::Translation>({{0., 0., 0.}})
                          //.set<Transform3D::LocalRotation>({{glm::radians(90.), 0, glm::radians(180.)}})
                          //.set<Transform3D::LocalRotation>({{0, 0, glm::radians(180.)}})
                 ;
                 e.get_mut<Models::AnimationStack>()->PlayAnimation(0, -1);
         }
         {
-                auto e = m_World.entity("Camera").child_of(m_World.id<Luddite::Scene>().entity());
-                e.set<Transform3D::Translation>({glm::vec3(0, 20, -10)});
-                e.set<Transform3D::Rotation>({glm::vec3(glm::radians(53.f), glm::radians(45.f), 0)});
+                auto target = m_World.entity("Camera Target").child_of(m_World.id<Luddite::Scene>().entity())
+                              .set<Transform3D::Translation>({})
+                              .set<Transform3D::Rotation>({})
+                              .set<Transform3D::Scale>({})
+                              .add<Editor::CameraParent>();
+                ;
+                auto e = m_World.entity("Camera").child_of(target);
+                //auto e = m_World.entity("Camera").child_of(m_World.id<Luddite::Scene>().entity());
+                //e.set<Transform3D::Translation>({glm::vec3(0, 20, -10)});
+                //e.set<Transform3D::Rotation>({glm::vec3(glm::radians(53.f), glm::radians(45.f), 0)});
+                e.set<Transform3D::Translation>({});
+                e.set<Transform3D::Rotation>({});
+                e.set<Transform3D::LocalTranslation>({{0., -1., 0.}});
+                e.set<Transform3D::LocalRotation>({});
                 e.add<Graphics::Camera>();
                 e.add<Graphics::RenderTarget>();
                 e.add<Graphics::RenderToMainWindow>();
@@ -56,6 +69,7 @@ void EditorLayer::Initialize()
         }
         {
                 auto e = m_World.entity("Light").child_of(m_World.id<Luddite::Scene>().entity());
+                e.add<Transform3D::TransformMatrix>();
                 e.add<Transform3D::Translation>();
                 e.add<Graphics::PointLight>();
         }

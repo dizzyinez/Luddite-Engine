@@ -1,5 +1,4 @@
 #pragma once
-#include "Luddite/Core/DebugTools.hpp"
 #include "Luddite/Core/pch.hpp"
 #include "Luddite/Graphics/Camera.hpp"
 #include "Luddite/Graphics/Color.hpp"
@@ -39,36 +38,28 @@ LD_COMPONENT_DEFINE(Camera,
         ((float)ClipNear, (0.001f), .speed = 0.001f, .min = 0.001f, .max = 1.0f, .flags = ImGuiSliderFlags_ClampOnInput | ImGuiSliderFlags_AlwaysClamp),
         ((float)ClipFar, (1000.f), .min = 2.0f, .flags = ImGuiSliderFlags_ClampOnInput | ImGuiSliderFlags_AlwaysClamp)
         )
-//struct Camera
-//{
-//        Luddite::Camera::ProjectionType Projection = Luddite::Camera::ProjectionType::PERSPECTIVE;
-//        float FOV = glm::radians(90.f);
-//        float OrthoScale = 100.f;
-//        float ClipNear = 0.1f;
-//        float ClipFar = 1000.f;
-//};
 
-struct PointLight
-{
-        Luddite::ColorRGB Color;
-        float Range = 10.f;
-        float Intensity = 1.f;
-};
+LD_COMPONENT_DEFINE(PointLight,
+        (),
+        ((Luddite::ColorRGB)Color, ({})),
+        ((float)Range, (10.f)),
+        ((float)Intensity, (1.f))
+        );
 
-struct SpotLight
-{
-        Luddite::ColorRGB Color;
-        float Range = 10.f;
-        glm::vec3 Direction;
-        float Intensity = 1.f;
-        float HalfAngle = glm::quarter_pi<float>();
-};
+LD_COMPONENT_DEFINE(SpotLight,
+        (),
+        ((Luddite::ColorRGB)Color, ({})),
+        ((glm::vec3)Direction, ({})),
+        ((float)Range, (10.f)),
+        ((float)Intensity, (1.f)),
+        ((float)HalfAngle, (glm::quarter_pi<float>()))
+        );
 
-struct DirectionalLight
-{
-        Luddite::ColorRGB Color;
-        float Intensity = 1.f;
-};
+LD_COMPONENT_DEFINE(DirectionalLight,
+        (),
+        ((Luddite::ColorRGB)Color, ({})),
+        ((float)Intensity, ({1.f}))
+        );
 
 struct RenderModelDirectly {};
 
@@ -83,9 +74,9 @@ struct Components
                 LD_COMPONENT_REGISTER(Camera, w);
                 w.component<RenderTarget>();
                 w.component<Material>();
-                w.component<PointLight>();
-                w.component<SpotLight>();
-                w.component<DirectionalLight>();
+                LD_COMPONENT_REGISTER(PointLight, w);
+                LD_COMPONENT_REGISTER(SpotLight, w);
+                LD_COMPONENT_REGISTER(DirectionalLight, w);
                 w.component<RenderModelDirectly>();
                 //w.id<MainWindow>().entity().add<RenderTarget>();
         }

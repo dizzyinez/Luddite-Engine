@@ -1,6 +1,7 @@
 #pragma once
 #include "Luddite/Core/pch.hpp"
 #include "Luddite/Core/Core.hpp"
+#include "Luddite/Core/MetaInfo.hpp"
 
 namespace Luddite
 {
@@ -84,3 +85,29 @@ class LUDDITE_API ColorRGB
         glm::vec3 rgb;
 };
 }
+
+template<>
+struct MetaTypeInfo<Luddite::ColorRGBA>
+{
+        const std::string name;
+        int flags = 0;
+        static constexpr std::size_t size() {return sizeof(Luddite::ColorRGBA);}
+        static std::string to_string(const Luddite::ColorRGBA& c) {return glm::to_string(c.GetVec4());}
+        void IMGuiElement(Luddite::ColorRGBA& c) const
+        {
+                ImGui::ColorEdit4(name.c_str(), &c.GetVec4()[0], flags);
+        }
+};
+
+template<>
+struct MetaTypeInfo<Luddite::ColorRGB>
+{
+        const std::string name;
+        int flags = 0;
+        static constexpr std::size_t size() {return sizeof(Luddite::ColorRGB);}
+        static std::string to_string(const Luddite::ColorRGB& c) {return glm::to_string(c.GetVec3());}
+        void IMGuiElement(Luddite::ColorRGB& c) const
+        {
+                ImGui::ColorEdit3(name.c_str(), &c.GetVec3()[0], flags);
+        }
+};
