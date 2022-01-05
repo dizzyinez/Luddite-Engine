@@ -67,9 +67,10 @@ void EditorLayer::Initialize()
                 e.set<Physics::LinearDamping>({glm::vec3(0.50, 0, 0)});
                 e.set<Models::Model>({Luddite::Assets::GetBasicModelLibrary().GetAsset(4049191577729022337ULL)});
         }
+        for (int i = 0; i < 250; i++)
         {
                 auto e = m_World.entity("Light").child_of(m_World.id<Luddite::Scene>().entity());
-                e.add<Transform3D::TransformMatrix>();
+                //e.add<Transform3D::TransformMatrix>();
                 e.add<Transform3D::Translation>();
                 e.add<Graphics::PointLight>();
         }

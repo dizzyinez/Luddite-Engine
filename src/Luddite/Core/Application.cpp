@@ -49,12 +49,14 @@ void Application::Run()
                 m_pMainWindow->PollEvents();
                 m_pMainWindow->HandleEvents();
                 {
+                        ZoneScopedN("OnUpdate");
                         OnUpdate(delta_time);
                 }
                 int update_count = 0;
                 while (update_accululator >= min_update_time && update_count < 10)
                 {
                         //update
+                        ZoneScopedN("OnFixedUpdate");
                         update_accululator -= min_update_time;
                         OnFixedUpdate(fixed_dt);
                         update_count++;
@@ -65,14 +67,17 @@ void Application::Run()
                 //TEMP
                 float lerp_alpha = 1.0f;
 
-                Assets::MergeLoadedAssets();
-                Assets::RefreshAssets();
+                {
+                        Assets::MergeLoadedAssets();
+                        Assets::RefreshAssets();
+                }
 
                 //render
                 auto MainWindowRenderTarget = m_pMainWindow->GetRenderTarget();
                 Renderer::BindRenderTarget(MainWindowRenderTarget);
                 Renderer::ClearRenderTarget(MainWindowRenderTarget);
                 {
+                        ZoneScopedN("OnRender");
                         OnRender(lerp_alpha);
                 }
 
@@ -82,6 +87,7 @@ void Application::Run()
                 m_pMainWindow->ImGuiNewFrame();
                 //ImGuizmo::BeginFrame();
                 {
+                        ZoneScopedN("OnImGuiRender");
                         OnImGuiRender(lerp_alpha);
                 }
                 m_pMainWindow->GetImGuiImpl()->Render(Renderer::m_pImmediateContext);

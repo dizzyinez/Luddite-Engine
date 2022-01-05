@@ -50,14 +50,31 @@ void Luddite::ViewportPanel::OnDraw(EditorContext& ctx)
                 if (ctx.selection.size() > 0)
                 {
                         auto& selected_entity = ctx.selection.front();
-                        if (selected_entity.has<Transform3D::TransformMatrix>())
+                        glm::mat4 selection_transform = glm::identity<glm::mat4>();
+                        bool has_translation, has_rotation, has_scale = false;
+                        if (selected_entity.has<Transform3D::Translation>())
+                        {
+                                has_translation = true;
+                                selection_transform *= selected_entity.get<Transform3D::Translation>()->GetMatrix();
+                        }
+                        if (selected_entity.has<Transform3D::Rotation>())
+                        {
+                                has_rotation = true;
+                                selection_transform *= selected_entity.get<Transform3D::Rotation>()->GetMatrix();
+                        }
+                        if (selected_entity.has<Transform3D::Scale>())
+                        {
+                                has_scale = true;
+                                selection_transform *= selected_entity.get<Transform3D::Scale>()->GetMatrix();
+                        }
+
+                        if (has_translation || has_rotation || has_scale)
                         {
                                 //ImGuizmo::SetRect(window_region_min.x, window_region_min.y, size.x, size.y);
                                 ImGuizmo::SetRect(window_pos.x, window_pos.y, size.x, size.y);
                                 ImGuizmo::SetOrthographic(camera.Projection == Camera::ProjectionType::ORTHOGRAPHIC);
                                 ImGuizmo::SetDrawlist();
 
-                                glm::mat4 selection_transform = selected_entity.get<Transform3D::TransformMatrix>()->Transform;
                                 glm::mat4 projection = m_RenderTexture.GetRenderTarget().GetProjectionMatrix(camera);
                                 glm::mat4 view = m_RenderTexture.GetRenderTarget().GetViewMatrix(camera);
                                 ImGuizmo::Manipulate(glm::value_ptr(view), glm::value_ptr(projection), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL, glm::value_ptr(selection_transform));
@@ -67,11 +84,11 @@ void Luddite::ViewportPanel::OnDraw(EditorContext& ctx)
                                         glm::vec3 t, r, s;
                                         ImGuizmo::DecomposeMatrixToComponents(glm::value_ptr(selection_transform), &t[0], &r[0], &s[0]);
                                         r = glm::radians(r);
-                                        if (selected_entity.has<Transform3D::Translation>())
+                                        if (has_translation)
                                                 selected_entity.set<Transform3D::Translation>({t});
-                                        if (selected_entity.has<Transform3D::Rotation>())
+                                        if (has_rotation)
                                                 selected_entity.set<Transform3D::Rotation>({r});
-                                        if (selected_entity.has<Transform3D::Scale>())
+                                        if (has_scale)
                                                 selected_entity.set<Transform3D::Scale>({s});
                                 }
                         }

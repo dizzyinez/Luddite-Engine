@@ -98,6 +98,7 @@ struct Systems
                 .term<RenderTarget>().inout(flecs::Out)
                 .term<const MainWindow>().inout(flecs::In).singleton()
                 .iter([](flecs::iter it){
+                                ZoneScopedN("Assing Main Window");
                                 auto rt = it.term<RenderTarget>(3);
                                 auto mw = it.term<const MainWindow>(4);
                                 for (auto i : it)
@@ -109,6 +110,7 @@ struct Systems
                 w.system<>("Begin Scene")
                 .kind(w.id<Luddite::OnRender>())
                 .iter([](flecs::iter it){
+                                ZoneScopedN("Begin Scene");
                                 Luddite::Renderer::BeginScene();
                         });
 
@@ -117,6 +119,7 @@ struct Systems
                 .arg(6).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnRender>())
                 .iter([](flecs::iter it, const Transform3D::TransformMatrix* tm, const Models::Model* m, const Models::NodeTransforms* nt, const Models::BoneTransforms* bt, const RenderModelDirectly* dummy, const Graphics::Material* mat){
+                                ZoneScopedN("Submit Model Directly");
                                 for (auto i : it)
                                 {
                                         for (auto& pair : m[i].ModelHandle->m_MeshNodePairs)
@@ -136,6 +139,7 @@ struct Systems
                 .arg(6).oper(flecs::Optional)
                 .kind(w.id<Luddite::OnRender>())
                 .iter([](flecs::iter it, const Models::MeshIndex* mi, const Models::ModelNodeID* node_id, const Transform3D::TransformMatrix* tm, const Models::Model* m, const Models::BoneTransforms* bt, const Graphics::Material* mat){
+                                ZoneScopedN("Submit Meshes");
                                 for (auto i : it)
                                 {
                                         auto& mesh = m[i].ModelHandle->m_Meshes[mi[i].MeshIndex];
@@ -149,6 +153,7 @@ struct Systems
                 w.system<const Transform3D::Translation, const PointLight>("Submit Point Lights")
                 .kind(w.id<Luddite::OnRender>())
                 .each([](flecs::entity e, const Transform3D::Translation& t, const PointLight& l){
+                                ZoneScopedN("Submit Point Light");
                                 Luddite::PointLightCPU light;
                                 light.Position = glm::vec4(t.Translation, 1.f);
                                 light.Color = l.Color.GetVec3();
@@ -157,9 +162,10 @@ struct Systems
                                 Luddite::Renderer::SubmitPointLight(light);
                         });
 
-                w.system<const Transform3D::Translation, const Transform3D::Rotation, const SpotLight>("Submit Spot Light")
+                w.system<const Transform3D::Translation, const Transform3D::Rotation, const SpotLight>("Submit Spot Lights")
                 .kind(w.id<Luddite::OnRender>())
                 .each([](flecs::entity e, const Transform3D::Translation& t, const Transform3D::Rotation& r, const SpotLight& l){
+                                ZoneScopedN("Submit Spot Light");
                                 Luddite::SpotLightCPU light;
                                 light.Position = glm::vec4(t.Translation, 1.f);
                                 light.Color = l.Color.GetVec3();
@@ -173,6 +179,7 @@ struct Systems
                 w.system<const Transform3D::Rotation, const DirectionalLight>("Submit Directional Lights")
                 .kind(w.id<Luddite::OnRender>())
                 .each([](flecs::entity e, const Transform3D::Rotation& r, const DirectionalLight& l){
+                                ZoneScopedN("Submit Directional Light");
                                 Luddite::DirectionalLightCPU light;
                                 light.Color = l.Color.GetVec3();
                                 light.Intensity = l.Intensity;
@@ -183,6 +190,7 @@ struct Systems
                 w.system<>("End Scene")
                 .kind(w.id<Luddite::OnRender>())
                 .iter([](flecs::iter it){
+                                ZoneScopedN("End Scene");
                                 Luddite::Renderer::EndScene();
                         });
 
@@ -190,6 +198,7 @@ struct Systems
                 .term<const RenderTarget>().inout(flecs::In)
                 .kind(w.id<Luddite::OnRender>())
                 .iter([](flecs::iter it){
+                                ZoneScopedN("Render Active Cameras");
                                 //.each([](flecs::entity e, const Camera& c, const Transform3D::Translation& t, const Transform3D::Rotation& r, const RenderTarget& rt){
                                 auto c = it.term<const Camera>(1);
                                 auto t = it.term<const Transform3D::Translation>(2);

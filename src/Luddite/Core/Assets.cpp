@@ -25,6 +25,7 @@ void Assets::Initialize()
 
 void Assets::RefreshAssets()
 {
+        ZoneScoped;
         LD_PROFILE_FUNCTION();
         m_ModelLibrary.RefreshAssetsFromFilesystem();
         m_ShaderLibrary.RefreshAssetsFromFilesystem();
@@ -34,6 +35,7 @@ void Assets::RefreshAssets()
 
 void Assets::MergeLoadedAssets()
 {
+        ZoneScoped;
         LD_PROFILE_FUNCTION();
         m_ModelLibrary.MergeLoadedAssets();
         m_ShaderLibrary.MergeLoadedAssets();

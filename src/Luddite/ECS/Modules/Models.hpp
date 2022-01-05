@@ -115,7 +115,6 @@ struct Systems
                 //.iter([](flecs::iter it, RootNode* root, const Model* m, AnimationStack* as){
                 .iter([](flecs::iter it){
                                 ZoneScopedN("Progress Animations");
-                                //ZoneNamed(Progress, true);
                                 auto nt = it.term<NodeTransforms>(1);
                                 auto m = it.term<const Model>(2);
                                 auto as = it.term<AnimationStack>(3);
